@@ -1,0 +1,9 @@
+mobile_country_code: 
+    886:
+       country: TW
+       lang: zh-TW
+       timezone: Taipei
+    86:
+       country: CN
+       lang: zh-CN
+       timezone: Beijing

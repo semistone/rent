@@ -11,7 +11,7 @@ public class TestJDBC {
 		try{
 		Class.forName("com.mysql.jdbc.Driver");
 		con = DriverManager.getConnection(
-				"jdbc:mysql://10.1.128.235/time_base_rent", "rentuser", "rentuser");
+				"jdbc:mysql://127.0.0.1/time_base_rent", "rentuser", "rentuser");
 
 		}finally{
 			if (con != null && !con.isClosed())
