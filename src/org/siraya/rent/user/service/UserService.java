@@ -11,16 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.regex.Pattern;
 import java.util.Map;
-import javax.servlet.jsp.jstl.core.Config;
+
+import javax.ws.rs.GET;
+import org.siraya.rent.pojo.Device;
+import org.siraya.rent.user.dao.IDeviceDao;
 @Service("userService")
 public class UserService implements IUserService {
     @Autowired
     private IUserDAO userDao;
     @Autowired
     private IApplicationConfig applicationConfig;
-    
+    @Autowired
+    private IDeviceDao deviceDao;
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
-    private static  Pattern mobilePhonePattern = Pattern.compile("^\\+\\d*$");
+
     
 	/**
 	 * new user mobile number
@@ -29,22 +33,21 @@ public class UserService implements IUserService {
 	 * @param moblie phone number
 	 * @exception DuplicateKeyException duplicate mobile number
 	 */
-	public String newUserByMobileNumber(int cc,String mobilePhone) throws Exception {
+	public User newUserByMobileNumber(int cc,String mobilePhone) throws Exception {
 		//
 		// verify format
 		//
-		Assert.assertTrue("phone number format error", mobilePhonePattern
-				.matcher(mobilePhone).find());
-		Map<String,Object> mobileCountryCode = (Map<String,Object>) applicationConfig.get("mobile_country_code");
-		Assert.assertTrue("cc not exist in mobile country code "+cc, 
-				mobileCountryCode.containsKey(cc)
-		);
-		Assert.assertTrue("cc code not match",mobilePhone.startsWith("+"+cc));
-		
+		Map<String, Object> mobileCountryCode = applicationConfig.get("mobile_country_code");
+		Assert.assertTrue("cc not exist in mobile country code " + cc,
+				mobileCountryCode.containsKey(cc));
+		Assert.assertTrue("cc code not match",
+				mobilePhone.startsWith("+" + cc));
+
 		//
 		// setup user object
 		//
-		Map<String,Object> map=(Map<String,Object>)mobileCountryCode.get(cc);
+		Map<String, Object> map = (Map<String, Object>) mobileCountryCode
+				.get(cc);
 		User user = new User();
 		String id = java.util.UUID.randomUUID().toString();
 		user.setId(id);
@@ -53,23 +56,50 @@ public class UserService implements IUserService {
 		user.setCreated(time);
 		user.setModified(time);
 		user.setMobilePhone(mobilePhone);
-		user.setCc((String)map.get("country"));
-		user.setLang((String)map.get("lang"));
-		user.setTimezone((String)map.get("timezone"));
+		user.setCc((String) map.get("country"));
+		user.setLang((String) map.get("lang"));
+		user.setTimezone((String) map.get("timezone"));
 		user.setStatus(UserStatus.Init.getStatus());
-		//
-		// insert into database.
-		//
-		userDao.newUser(user);
-		logger.info("create new user id is " + id);
-		return id;
-	
+		try{
+
+			//
+			// insert into database.
+			//
+			userDao.newUser(user);
+			logger.info("create new user id is " + id);
+			return user;
+		}catch(org.springframework.dao.DuplicateKeyException e){
+			return userDao.getUserByMobilePhone(mobilePhone);
+		}
 	}
 
-	@Override
-	public String newDevice(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+
+	/**
+	 * create new device
+	 * 
+	 *    1.check max device number.
+	 *    2.create new record in database.
+	 *    3.send auth code through mobile number.
+	 */
+	public String newDevice(Device device) throws Exception {
+		//
+		// check device count.
+		//
+		int count=deviceDao.deviceCountByUserId(device.getUserId());
+		int maxDevice = ((Integer)applicationConfig.get("general").get("max_device_count")).intValue();
+		if (count > maxDevice) {
+			throw new Exception("current user have too many device");
+		}
+
+		String id = java.util.UUID.randomUUID().toString();
+		device.setId(id);
+		// second is enough
+		long time = java.util.Calendar.getInstance().getTime().getTime() / 1000;
+		device.setCreated(time);
+		device.setModified(time);
+		device.setStatus(0);
+		deviceDao.newDevice(device);
+		return id;		
 	}
 
 	@Override

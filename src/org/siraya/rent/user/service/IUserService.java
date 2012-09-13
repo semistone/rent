@@ -5,6 +5,7 @@ package org.siraya.rent.user.service;
  * 
  */
 import org.siraya.rent.pojo.User;
+import org.siraya.rent.pojo.Device;
 public interface IUserService {
 	/**
 	 * add new user by mobile number.
@@ -12,14 +13,14 @@ public interface IUserService {
 	 * @param phoneNumber
 	 * @return String userId
 	 */
-	public String newUserByMobileNumber(int cc,String phoneNumber) throws Exception;
+	public User newUserByMobileNumber(int cc,String phoneNumber) throws Exception;
 
 	/**
 	 * add new user device.
-	 * @param userId
+	 * @param device
 	 * @return
 	 */
-	public String newDevice(String userId);
+	public String newDevice(Device device) throws Exception;
 	/**
 	 * verify user
 	 * @param deviceId

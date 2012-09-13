@@ -15,7 +15,12 @@ public class TestConfig {
 	
 	@Test 
 	public void testGetMobileSetting(){
-		Map<String,Object> map= (Map<String,Object>)config.get("mobile_country_code");
+		Map<String,Object> map= config.get("mobile_country_code");
 		Assert.assertEquals("TW", ((Map<String,Object>)map.get(new Integer(886))).get("country"));
+	}
+	@Test 
+	public void testGetGeneralSetting(){
+		int retryLimit = (Integer)config.get("general").get("auth_retry_limit");
+		Assert.assertEquals(3, retryLimit);
 	}
 }

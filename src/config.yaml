@@ -7,3 +7,9 @@ mobile_country_code:
        country: CN
        lang: zh-CN
        timezone: Beijing
+general:
+    max_device_count: 3
+    auth_retry_limit: 3
+sently:
+    username: semistone
+    password: semistone

@@ -25,6 +25,10 @@ public interface IUserDAO {
     @ResultMap("rent.mapper.UserResultMap")
     public User getUserByLoginIdAndLoginType(@Param("loginId")String loginId, @Param("loginType")int loginType);
 
+    @Select("select * from USER where MOBILE_PHONE=#{mobilePhone}")
+    @ResultMap("rent.mapper.UserResultMap")
+    public User getUserByMobilePhone(@Param("mobilePhone")String mobilePhone);
+
     @Update(UPDATE_USER_SQL)
     public void updateUserEmail(User user);
     

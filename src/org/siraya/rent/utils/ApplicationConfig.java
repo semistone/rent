@@ -32,8 +32,8 @@ public class ApplicationConfig implements IApplicationConfig{
 
 	}
 		
-	public Object get(String key){
-		return data.get(key);
+	public Map<String,Object> get(String key){
+		return (Map<String,Object>)data.get(key);
 	}
 	
 }

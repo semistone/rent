@@ -3,6 +3,7 @@ package org.siraya.rent.user.service;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.siraya.rent.pojo.User;
 import org.siraya.rent.user.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,7 +15,7 @@ public class TestUserService  extends AbstractJUnit4SpringContextTests{
 	private IUserService userService;
 	@Test   
 	public void testNewUser()throws Exception{
-		String userId =userService.newUserByMobileNumber(886,"+88653936072283");
-		Assert.assertNotNull(userId);
+		User user =userService.newUserByMobileNumber(886,"+88653936072283");
+		Assert.assertNotNull(user.getId());
 	}
 }
