@@ -22,7 +22,7 @@
     <!-- db_TMIC database settings -->
     <bean id="rentDS" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
-        <property name="jdbcUrl" value="jdbc:mysql://10.1.128.235/time_base_rent"></property>
+        <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1/time_base_rent"></property>
         <property name="user" value="rentuser"></property>
         <property name="password" value="rentuser"></property>
         <property name="minPoolSize" value="5"></property>
@@ -37,4 +37,8 @@
     </bean>
 
     <tx:annotation-driven transaction-manager="rentTxManager"/>
+    
+ 
+    <bean id="userRestApi" 
+                  class="org.siraya.rent.rest.UserRestApi" />    
 </beans>
