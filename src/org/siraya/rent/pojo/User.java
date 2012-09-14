@@ -386,7 +386,11 @@ public class User {
      * @mbggenerated Mon Sep 10 16:50:24 CST 2012
      */
     public Long getCreated() {
-        return created;
+		if (created == 0) {
+			created=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+			modified= created;
+		}
+    	return created;
     }
 
     /**
@@ -410,6 +414,9 @@ public class User {
      * @mbggenerated Mon Sep 10 16:50:24 CST 2012
      */
     public Long getModified() {
+		if (modified == 0) {
+			modified=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+		}
         return modified;
     }
 

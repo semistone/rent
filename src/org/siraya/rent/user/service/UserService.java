@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.regex.Pattern;
 import java.util.Map;
+import java.util.Random;
 
 import javax.ws.rs.GET;
 import org.siraya.rent.pojo.Device;
@@ -37,10 +38,11 @@ public class UserService implements IUserService {
 		//
 		// verify format
 		//
+		logger.debug("check cc code");
 		Map<String, Object> mobileCountryCode = applicationConfig.get("mobile_country_code");
 		Assert.assertTrue("cc not exist in mobile country code " + cc,
 				mobileCountryCode.containsKey(cc));
-		Assert.assertTrue("cc code not match",
+		Assert.assertTrue("cc code not start with +"+cc,
 				mobilePhone.startsWith("+" + cc));
 
 		//
@@ -51,10 +53,8 @@ public class UserService implements IUserService {
 		User user = new User();
 		String id = java.util.UUID.randomUUID().toString();
 		user.setId(id);
-		// second is enough
-		long time = java.util.Calendar.getInstance().getTime().getTime() / 1000;
-		user.setCreated(time);
-		user.setModified(time);
+
+
 		user.setMobilePhone(mobilePhone);
 		user.setCc((String) map.get("country"));
 		user.setLang((String) map.get("lang"));
@@ -81,27 +81,38 @@ public class UserService implements IUserService {
 	 *    2.create new record in database.
 	 *    3.send auth code through mobile number.
 	 */
-	public String newDevice(Device device) throws Exception {
+	public void newDevice(Device device) throws Exception {
 		//
 		// check device count.
 		//
 		int count=deviceDao.deviceCountByUserId(device.getUserId());
 		int maxDevice = ((Integer)applicationConfig.get("general").get("max_device_count")).intValue();
+		logger.debug("device count is "+count+" max device is "+maxDevice);
 		if (count > maxDevice) {
 			throw new Exception("current user have too many device");
 		}
-
+		//
+		// check user status
+		//
+		if (device.getUser().getStatus() == UserStatus.Remove.getStatus()) {
+			throw new Exception("user status is removed");
+		}
+		
 		String id = java.util.UUID.randomUUID().toString();
 		device.setId(id);
-		// second is enough
-		long time = java.util.Calendar.getInstance().getTime().getTime() / 1000;
-		device.setCreated(time);
-		device.setModified(time);
-		device.setStatus(0);
+		device.setStatus(DeviceStatus.Init.getStatus());
+		Random r = new Random();
+		device.setToken(String.valueOf(r.nextInt(9999)));
 		deviceDao.newDevice(device);
-		return id;		
+		logger.debug("insert device");
+		
 	}
 
+	public void doMobileAuth(){
+		
+		
+	}
+	
 	@Override
 	public void verifyMobile(String deviceId, String authCode) {
 		// TODO Auto-generated method stub

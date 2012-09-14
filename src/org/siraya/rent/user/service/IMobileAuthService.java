@@ -5,5 +5,5 @@ public interface IMobileAuthService {
 
 	public void sendAuthMessage(Device device) throws Exception;
 	
-	public void verifyAuthCode(String deviceId, String authCode);
+	public void verifyAuthCode(String deviceId, String authCode) throws Exception;
 }

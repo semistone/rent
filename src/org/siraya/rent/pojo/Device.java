@@ -33,12 +33,21 @@ public class Device {
 		this.token = token;
 	}
 	public long getCreated() {
+		if (created == 0) {
+			created=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+			modified= created;
+		}
+
 		return created;
 	}
 	public void setCreated(long created) {
 		this.created = created;
 	}
+	
 	public long getModified() {
+		if (modified == 0) {
+			modified=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+		}
 		return modified;
 	}
 	public void setModified(long modified) {
@@ -82,6 +91,7 @@ public class Device {
 	}
 	public void setUser(User user) {
 		this.user = user;
+		this.userId = user.getId();
 	}
 }
 

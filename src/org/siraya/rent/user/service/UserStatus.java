@@ -1,7 +1,9 @@
 package org.siraya.rent.user.service;
 
 public enum UserStatus {
-	Init(0);
+	Init(0),
+	Authed(1),
+	Remove(3);
 	private int status;	
 	
 	

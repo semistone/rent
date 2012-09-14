@@ -25,11 +25,11 @@
         <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1/time_base_rent"></property>
         <property name="user" value="rentuser"></property>
         <property name="password" value="rentuser"></property>
-        <property name="minPoolSize" value="5"></property>
+        <property name="minPoolSize" value="1"></property>
         <property name="maxPoolSize" value="30"></property>
-        <property name="initialPoolSize" value="5"></property>
+        <property name="initialPoolSize" value="1"></property>
         <property name="maxIdleTime" value="60"></property>
-        <property name="acquireIncrement" value="5"></property>
+        <property name="acquireIncrement" value="1"></property>
     </bean>
 
     <bean id="rentTxManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

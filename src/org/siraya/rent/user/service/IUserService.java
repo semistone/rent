@@ -20,7 +20,8 @@ public interface IUserService {
 	 * @param device
 	 * @return
 	 */
-	public String newDevice(Device device) throws Exception;
+	public void newDevice(Device device) throws Exception;
+
 	/**
 	 * verify user
 	 * @param deviceId

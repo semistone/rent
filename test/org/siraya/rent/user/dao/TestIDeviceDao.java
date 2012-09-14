@@ -1,5 +1,7 @@
 package org.siraya.rent.user.dao;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.siraya.rent.pojo.Device;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +25,10 @@ public class TestIDeviceDao  extends AbstractJUnit4SpringContextTests{
     	device.setToken("1234");
     	device.setModified(time/1000);
     	deviceDao.newDevice(device);
+    	Device device2=deviceDao.getDeviceByDeviceId(device.getId());
+        Assert.assertEquals(device.getCreated(), device2.getCreated());
+        
+        int ret=deviceDao.updateStatusAndRetryCount(device.getId(), 2, 0, time/1000);
+        Assert.assertEquals(1, ret);
     }
 }
