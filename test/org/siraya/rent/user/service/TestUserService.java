@@ -16,7 +16,7 @@ public class TestUserService  extends AbstractJUnit4SpringContextTests{
 	private IUserService userService;
 	@Test   
 	public void testNewUser()throws Exception{
-		User user =userService.newUserByMobileNumber(886,"+88653936072283");
+		User user =userService.newUserByMobileNumber(886,"88653936072283");
 		Assert.assertNotNull(user.getId());
 	}
 	

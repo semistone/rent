@@ -17,9 +17,10 @@ public class TestIDeviceDao  extends AbstractJUnit4SpringContextTests{
     public void testCRUD()throws Exception{
     	Device device=new Device();
     	long time=java.util.Calendar.getInstance().getTimeInMillis();
+    	String userId = "i"+time;
     	String loginId="d"+time;
     	device.setId("id"+time);
-    	device.setUserId("i"+time);
+    	device.setUserId(userId);
     	device.setCreated(time/1000);
     	device.setStatus(0);
     	device.setToken("1234");
@@ -27,8 +28,9 @@ public class TestIDeviceDao  extends AbstractJUnit4SpringContextTests{
     	deviceDao.newDevice(device);
     	Device device2=deviceDao.getDeviceByDeviceId(device.getId());
         Assert.assertEquals(device.getCreated(), device2.getCreated());
-        
         int ret=deviceDao.updateStatusAndRetryCount(device.getId(), 2, 0, time/1000);
+        Assert.assertEquals(1, ret);
+        ret = deviceDao.getDeviceCountByUserId(userId);
         Assert.assertEquals(1, ret);
     }
 }

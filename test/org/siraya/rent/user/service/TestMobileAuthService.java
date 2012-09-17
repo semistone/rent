@@ -21,7 +21,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 	@Autowired
 	private IMobileAuthService mobileAuthService;
 	private Mockery context;
-	
+	String deviceId= "123";
 	Device device =null;
 	private String authCode = "1234";	
 	private IDeviceDao deviceDao;
@@ -33,10 +33,11 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 			context = new JUnit4Mockery();
 		}
 		User user = new User();
+		user.setId("userid123");
 		user.setCc("TW");
 		user.setLang("zh");
 		user.setStatus(0);
-		user.setMobilePhone("+886936072283");
+		user.setMobilePhone("886936072283");
 		device = new Device();
 		device.setId("test id");
 		device.setUser(user);
@@ -45,8 +46,8 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		if (isMock){
 			deviceDao = context.mock(IDeviceDao.class);	
 			userDao = context.mock(IUserDAO.class);	
-			((MobileAuthService)mobileAuthService).setDeviceDao(deviceDao);
-			((MobileAuthService)mobileAuthService).setUserDao(userDao);
+			mobileAuthService.setDeviceDao(deviceDao);
+			mobileAuthService.setUserDao(userDao);
 		}
 	}
 	
@@ -56,6 +57,12 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		if (isMock) {
 			context.checking(new Expectations() {
 				{
+					one(deviceDao).getDeviceByDeviceId(deviceId);								
+					will(returnValue(device));
+
+					one(userDao).getUserByUserId(device.getUserId());
+					will(returnValue(device.getUser()));
+					
 					one(deviceDao)
 							.updateStatusAndRetryCount(
 									with(any(String.class)),
@@ -83,14 +90,31 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		}
 		
 		
-		mobileAuthService.sendAuthMessage(device);
+		mobileAuthService.sendAuthMessage(deviceId);
 		mobileAuthService.verifyAuthCode(device.getId(), authCode);
 	}
 	
 	@Test(expected=junit.framework.AssertionFailedError.class)   
 	public void testRetryMax()throws Exception{
-		device.setAuthRetry(5);
-		mobileAuthService.sendAuthMessage(device);
+		try {
+			if (isMock) {
+				context.checking(new Expectations() {
+					{
+						one(deviceDao).getDeviceByDeviceId(deviceId);								
+						device.setAuthRetry(5);
+						will(returnValue(device));
+
+						one(userDao).getUserByUserId(device.getUserId());
+						will(returnValue(device.getUser()));
+
+					}
+				});	
+			}
+			mobileAuthService.sendAuthMessage(deviceId);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+			throw e;
+		}
 	}
 	
 	@Test(expected=junit.framework.AssertionFailedError.class)   

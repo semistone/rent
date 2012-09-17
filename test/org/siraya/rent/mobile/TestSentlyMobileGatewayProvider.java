@@ -13,6 +13,6 @@ public class TestSentlyMobileGatewayProvider  extends AbstractJUnit4SpringContex
     
     @Test   
     public void testSendSMS()throws Exception{
-    	mobileGatewayService.sendSMS("+886936072281", "Hello world");
+    	mobileGatewayService.sendSMS("886936072281", "Hello world");
     }
 }

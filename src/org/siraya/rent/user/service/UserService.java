@@ -9,6 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.regex.Pattern;
 import java.util.Map;
 import java.util.Random;
@@ -16,6 +19,7 @@ import java.util.Random;
 import javax.ws.rs.GET;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.dao.IDeviceDao;
+
 @Service("userService")
 public class UserService implements IUserService {
     @Autowired
@@ -24,6 +28,9 @@ public class UserService implements IUserService {
     private IApplicationConfig applicationConfig;
     @Autowired
     private IDeviceDao deviceDao;
+	@Autowired
+	private IMobileAuthService mobileAuthService;	
+	
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     
@@ -33,17 +40,19 @@ public class UserService implements IUserService {
 	 * @param cc country code
 	 * @param moblie phone number
 	 * @exception DuplicateKeyException duplicate mobile number
-	 */
+	 */    
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
 	public User newUserByMobileNumber(int cc,String mobilePhone) throws Exception {
 		//
 		// verify format
 		//
 		logger.debug("check cc code");
+		mobilePhone = mobilePhone.trim();
 		Map<String, Object> mobileCountryCode = applicationConfig.get("mobile_country_code");
 		Assert.assertTrue("cc not exist in mobile country code " + cc,
 				mobileCountryCode.containsKey(cc));
 		Assert.assertTrue("cc code not start with +"+cc,
-				mobilePhone.startsWith("+" + cc));
+				mobilePhone.startsWith(Integer.toString(cc)));
 
 		//
 		// setup user object
@@ -69,6 +78,7 @@ public class UserService implements IUserService {
 			logger.info("create new user id is " + id);
 			return user;
 		}catch(org.springframework.dao.DuplicateKeyException e){
+			logger.debug("phone number "+mobilePhone+" have been exist in database.");
 			return userDao.getUserByMobilePhone(mobilePhone);
 		}
 	}
@@ -81,13 +91,14 @@ public class UserService implements IUserService {
 	 *    2.create new record in database.
 	 *    3.send auth code through mobile number.
 	 */
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
 	public void newDevice(Device device) throws Exception {
 		//
 		// check device count.
 		//
-		int count=deviceDao.deviceCountByUserId(device.getUserId());
+		int count=deviceDao.getDeviceCountByUserId(device.getUserId());
 		int maxDevice = ((Integer)applicationConfig.get("general").get("max_device_count")).intValue();
-		logger.debug("device count is "+count+" max device is "+maxDevice);
+		logger.debug("user id is "+device.getUserId()+" device count is "+count+" max device is "+maxDevice);
 		if (count > maxDevice) {
 			throw new Exception("current user have too many device");
 		}
@@ -108,9 +119,8 @@ public class UserService implements IUserService {
 		
 	}
 
-	public void doMobileAuth(){
-		
-		
+ 	public void doMobileAuth(String deviceId) throws Exception{
+
 	}
 	
 	@Override
