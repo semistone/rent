@@ -2,6 +2,8 @@ package org.siraya.rent.user.service;
 import org.siraya.rent.mobile.service.IMobileGatewayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.utils.IApplicationConfig;
@@ -25,13 +27,22 @@ public class MobileAuthService implements IMobileAuthService {
     @Autowired
     private IUserDAO userDao;
     private static Logger logger = LoggerFactory.getLogger(MobileAuthService.class);
-	/**
+	
+    
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
+    public void sendAuthMessage(String deviceId)throws Exception{
+		Device device = deviceDao.getDeviceByDeviceId(deviceId);
+		Assert.assertNotNull("device id not exist ",device);
+		device.setUser(userDao.getUserByUserId(device.getUserId()));
+		this.sendAuthMessage(device);
+    }
+    /**
 	 * 1. check device status to prevent duplicate auth.
 	 * 2. set auth code by random from 0 - 9999
 	 * 3. send message.
 	 */
-	public void sendAuthMessage(Device device) throws Exception{
-		//
+    void sendAuthMessage(Device device) throws Exception{
+    	//
 		// check status and limit
 		//
 		Assert.assertNotNull(device.getToken());
@@ -76,11 +87,11 @@ public class MobileAuthService implements IMobileAuthService {
 	 * set user dao for testing
 	 * @param deviceDao
 	 */
-	void setDeviceDao(IDeviceDao deviceDao) {
+	public void setDeviceDao(IDeviceDao deviceDao) {
 		this.deviceDao = deviceDao;
 	}
 
-	void setUserDao(IUserDAO userDao){
+	public void setUserDao(IUserDAO userDao){
 		this.userDao = userDao;
 	}
 	/**

@@ -1,73 +1,95 @@
 <project name="WFRM" basedir="." default="build">
 
-    <!-- project-specific variables -->
-    <property name="app.name" value="rent" />
-    <property name="package.name" value="${app.name}.war" />
+	<!-- project-specific variables -->
+	<property name="app.name" value="rent" />
+	<property name="package.name" value="${app.name}.war" />
 
-    <property name="web.dir" value="." />
+	<property name="web.dir" value="." />
 
-    <property name="web.src.dir" value="${web.dir}/src" />
-    <property name="web.test.dir" value="${web.dir}/test" />
-    <property name="webroot.dir" value="${web.dir}/WebContent" />
-    <property name="class.dir" value="${webroot.dir}/WEB-INF/classes" />
-    <property name="lib.dir" value="${webroot.dir}/WEB-INF/lib" />
-    <property name="dest.dir" value="build" />
+	<property name="web.src.dir" value="${web.dir}/src" />
+	<property name="web.test.dir" value="${web.dir}/test" />
+	<property name="webroot.dir" value="${web.dir}/WebContent" />
+	<property name="dest.dir" value="build" />
+	<property name="class.dir" value="${dest.dir}/classes" />
+	<property name="lib.dir" value="${webroot.dir}/WEB-INF/lib" />
 
-
-    <path id="build.lib.path">
-        <fileset dir="${lib.dir}">
-            <include name="**/*.jar" />
-        </fileset>
-    </path>
-
-    <target name="clean">
-        <echo>=== Clean ===</echo>
-        <delete failonerror="false">
-            <fileset dir="${dest.dir}" includes="**/*"/>
-        </delete>
-        <delete failonerror="false" dir="${class.dir}"/>
-    </target>
-
-    <target name="prepare" depends="clean">
-        <mkdir dir="${dest.dir}" />
-        <mkdir dir="${class.dir}"/>
-    </target>
-
-    <!-- COMPILE -->
-    <target name="compile" depends="prepare">
-        <echo>=== COMPILE ===</echo>
-
-        <echo>Compiling ${web.src.dir} files ...</echo>
-        <javac srcdir="${web.src.dir}" destdir="${class.dir}" includes="**/*" source="1.6" target="1.6" debug="off">
-            <classpath refid="build.lib.path" />
-        </javac>
-
-        <echo>Copy ${web.src.dir} resources files ...</echo>
-        <copy todir="${class.dir}">
-            <fileset dir="${web.src.dir}">
-                <include name="**/*.xml"/>
-                <include name="**/*.properties"/>
-                <include name="META-INF/**"/>
-            </fileset>
-        </copy>
-    </target>
+	<property name="reports.tests" value="build" />
 
 
+	<path id="build.lib.path">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
 
-    <target name="copy">
-        <echo>=== Copy compiled files to ${dest.dir}... ===</echo>
-        <copy todir="${dest.dir}">
-            <fileset dir="${webroot.dir}">
-                <include name="**/*" />
-            </fileset>
-        </copy>
-    </target>
+	<target name="clean">
+		<echo>=== Clean ===</echo>
+		<delete failonerror="false">
+			<fileset dir="${dest.dir}" includes="**/*"/>
+		</delete>
+		<delete failonerror="false" dir="${class.dir}"/>
+	</target>
 
-    <!-- PACKAGE -->
-    <target name="build" depends="copy">
-        <echo>=== Build War Package ===</echo>
-        <war destfile="${dest.dir}/${package.name}" webxml="${dest.dir}/WEB-INF/web.xml" basedir="${dest.dir}" />
-    </target>
+	<target name="prepare" depends="clean">
+		<mkdir dir="${dest.dir}" />
+		<mkdir dir="${class.dir}"/>
+	</target>
+
+	<!-- COMPILE -->
+	<target name="compile" depends="prepare">
+		<echo>=== COMPILE ===</echo>
+
+		<echo>Compiling ${web.src.dir} files ...</echo>
+		<javac srcdir="${web.src.dir}" destdir="${class.dir}" includes="**/*" source="1.6" target="1.6" debug="off">
+			<classpath refid="build.lib.path" />
+		</javac>
+
+		<javac srcdir="${web.test.dir}" destdir="${class.dir}" includes="**/*" source="1.6" target="1.6" debug="off">
+			<classpath refid="build.lib.path" />
+		</javac>
+
+		<echo>Copy ${web.src.dir} resources files ...</echo>
+		<copy todir="${class.dir}">
+			<fileset dir="${web.src.dir}">
+				<include name="**/*.xml"/>
+				<include name="**/*.yaml"/>
+				<include name="**/*.properties"/>
+				<include name="META-INF/**"/>
+			</fileset>
+		</copy>
+	</target>
+
+
+
+	<target name="copy">
+		<echo>=== Copy compiled files to ${dest.dir}... ===</echo>
+		<copy todir="${dest.dir}">
+			<fileset dir="${webroot.dir}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- PACKAGE -->
+	<target name="build" depends="copy">
+		<echo>=== Build War Package ===</echo>
+		<war destfile="${dest.dir}/${package.name}" webxml="${dest.dir}/WEB-INF/web.xml" basedir="${dest.dir}" />
+	</target>
+	<target name="junit"  depends="compile">
+		<junit printsummary="yes" haltonfailure="yes">
+			<classpath refid="build.lib.path" />
+			<classpath>
+				<pathelement path="${class.dir}"/>
+			</classpath>
+
+			<formatter type="plain"/>
+			<batchtest fork="yes" todir="${reports.tests}">
+				<fileset dir="${web.test.dir}">
+					<include name="**/*Test*.java"/>
+					<exclude name="**/AllTests.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
 
 </project>
-

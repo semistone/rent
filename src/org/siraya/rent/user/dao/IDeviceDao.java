@@ -28,7 +28,7 @@ public interface IDeviceDao {
      * @return
      */
     @Select("select count(*) from DEVICE where USER_ID=#{userId}")
-    public int deviceCountByUserId(@Param("loginId")String userId);
+    public int getDeviceCountByUserId(@Param("userId")String userId);
     
     /**
      * 

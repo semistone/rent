@@ -22,6 +22,7 @@ public interface IUserService {
 	 */
 	public void newDevice(Device device) throws Exception;
 
+	public void doMobileAuth(String deviceId) throws Exception;
 	/**
 	 * verify user
 	 * @param deviceId
