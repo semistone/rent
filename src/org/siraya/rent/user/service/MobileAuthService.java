@@ -105,7 +105,9 @@ public class MobileAuthService implements IMobileAuthService {
 		// check status.
 		//
 		Device device = deviceDao.getDeviceByDeviceId(deviceId);
-		device.setUser(userDao.getUserByUserId(device.getUserId()));
+		if (device.getUser() == null) {
+			device.setUser(userDao.getUserByUserId(device.getUserId()));			
+		}
 		device.setModified(0); // reset modified to get current time.
 		if (device.getStatus() != DeviceStatus.Authing.getStatus()) {
 			throw new Exception("device auth status not match current status is "+device.getStatus());

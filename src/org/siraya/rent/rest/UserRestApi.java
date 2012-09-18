@@ -1,6 +1,8 @@
 package org.siraya.rent.rest;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
@@ -12,8 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
-import org.siraya.rent.pojo.Device;
+import java.util.Map;
 @Component
 @Path("/user")
 public class UserRestApi {
@@ -31,10 +32,13 @@ public class UserRestApi {
      * @param mobilePhone
      * @return
      */
-	@GET
+	@POST
+	@Consumes("application/json")
 	@Path("/new_device")
-	public Response newDevice(@QueryParam("country_code") String cc ,@QueryParam("mobile_phone") String mobilePhone){
+	public Response newDevice(Map<String,String> request){
 		try {
+			String cc=request.get("country_code");
+			String mobilePhone=request.get("mobile_phone");
 			User user =userService.newUserByMobileNumber(Integer.parseInt(cc), mobilePhone);
 			Device device = new Device();
 			device.setUser(user);
@@ -85,6 +89,8 @@ public class UserRestApi {
 		}
 	}
 	
+
+
 	void setUserService(IUserService userService) {
 		this.userService = userService;
 	}
