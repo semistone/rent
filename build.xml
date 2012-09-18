@@ -33,6 +33,7 @@
 	<target name="prepare" depends="clean">
 		<mkdir dir="${dest.dir}" />
 		<mkdir dir="${class.dir}"/>
+		<mkdir dir="${lib.dir}"/>
 	</target>
 
 	<!-- COMPILE -->

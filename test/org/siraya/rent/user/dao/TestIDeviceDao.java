@@ -21,16 +21,18 @@ public class TestIDeviceDao  extends AbstractJUnit4SpringContextTests{
     	String loginId="d"+time;
     	device.setId("id"+time);
     	device.setUserId(userId);
+
     	device.setCreated(time/1000);
     	device.setStatus(0);
     	device.setToken("1234");
     	device.setModified(time/1000);
     	deviceDao.newDevice(device);
-    	Device device2=deviceDao.getDeviceByDeviceId(device.getId());
-        Assert.assertEquals(device.getCreated(), device2.getCreated());
         int ret=deviceDao.updateStatusAndRetryCount(device.getId(), 2, 0, time/1000);
         Assert.assertEquals(1, ret);
         ret = deviceDao.getDeviceCountByUserId(userId);
         Assert.assertEquals(1, ret);
+    	Device device2=deviceDao.getDeviceByDeviceId(device.getId());
+        Assert.assertEquals(device.getCreated(), device2.getCreated());
+        Assert.assertEquals(1, device2.getAuthRetry());
     }
 }

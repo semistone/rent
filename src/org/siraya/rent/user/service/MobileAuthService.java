@@ -47,14 +47,17 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		Assert.assertNotNull(device.getToken());
 		
-		if (device.getStatus() != DeviceStatus.Init.getStatus()) {
-			throw new Exception("device status isn't init");
+		if (device.getStatus() != DeviceStatus.Init.getStatus()
+				&& device.getStatus() != DeviceStatus.Authing.getStatus()) {
+			throw new Exception("device status isn't init or authing");
 		}
 		//
 		// check retry count
 		//
 		int retryLimit = (Integer)applicationConfig.get("general").get("auth_retry_limit");
-		Assert.assertTrue("auth retry too many time try "+device.getAuthRetry(), retryLimit > device.getAuthRetry()  );
+		int currentRetry = device.getAuthRetry();
+		logger.info("current retry count is "+currentRetry);
+		Assert.assertTrue("auth retry too many time try "+currentRetry, retryLimit > currentRetry  );
 		
 		User user = device.getUser();
 		Assert.assertNotNull("user can't be null",user);
@@ -102,33 +105,49 @@ public class MobileAuthService implements IMobileAuthService {
 		// check status.
 		//
 		Device device = deviceDao.getDeviceByDeviceId(deviceId);
+		device.setUser(userDao.getUserByUserId(device.getUserId()));
 		device.setModified(0); // reset modified to get current time.
 		if (device.getStatus() != DeviceStatus.Authing.getStatus()) {
-			throw new Exception("auth status not match");
+			throw new Exception("device auth status not match current status is "+device.getStatus());
 		}
+		//
+		// if device modified + timeout  > current time then throw timeout exception.
+		// check verify timeout
+		//
+    	long time=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+		int timeout = (Integer)applicationConfig.get("general").get("auth_verify_timeout");
+    	if (time > device.getModified() + timeout ) {	
+    		throw new Exception("verify mobile auth code has been timeout");
+    	}
+    	
 		//
 		// check retry count
 		//
 		int retryLimit = (Integer)applicationConfig.get("general").get("auth_retry_limit");
-		Assert.assertTrue("verify auth retry too many time try:"+device.getAuthRetry()+" > "+retryLimit, device.getAuthRetry() <= retryLimit);
+		if(logger.isDebugEnabled()) {
+			logger.debug("retry limit is "+retryLimit+" current auth retry is "+device.getAuthRetry());
+		}
+		Assert.assertTrue("mobile verify auth retry too many time try:"+device.getAuthRetry()+" > "+retryLimit, device.getAuthRetry() <= retryLimit);
 
 		//
 		// check auth code
 		//
-		if (authCode != device.getToken()) {
+		String token = device.getToken();
+		if (!authCode.equals(token)) {
 			//
 			// if fail update retry status
 			//
+			logger.debug("token is "+token);
 			int ret =deviceDao.updateStatusAndRetryCount(device.getId(), DeviceStatus.Authing.getStatus(),
 					DeviceStatus.Init.getStatus(), device.getModified());
 			Assert.assertEquals("update device status count is not 1",1, ret);
-			throw new Exception("auth code not match");
+			throw new Exception("device id "+device.getId()+" enter auth code not match "+authCode);
 		}
 		
 		//
 		// update device and user in database.
 		//
-		deviceDao.updateDeviceStatus(device.getId(),DeviceStatus.Authed.getStatus(),
+		deviceDao.updateStatusAndRetryCount(device.getId(),DeviceStatus.Authed.getStatus(),
 				DeviceStatus.Authing.getStatus(),
 				device.getModified());
 		User user = device.getUser();

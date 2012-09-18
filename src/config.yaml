@@ -10,6 +10,7 @@ mobile_country_code:
 general:
     max_device_count: 3
     auth_retry_limit: 3
+    auth_verify_timeout : 1800
 sently:
     username: semistone
     password: semistone

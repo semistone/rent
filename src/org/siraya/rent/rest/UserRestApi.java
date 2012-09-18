@@ -42,7 +42,7 @@ public class UserRestApi {
 			return Response.status(200).entity(device.getId()).build();
 		}catch(java.lang.NumberFormatException e){
 			logger.error("country code or mobile number must be number",e);
-			return Response.status(401).entity("cc must be number").build();						
+			return Response.status(401).entity("country code or mobile number must be number").build();						
 		}catch(Exception e) {
 			logger.error("exception "+e.getMessage(),e);
 			return Response.status(500).entity(e.getMessage()).build();			
@@ -63,6 +63,25 @@ public class UserRestApi {
 		}catch(Exception e) {
 			logger.error("exception "+e.getMessage(),e);
 			return Response.status(500).entity(e.getMessage()).build();		
+		}
+	}
+	
+	/**
+	 * verify auth code
+	 * @param deviceId
+	 * @param authCode
+	 * @return
+	 */
+	@GET
+	@Path("/verify_mobile_auth_code")
+	public Response verifyMobileAuthCode(
+			@QueryParam("device_id") String deviceId, @QueryParam("auth_code")String authCode) {
+		try {
+			mobileAuthService.verifyAuthCode(deviceId, authCode);
+			return Response.status(200).entity("OK").build();
+		} catch (Exception e) {
+			logger.error("exception " + e.getMessage(), e);
+			return Response.status(500).entity(e.getMessage()).build();
 		}
 	}
 	

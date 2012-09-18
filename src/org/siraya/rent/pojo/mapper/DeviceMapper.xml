@@ -10,6 +10,7 @@
     <id column="ID" jdbcType="VARCHAR" property="id" />
     <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
     <result column="TOKEN" jdbcType="VARCHAR" property="token" />
+    <result column="AUTH_RETRY" jdbcType="INTEGER" property="authRetry" />
     <result column="STATUS" jdbcType="INTEGER" property="status" />
     <result column="CREATED" jdbcType="DECIMAL" property="created" />
     <result column="MODIFIED" jdbcType="DECIMAL" property="modified" />

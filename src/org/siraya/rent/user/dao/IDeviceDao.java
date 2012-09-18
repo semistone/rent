@@ -40,7 +40,7 @@ public interface IDeviceDao {
     @ResultMap("rent.mapper.DeviceResultMap")
     public Device getDeviceByDeviceId(@Param("id")String id);
     
-    @Update("update DEVICE set STATUS = #{newStatus}, RETRY=RETRY+1, MODIFIED=#{modified} where ID = #{id} and (STATUS= #{oldStatus} or STATUS=#{newStatus})")
+    @Update("update DEVICE set STATUS = #{newStatus}, AUTH_RETRY=AUTH_RETRY+1, MODIFIED=#{modified} where ID = #{id} and (STATUS= #{oldStatus} or STATUS=#{newStatus})")
     public int updateStatusAndRetryCount(@Param("id")String id,@Param("newStatus")int newStatus,@Param("oldStatus")int oldStatus,@Param("modified")Long modified);
 
     @Update("update DEVICE set STATUS = #{newStatus}, MODIFIED=#{modified} where ID = #{id} and STATUS= #{oldStatus}")    

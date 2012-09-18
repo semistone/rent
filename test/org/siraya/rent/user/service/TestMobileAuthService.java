@@ -134,5 +134,4 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		mobileAuthService.verifyAuthCode(device.getId(), authCode);
 	}
 	
-	
 }
