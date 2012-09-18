@@ -73,11 +73,39 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 					one(deviceDao).getDeviceByDeviceId(device.getId());
 					will(returnValue(device));
 					
-					one(deviceDao).updateDeviceStatus(with(any(String.class)),
-							with(any(int.class)),
-							with(any(int.class)),
-							with(any(long.class)));
+
+				}
+			});	
+		}
+		
+		
+		mobileAuthService.sendAuthMessage(deviceId);
+	}
+	
+	@Test   
+	public void testVerifyAuthCode() throws Exception{
+		//expectation
+		if (isMock) {
+			device.setStatus(1);
+			context.checking(new Expectations() {
+				{
+					one(deviceDao).getDeviceByDeviceId(deviceId);								
+					will(returnValue(device));
+
+					one(userDao).getUserByUserId(device.getUserId());
+					will(returnValue(device.getUser()));
+					
+					one(deviceDao)
+							.updateStatusAndRetryCount(
+									with(any(String.class)),
+									with(any(int.class)), 
+									with(any(int.class)),
+									with(any(long.class)));
 					will(returnValue(1));
+					one(deviceDao).getDeviceByDeviceId(device.getId());
+					will(returnValue(device));
+					
+
 					
 					one(userDao).updateUserStatus(
 							with(any(String.class)),
@@ -89,11 +117,10 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 			});	
 		}
 		
+
 		
-		mobileAuthService.sendAuthMessage(deviceId);
-		mobileAuthService.verifyAuthCode(device.getId(), authCode);
+		mobileAuthService.verifyAuthCode(device.getId(), authCode);		
 	}
-	
 	@Test(expected=junit.framework.AssertionFailedError.class)   
 	public void testRetryMax()throws Exception{
 		try {
