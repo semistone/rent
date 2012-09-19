@@ -24,6 +24,8 @@ public class TestUserService  extends AbstractJUnit4SpringContextTests{
 		user = new User();
 		user.setEmail(time+"@gmail.com");
 		user.setId("0b2150d3-b437-4731-91d6-70db69660dc2");	
+		user.setLoginId("id"+time);
+		user.setPassword("test");
 	}
 	@Test   
 	public void testNewUser()throws Exception{
@@ -45,5 +47,11 @@ public class TestUserService  extends AbstractJUnit4SpringContextTests{
 	@Test
 	public void testSetupEmail() throws Exception{
 		userService.setupEmail(user);
+		
+	}
+	
+	@Test
+	public void testUpdateLoginIdAndPassword()throws Exception{
+		userService.updateLoginIdAndPassowrd(user);
 	}
 }

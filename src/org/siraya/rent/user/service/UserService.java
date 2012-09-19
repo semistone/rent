@@ -6,6 +6,7 @@ import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.VerifyEvent;
 import org.siraya.rent.user.dao.IUserDAO;
 import org.siraya.rent.user.dao.IVerifyEventDao;
+import org.siraya.rent.utils.EncodeUtility;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +30,7 @@ public class UserService implements IUserService {
     @Autowired
     private IApplicationConfig applicationConfig;
     @Autowired
-    private IDeviceDao deviceDao;
-	@Autowired
-	private IMobileAuthService mobileAuthService;	
+    private IDeviceDao deviceDao;	
     @Autowired
     private IVerifyEventDao verifyEventDao;
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -177,9 +176,31 @@ public class UserService implements IUserService {
     	userDao.updateUserEmail(user);
     	
     }
-	
-	public void updateLoginIdAndPassowrd(User user){
-		
+
+    /**
+     * update login id and password
+     * 
+     */
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class) 
+	public void updateLoginIdAndPassowrd(User user) throws Exception{
+    	String userId = user.getId();
+    	User user2 = userDao.getUserByUserId(user.getId());
+    	//
+    	// check original login id must be null or empty
+    	//
+    	if (user2.getLoginId() != null && user2.getLoginId() != "") {
+    		throw new Exception("can't reset login id");
+    	}
+    	user.setId(user2.getId());
+    	//
+    	// sha1
+    	//
+    	user.setPassword(EncodeUtility.sha1(user.getPassword()));
+    	logger.debug("update login id and password in database");
+    	int ret =userDao.updateUserLoginIdAndPassword(user);	
+    	if (ret == 0 ) {
+    		throw new Exception("update cnt =0, only empty login id can be update");
+    	}
 	}
 
 	@Override

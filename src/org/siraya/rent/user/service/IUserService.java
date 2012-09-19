@@ -34,7 +34,7 @@ public interface IUserService {
 	 * @param loginId
 	 * @param password
 	 */
-	public void updateLoginIdAndPassowrd(User user);
+	public void updateLoginIdAndPassowrd(User user) throws Exception;
 	/**
 	 * verify email.
 	 * @param userId

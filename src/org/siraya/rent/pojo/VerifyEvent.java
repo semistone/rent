@@ -60,7 +60,8 @@ public class VerifyEvent {
 	}
 
 	public enum VerifyType {
-		Email(0);
+		Email(0),
+		MobilePhone(1);
 		private int type;	
 		
 		private VerifyType(int type) {
