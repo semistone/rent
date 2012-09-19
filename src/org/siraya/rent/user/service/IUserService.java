@@ -27,7 +27,7 @@ public interface IUserService {
 	 * @param userId
 	 * @param email
 	 */
-	public void setupEmail(User user);
+	public void setupEmail(User user) throws Exception;
 	
 	/**
 	 * 

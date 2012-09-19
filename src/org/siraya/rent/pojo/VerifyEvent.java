@@ -40,17 +40,50 @@ public class VerifyEvent {
 		this.verifyDetail = verifyDetail;
 	}
 	public long getCreated() {
+		if (created == 0) {
+			created=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+			modified= created;
+		}		
 		return created;
 	}
 	public void setCreated(long created) {
 		this.created = created;
 	}
 	public long getModified() {
+		if (modified == 0) {
+			modified=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+		}
 		return modified;
 	}
 	public void setModified(long modified) {
 		this.modified = modified;
 	}
 
+	public enum VerifyType {
+		Email(0);
+		private int type;	
+		
+		private VerifyType(int type) {
+			this.type = type;
+		}
+		
+		public int getType() {
+			return type;
+		}
+	}	
 	
+	public enum VerifyStatus {
+		Init(0),
+		Authing(1),
+		Authed(2);
+		private int status;	
+		
+		private VerifyStatus(int status) {
+			this.status = status;
+		}
+		
+		public int getStatus() {
+			return status;
+		}
+	}	
 }

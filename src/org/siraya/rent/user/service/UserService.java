@@ -3,7 +3,9 @@ package org.siraya.rent.user.service;
 import junit.framework.Assert;
 
 import org.siraya.rent.pojo.User;
+import org.siraya.rent.pojo.VerifyEvent;
 import org.siraya.rent.user.dao.IUserDAO;
+import org.siraya.rent.user.dao.IVerifyEventDao;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +32,8 @@ public class UserService implements IUserService {
     private IDeviceDao deviceDao;
 	@Autowired
 	private IMobileAuthService mobileAuthService;	
-	
+    @Autowired
+    private IVerifyEventDao verifyEventDao;
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     
@@ -125,10 +128,54 @@ public class UserService implements IUserService {
      * 
      */
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class) 
-	public void setupEmail(User user) {
+	public void setupEmail(User user) throws Exception {
     	String userId = user.getId();
     	String newEmail = user.getEmail();
+    	logger.info("update email for user "+userId+ " new email "+newEmail);
+    	VerifyEvent verifyEvent = null;
     	user = userDao.getUserByUserId(user.getId());
+    	String oldEmail = user.getEmail();
+    	
+    	if (oldEmail != null && !oldEmail.equals("")) {
+    		logger.debug("old email exist");
+    		
+    		if (oldEmail.equals(newEmail)) {
+    			//
+    			// same email.
+    			//
+    			throw new Exception("same email have been setted");
+    		}
+    		
+    		//
+    		// if old email exist and already verified, then throw exception
+    		//  to prevent overwrite primary email 
+    		//  change email must call by different process.
+    		//
+    		verifyEvent = verifyEventDao.getEventByVerifyDetailAndType(VerifyEvent.VerifyType.Email.getType(),
+    				oldEmail);
+			
+    		if (verifyEvent != null
+					&& verifyEvent.getStatus() == VerifyEvent.VerifyStatus.Authed
+							.getStatus()) {
+				throw new Exception("old email have been verified. can't reset email");
+			}
+    	}
+    	
+    	user.setModified(new Long(0));
+    	user.setEmail(newEmail);
+
+    	logger.debug("insert verify event");
+    	verifyEvent = new VerifyEvent();
+    	verifyEvent.setUserId(userId);
+    	verifyEvent.setStatus(VerifyEvent.VerifyStatus.Init.getStatus());
+    	verifyEvent.setVerifyDetail(newEmail);
+    	verifyEvent.setVerifyType(VerifyEvent.VerifyType.Email.getType());    	
+    	verifyEventDao.newVerifyEvent(verifyEvent);
+
+    	
+    	logger.debug("update email in database");
+    	userDao.updateUserEmail(user);
+    	
     }
 	
 	public void updateLoginIdAndPassowrd(User user){
