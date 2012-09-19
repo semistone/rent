@@ -119,20 +119,20 @@ public class UserService implements IUserService {
 		
 	}
 
- 	public void doMobileAuth(String deviceId) throws Exception{
 
-	}
+    /**
+     * set up email. only when email still not exist.
+     * 
+     */
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class) 
+	public void setupEmail(User user) {
+    	String userId = user.getId();
+    	String newEmail = user.getEmail();
+    	user = userDao.getUserByUserId(user.getId());
+    }
 	
-	@Override
-	public void verifyMobile(String deviceId, String authCode) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void updateEmail(String userId, String email) {
-		// TODO Auto-generated method stub
-
+	public void updateLoginIdAndPassowrd(User user){
+		
 	}
 
 	@Override

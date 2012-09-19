@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.siraya.rent.user.dao.IUserDAO;
 import org.siraya.rent.pojo.User;
 
-@ContextConfiguration(locations = {"classpath*:/applicationContext*.xml"})
+@ContextConfiguration(locations = {"classpath*:/applicationContext.xml","classpath*:/applicationContext-mybatis.xml"})
 public class TestIUserDAO extends AbstractJUnit4SpringContextTests{
     @Autowired
     private IUserDAO userDao;

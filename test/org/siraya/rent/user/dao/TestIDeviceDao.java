@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.siraya.rent.user.dao.IDeviceDao;
-@ContextConfiguration(locations = {"classpath*:/applicationContext*.xml"})
+@ContextConfiguration(locations = {"classpath*:/applicationContext.xml","classpath*:/applicationContext-mybatis.xml"})
 public class TestIDeviceDao  extends AbstractJUnit4SpringContextTests{
     @Autowired
     private IDeviceDao deviceDao;

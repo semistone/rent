@@ -6,6 +6,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+
+import org.bouncycastle.asn1.ocsp.Request;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.service.IMobileAuthService;
@@ -58,10 +60,12 @@ public class UserRestApi {
 	 * @param deviceId
 	 * @return
 	 */
-	@GET
+	@POST
+	@Consumes("application/json")
 	@Path("/send_mobile_auth_message")
-	public Response sendMobileAuthMessage(@QueryParam("device_id") String deviceId){
+	public Response sendMobileAuthMessage(Map<String,String> request){
 		try {
+			String deviceId= request.get("device_id");
 			mobileAuthService.sendAuthMessage(deviceId);
 			return Response.status(200).entity("OK").build();
 		}catch(Exception e) {
@@ -76,11 +80,13 @@ public class UserRestApi {
 	 * @param authCode
 	 * @return
 	 */
-	@GET
+	@POST
+	@Consumes("application/json")
 	@Path("/verify_mobile_auth_code")
-	public Response verifyMobileAuthCode(
-			@QueryParam("device_id") String deviceId, @QueryParam("auth_code")String authCode) {
+	public Response verifyMobileAuthCode(Map<String,String> request) {
 		try {
+			String deviceId= request.get("device_id");
+			String authCode = request.get("auth_code");
 			mobileAuthService.verifyAuthCode(deviceId, authCode);
 			return Response.status(200).entity("OK").build();
 		} catch (Exception e) {

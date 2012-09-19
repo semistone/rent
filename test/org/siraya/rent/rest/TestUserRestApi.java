@@ -1,6 +1,7 @@
 package org.siraya.rent.rest;
 
 import org.jmock.Expectations;
+import java.util.HashMap;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
@@ -24,9 +25,10 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 	private boolean isMock = true;
 	private String deviceId= "23131";
 	private String authCode="123";
-	
+	private java.util.Map<String, String> request;
 	@Before
 	public void setUp(){
+		request = new java.util.HashMap<String,String>();
 		if (isMock){
 			context = new JUnit4Mockery();
 			mobileAuthService = context.mock(IMobileAuthService.class);	
@@ -36,7 +38,7 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 	@Test   
 	public void testNewDevice(){		
     	long time=java.util.Calendar.getInstance().getTimeInMillis();
-    	java.util.Map<String, String >request = new java.util.HashMap<String,String>();
+    	
     	request.put("country_code", "886");
     	request.put("mobile_phone", "886"+time/1000);
 		Response response = userRestApi.newDevice(request);
@@ -52,7 +54,8 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 				}
 			});
 		};
-		Response response = userRestApi.sendMobileAuthMessage(deviceId);
+		request.put("device_id", this.deviceId);
+		Response response = userRestApi.sendMobileAuthMessage(request);
 		Assert.assertEquals(200, response.getStatus());
 	}
 	
@@ -65,7 +68,10 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 				}
 			});
 		};
-		Response response = userRestApi.verifyMobileAuthCode(deviceId, authCode);
+		request.put("device_id", this.deviceId);
+		request.put("auth_code", this.authCode);
+
+		Response response = userRestApi.verifyMobileAuthCode(request);
 		Assert.assertEquals(200, response.getStatus());
 	}
 }

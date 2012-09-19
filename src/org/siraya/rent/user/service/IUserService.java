@@ -22,21 +22,19 @@ public interface IUserService {
 	 */
 	public void newDevice(Device device) throws Exception;
 
-	public void doMobileAuth(String deviceId) throws Exception;
-	/**
-	 * verify user
-	 * @param deviceId
-	 * @param authCode
-	 */
-	public void verifyMobile(String deviceId, String authCode);
-
 	/**
 	 * update user email
 	 * @param userId
 	 * @param email
 	 */
-	public void updateEmail(String userId, String email);
+	public void setupEmail(User user);
 	
+	/**
+	 * 
+	 * @param loginId
+	 * @param password
+	 */
+	public void updateLoginIdAndPassowrd(User user);
 	/**
 	 * verify email.
 	 * @param userId
