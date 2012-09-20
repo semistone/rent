@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.Map;
-import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.NewCookie;
 @Component
 @Path("/user")
@@ -47,7 +46,20 @@ public class UserRestApi {
 			Device device = new Device();
 			device.setUser(user);
 			userService.newDevice(device);
-			return Response.status(200).entity(device.getId()).build();
+			
+			//
+			// set device id into cookie
+			//
+			NewCookie deviceCookie = new NewCookie(
+					"D",
+					device.getId(), 
+					"/", 
+					null,
+					1,
+					"no comment",
+					1073741823, // maxAge max int value/2
+					false);
+			return Response.status(200).entity(device.getId()).cookie(deviceCookie).build();
 		}catch(java.lang.NumberFormatException e){
 			logger.error("country code or mobile number must be number",e);
 			return Response.status(401).entity("country code or mobile number must be number").build();						
@@ -65,9 +77,8 @@ public class UserRestApi {
 	@POST
 	@Consumes("application/json")
 	@Path("/send_mobile_auth_message")
-	public Response sendMobileAuthMessage(Map<String,String> request){
+	public Response sendMobileAuthMessage(@HeaderParam("DEVICE_ID") String deviceId,Map<String,String> request){
 		try {
-			String deviceId= request.get("device_id");
 			mobileAuthService.sendAuthMessage(deviceId);
 			return Response.status(200).entity("OK").build();
 		}catch(Exception e) {
@@ -85,9 +96,8 @@ public class UserRestApi {
 	@POST
 	@Consumes("application/json")
 	@Path("/verify_mobile_auth_code")
-	public Response verifyMobileAuthCode(Map<String,String> request) {
+	public Response verifyMobileAuthCode(@HeaderParam("DEVICE_ID") String deviceId,Map<String,String> request) {
 		try {
-			String deviceId= request.get("device_id");
 			String authCode = request.get("auth_code");
 			mobileAuthService.verifyAuthCode(deviceId, authCode);
 			return Response.status(200).entity("OK").build();

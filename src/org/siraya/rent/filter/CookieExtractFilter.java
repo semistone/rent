@@ -14,11 +14,12 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 	@Override
 	public ContainerRequest filter(ContainerRequest request) {
 		logger.debug("pass filter");
-	    MultivaluedMap<String, String> headers = request.getRequestHeaders();
-
-	    headers.add("code", "MY_APP_CODE");
-	    request.setHeaders((InBoundHeaders)headers);		
 		Map<String,Cookie>cookies = request.getCookies();
+		MultivaluedMap<String, String> headers = request.getRequestHeaders();
+		if (cookies.containsKey("D")){
+		    headers.add("DEVICE_ID", cookies.get("D").getValue());			
+		}
+	    request.setHeaders((InBoundHeaders)headers);		
 		return request;
 	}
 

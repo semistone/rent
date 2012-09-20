@@ -55,7 +55,7 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 			});
 		};
 		request.put("device_id", this.deviceId);
-		Response response = userRestApi.sendMobileAuthMessage(request);
+		Response response = userRestApi.sendMobileAuthMessage(deviceId,request);
 		Assert.assertEquals(200, response.getStatus());
 	}
 	
@@ -71,7 +71,7 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 		request.put("device_id", this.deviceId);
 		request.put("auth_code", this.authCode);
 
-		Response response = userRestApi.verifyMobileAuthCode(request);
+		Response response = userRestApi.verifyMobileAuthCode(deviceId,request);
 		Assert.assertEquals(200, response.getStatus());
 	}
 }

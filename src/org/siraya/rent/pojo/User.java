@@ -171,8 +171,7 @@ public class User {
      * @mbggenerated Mon Sep 10 16:50:24 CST 2012
      */
     public String getEmail() {
-		Assert.assertTrue("email format error", emailPattern
-				.matcher(email).find());    	
+
         return email;
     }
 
@@ -185,7 +184,10 @@ public class User {
      * @mbggenerated Mon Sep 10 16:50:24 CST 2012
      */
     public void setEmail(String email) {
-    	
+		if (email != null) {
+			Assert.assertTrue("email format error", emailPattern
+				.matcher(email).find());    	
+		}
         this.email = email == null ? null : email.trim();
     }
 
