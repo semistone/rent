@@ -5,9 +5,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.core.Response;
 
-import org.bouncycastle.asn1.ocsp.Request;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.service.IMobileAuthService;
@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.Map;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.NewCookie;
 @Component
 @Path("/user")
 public class UserRestApi {
@@ -27,7 +29,7 @@ public class UserRestApi {
     private static Logger logger = LoggerFactory.getLogger(UserRestApi.class);
 
 
-
+    
 	/**
      * create new device and assign a device id for it.
      * @param cc
@@ -95,7 +97,21 @@ public class UserRestApi {
 		}
 	}
 	
-
+	@GET
+	@Path("/test")
+	public Response test(@HeaderParam("code") String code){
+		System.out.println("code is "+code);
+		javax.ws.rs.core.NewCookie lastVisited = new javax.ws.rs.core.NewCookie(
+				"lastVisited",
+				"testvalue", 
+				"/", 
+				null,
+				1,
+				"no comment",
+				1073741823, // maxAge max int value/2
+				false);
+		return Response.status(200).entity("OK").cookie(lastVisited).build();
+	}
 
 	void setUserService(IUserService userService) {
 		this.userService = userService;
