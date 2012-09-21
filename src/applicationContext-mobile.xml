@@ -53,5 +53,6 @@
                 <property name="errorHandler" ref="mobileErrorHandler"/>
             </bean>
         </constructor-arg>
-    </bean>                       
+    </bean>  
+    <bean id="sentlyCallback" class="org.siraya.rent.rest.SentlyCallback" />                    
 </beans>

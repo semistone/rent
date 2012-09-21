@@ -20,7 +20,7 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		    headers.add("DEVICE_ID", cookies.get("D").getValue());			
 		}
 	    request.setHeaders((InBoundHeaders)headers);		
-		return request;
+	    return request;
 	}
 
 }
