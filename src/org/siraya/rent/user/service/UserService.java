@@ -53,7 +53,7 @@ public class UserService implements IUserService {
 		Map<String, Object> mobileCountryCode = applicationConfig.get("mobile_country_code");
 		Assert.assertTrue("cc not exist in mobile country code " + cc,
 				mobileCountryCode.containsKey(cc));
-		Assert.assertTrue("cc code not start with +"+cc,
+		Assert.assertTrue("cc code not start with "+cc,
 				mobilePhone.startsWith(Integer.toString(cc)));
 
 		//

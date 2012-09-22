@@ -27,7 +27,8 @@ $LAB.setOptions({BasePath:"../js/"})
             RENT.loadTemplate("../user/tmpl.register.html",
                 function(){
             	    logger.debug('new register view');
-                    var register = new RENT.user.view.RegisterView({el:'#pageMain'}); 
+            	    var model = new RENT.user.model.UserModel({});
+                    var register = new RENT.user.view.RegisterView({el:'#pageMain',model:model}); 
                     register.render();
             });
         });

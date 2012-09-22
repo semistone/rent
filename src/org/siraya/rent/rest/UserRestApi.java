@@ -28,7 +28,12 @@ public class UserRestApi {
     private static Logger logger = LoggerFactory.getLogger(UserRestApi.class);
 
 
-    
+	@POST
+	@Consumes("application/json")
+	public Response create(Map<String,String> request){
+		logger.debug("call new device");
+		return this.newDevice(request);
+	}
 	/**
      * create new device and assign a device id for it.
      * @param cc
