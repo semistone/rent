@@ -130,6 +130,7 @@ public class UserService implements IUserService {
 				device.setToken(String.valueOf(r.nextInt(9999)));
 				deviceDao.newDevice(device);
 				logger.debug("insert device");				
+				
 			}
 		}		
 	}
@@ -205,6 +206,7 @@ public class UserService implements IUserService {
     		throw new Exception("can't reset login id");
     	}
     	user.setId(user2.getId());
+    	user.setModified(new Long(0));
     	//
     	// sha1
     	//
@@ -227,5 +229,12 @@ public class UserService implements IUserService {
 		// TODO Auto-generated method stub
 
 	}
-
+	
+	public void setUserDao(IUserDAO userDao){
+		this.userDao = userDao;
+	}
+	
+	public void setDeviceDao(IDeviceDao deviceDao){
+		this.deviceDao = deviceDao;
+	}
 }

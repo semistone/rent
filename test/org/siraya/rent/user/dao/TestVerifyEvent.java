@@ -20,7 +20,7 @@ public class TestVerifyEvent  extends AbstractJUnit4SpringContextTests{
     	verifyEvent.setModified(time);
     	verifyEvent.setCreated(time);
     	verifyEvent.setStatus(0);
-    	verifyEvent.setVerifyDetail("xxx@gmail.com");
+    	verifyEvent.setVerifyDetail("d"+time);
     	verifyEvent.setUserId("u"+time);
     }
     

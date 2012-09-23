@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.siraya.rent.rest.UserRestApi;
+import org.siraya.rent.user.service.IUserService;
 import org.siraya.rent.user.dao.IDeviceDao;
+import org.siraya.rent.pojo.Device;
+import org.siraya.rent.pojo.User;
 
 import javax.ws.rs.core.Response;
 
@@ -22,10 +25,15 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 	UserRestApi userRestApi;
 	private Mockery context;
 	private IMobileAuthService mobileAuthService;
+	private IUserService userService;
 	private boolean isMock = true;
 	private String deviceId= "23131";
 	private String userId = "12313";
 	private String authCode="123";
+	private int  cc=886;
+	private String mobilePhone= "886234242342";
+	private Device device = new Device();
+	private User  user = new User();
 	private java.util.Map<String, String> request;
 	@Before
 	public void setUp(){
@@ -34,14 +42,25 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 			context = new JUnit4Mockery();
 			mobileAuthService = context.mock(IMobileAuthService.class);	
 			userRestApi.setMobileAuthService(mobileAuthService);
+			userService = context.mock(IUserService.class);	
+			userRestApi.setUserService(userService);
+			
 		}
 	}
 	@Test   
-	public void testNewDevice(){		
-    	long time=java.util.Calendar.getInstance().getTimeInMillis();
-    	
-    	request.put("country_code", "886");
-    	request.put("mobile_phone", "886"+time/1000);
+	public void testNewDevice()throws Exception{	
+		if (isMock) {
+			context.checking(new Expectations() {
+				{
+					one(userService).newDevice(with(any(Device.class)));
+					one(userService).newUserByMobileNumber(cc, mobilePhone);
+					will(returnValue(user));
+				}
+			});
+		}
+    	long time=java.util.Calendar.getInstance().getTimeInMillis();    	
+    	request.put("country_code", Integer.toString(cc));
+    	request.put("mobile_phone",mobilePhone);
 		Response response = userRestApi.newDevice(this.deviceId,this.userId,request);
 		Assert.assertEquals(200, response.getStatus());
 	}

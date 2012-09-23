@@ -6,6 +6,8 @@ package org.siraya.rent.user.service;
  */
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.Device;
+import org.siraya.rent.user.dao.IUserDAO;
+import org.siraya.rent.user.dao.IDeviceDao;
 public interface IUserService {
 	/**
 	 * add new user by mobile number.
@@ -47,4 +49,8 @@ public interface IUserService {
 	 * @param user
 	 */
 	public void updateUserInfo(User user);
+	
+	public void setUserDao(IUserDAO dao);
+
+	public void setDeviceDao(IDeviceDao dao);
 }

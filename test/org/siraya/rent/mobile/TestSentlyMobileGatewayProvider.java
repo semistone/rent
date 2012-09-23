@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-@ContextConfiguration(locations = {"classpath*:/applicationContext-mobile.xml"})
+@ContextConfiguration(locations = {"classpath*:/applicationContext*.xml"})
 public class TestSentlyMobileGatewayProvider  extends AbstractJUnit4SpringContextTests{
     @Autowired
     private IMobileGatewayService mobileGatewayService;
