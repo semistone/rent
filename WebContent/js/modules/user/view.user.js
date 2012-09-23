@@ -19,12 +19,40 @@ RENT.user.view.RegisterView = Backbone.View.extend({
     	if (mobile_phone.substring(0,1) == '0') {
     		mobile_phone = country_code + mobile_phone.substring(1);
     	}
-    	this.model.set({
+        var _this = this;
+    	this.model.save({
             country_code:country_code,
             mobile_phone:mobile_phone
+            },
+            {
+            success:function(model, response){
+                logger.debug('step1 success');
+                var step2 = new RENT.user.view.RegisterStep2View({el:_this.el ,model:this.model}); 
+                step2.render();
+            },
+            error:function(model, response){
+                logger.error('step1 error response:'+response);
+            },
         });
-
-    	this.model.save();
     },
 
 });
+RENT.user.view.RegisterStep2View = Backbone.View.extend({
+    events: {
+        "click #verify_button": "do_verify"
+    },
+    initialize: function() {
+    	this.tmpl = $('#tmpl_register_step2').html();
+    	this.$el=$(this.el);
+    	 _.bindAll(this, 'render');
+    },
+    render: function() { 
+    	logger.debug('render register step2');
+    	this.$el.html(this.tmpl);
+    },
+    do_verify:function(){
+    	logger.debug('click do verify button');
+    }
+});
+
+

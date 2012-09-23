@@ -63,8 +63,9 @@ public class UserRestApi {
 					1,
 					"no comment",
 					1073741823, // maxAge max int value/2
-					false);
-			return Response.status(200).entity(device.getId()).cookie(deviceCookie).build();
+					false); 
+                        String response = "{}";
+			return Response.status(200).entity(response).cookie(deviceCookie).build();
 		}catch(java.lang.NumberFormatException e){
 			logger.error("country code or mobile number must be number",e);
 			return Response.status(401).entity("country code or mobile number must be number").build();						
@@ -85,7 +86,8 @@ public class UserRestApi {
 	public Response sendMobileAuthMessage(@HeaderParam("DEVICE_ID") String deviceId,Map<String,String> request){
 		try {
 			mobileAuthService.sendAuthMessage(deviceId);
-			return Response.status(200).entity("OK").build();
+                        String response = "{}";
+			return Response.status(200).entity(response).build();
 		}catch(Exception e) {
 			logger.error("exception "+e.getMessage(),e);
 			return Response.status(500).entity(e.getMessage()).build();		
@@ -105,7 +107,8 @@ public class UserRestApi {
 		try {
 			String authCode = request.get("auth_code");
 			mobileAuthService.verifyAuthCode(deviceId, authCode);
-			return Response.status(200).entity("OK").build();
+                        String response = "{}";
+			return Response.status(200).entity(response).build();
 		} catch (Exception e) {
 			logger.error("exception " + e.getMessage(), e);
 			return Response.status(500).entity(e.getMessage()).build();
