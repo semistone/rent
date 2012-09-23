@@ -36,9 +36,9 @@ public interface IDeviceDao {
      * @param id
      * @return
      */
-    @Select("select * from DEVICE where ID=#{id}") 
+    @Select("select * from DEVICE where ID=#{deviceId} and USER_ID=#{userId}") 
     @ResultMap("rent.mapper.DeviceResultMap")
-    public Device getDeviceByDeviceId(@Param("id")String id);
+    public Device getDeviceByDeviceIdAndUserId(@Param("decviceId")String deviceId,@Param("userId")String userId);
     
     @Update("update DEVICE set STATUS = #{newStatus}, AUTH_RETRY=AUTH_RETRY+1, MODIFIED=#{modified} where ID = #{id} and (STATUS= #{oldStatus} or STATUS=#{newStatus})")
     public int updateStatusAndRetryCount(@Param("id")String id,@Param("newStatus")int newStatus,@Param("oldStatus")int oldStatus,@Param("modified")Long modified);

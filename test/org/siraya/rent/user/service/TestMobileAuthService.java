@@ -22,6 +22,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 	private IMobileAuthService mobileAuthService;
 	private Mockery context;
 	String deviceId= "123";
+	String userId= "456";
 	Device device =null;
 	private String authCode = "1234";	
 	private IDeviceDao deviceDao;
@@ -57,7 +58,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		if (isMock) {
 			context.checking(new Expectations() {
 				{
-					one(deviceDao).getDeviceByDeviceId(deviceId);								
+					one(deviceDao).getDeviceByDeviceIdAndUserId(deviceId,userId);								
 					will(returnValue(device));
 
 					one(userDao).getUserByUserId(device.getUserId());
@@ -70,7 +71,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 									with(any(int.class)),
 									with(any(long.class)));
 					will(returnValue(1));
-					one(deviceDao).getDeviceByDeviceId(device.getId());
+					one(deviceDao).getDeviceByDeviceIdAndUserId(device.getId(),device.getUserId());
 					will(returnValue(device));
 					
 
@@ -79,7 +80,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		}
 		
 		
-		mobileAuthService.sendAuthMessage(deviceId);
+		mobileAuthService.sendAuthMessage(deviceId,userId);
 	}
 	
 	@Test   
@@ -89,7 +90,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 			device.setStatus(1);
 			context.checking(new Expectations() {
 				{
-					one(deviceDao).getDeviceByDeviceId(deviceId);								
+					one(deviceDao).getDeviceByDeviceIdAndUserId(deviceId,userId);								
 					will(returnValue(device));
 
 					one(userDao).getUserByUserId(device.getUserId());
@@ -102,7 +103,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 									with(any(int.class)),
 									with(any(long.class)));
 					will(returnValue(1));
-					one(deviceDao).getDeviceByDeviceId(device.getId());
+					one(deviceDao).getDeviceByDeviceIdAndUserId(device.getId(),device.getUserId());
 					will(returnValue(device));
 					
 
@@ -119,7 +120,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		
 
 		
-		mobileAuthService.verifyAuthCode(device.getId(), authCode);		
+		mobileAuthService.verifyAuthCode(device.getId(),device.getUserId(), authCode);		
 	}
 	@Test(expected=junit.framework.AssertionFailedError.class)   
 	public void testRetryMax()throws Exception{
@@ -127,7 +128,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 			if (isMock) {
 				context.checking(new Expectations() {
 					{
-						one(deviceDao).getDeviceByDeviceId(deviceId);								
+						one(deviceDao).getDeviceByDeviceIdAndUserId(deviceId,userId);								
 						device.setAuthRetry(5);
 						will(returnValue(device));
 
@@ -137,7 +138,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 					}
 				});	
 			}
-			mobileAuthService.sendAuthMessage(deviceId);
+			mobileAuthService.sendAuthMessage(deviceId,userId);
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 			throw e;
@@ -150,7 +151,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		if (isMock) {
 			context.checking(new Expectations() {
 				{
-					one(deviceDao).getDeviceByDeviceId(device.getId());
+					one(deviceDao).getDeviceByDeviceIdAndUserId(device.getId(),device.getUserId());
 					will(returnValue(device));
 					one(userDao).getUserByUserId(device.getUserId());
 					will(returnValue(device.getUser()));
@@ -159,7 +160,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		}
 		device.setStatus(DeviceStatus.Authing.getStatus());
 		device.setAuthRetry(5);
-		mobileAuthService.verifyAuthCode(device.getId(), authCode);
+		mobileAuthService.verifyAuthCode(device.getId(), device.getUserId(), authCode);
 	}
 	
 }

@@ -24,6 +24,7 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 	private IMobileAuthService mobileAuthService;
 	private boolean isMock = true;
 	private String deviceId= "23131";
+	private String userId = "12313";
 	private String authCode="123";
 	private java.util.Map<String, String> request;
 	@Before
@@ -41,7 +42,7 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
     	
     	request.put("country_code", "886");
     	request.put("mobile_phone", "886"+time/1000);
-		Response response = userRestApi.newDevice(request);
+		Response response = userRestApi.newDevice(this.deviceId,this.userId,request);
 		Assert.assertEquals(200, response.getStatus());
 	}
 
@@ -50,12 +51,12 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 		if (isMock) {
 			context.checking(new Expectations() {
 				{
-					one(mobileAuthService).sendAuthMessage(deviceId);
+					one(mobileAuthService).sendAuthMessage(deviceId,userId);
 				}
 			});
 		};
 		request.put("device_id", this.deviceId);
-		Response response = userRestApi.sendMobileAuthMessage(deviceId,request);
+		Response response = userRestApi.sendMobileAuthMessage(deviceId,userId,request);
 		Assert.assertEquals(200, response.getStatus());
 	}
 	
@@ -64,14 +65,14 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 		if (isMock) {
 			context.checking(new Expectations() {
 				{
-					one(mobileAuthService).verifyAuthCode(deviceId, authCode);
+					one(mobileAuthService).verifyAuthCode(deviceId, userId, authCode);
 				}
 			});
 		};
 		request.put("device_id", this.deviceId);
 		request.put("auth_code", this.authCode);
 
-		Response response = userRestApi.verifyMobileAuthCode(deviceId,request);
+		Response response = userRestApi.verifyMobileAuthCode(deviceId, userId,request);
 		Assert.assertEquals(200, response.getStatus());
 	}
 }

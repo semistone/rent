@@ -30,8 +30,8 @@ public class MobileAuthService implements IMobileAuthService {
 	
     
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
-    public void sendAuthMessage(String deviceId)throws Exception{
-		Device device = deviceDao.getDeviceByDeviceId(deviceId);
+    public void sendAuthMessage(String deviceId,String userId)throws Exception{
+		Device device = deviceDao.getDeviceByDeviceIdAndUserId(deviceId,userId);
 		Assert.assertNotNull("device id not exist ",device);
 		device.setUser(userDao.getUserByUserId(device.getUserId()));
 		this.sendAuthMessage(device);
@@ -100,11 +100,11 @@ public class MobileAuthService implements IMobileAuthService {
 	/**
 	 * 
 	 */
-	public void verifyAuthCode(String deviceId, String authCode) throws Exception{
+	public void verifyAuthCode(String deviceId, String userId,String authCode) throws Exception{
 		//
 		// check status.
 		//
-		Device device = deviceDao.getDeviceByDeviceId(deviceId);
+		Device device = deviceDao.getDeviceByDeviceIdAndUserId(deviceId,userId);
 		if (device.getUser() == null) {
 			device.setUser(userDao.getUserByUserId(device.getUserId()));			
 		}

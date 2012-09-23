@@ -17,7 +17,11 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		Map<String,Cookie>cookies = request.getCookies();
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
 		if (cookies.containsKey("D")){
-		    headers.add("DEVICE_ID", cookies.get("D").getValue());			
+			String value = cookies.get("D").getValue();
+		    String[] strings=value.split(":");
+			headers.add("DEVICE_ID", strings[0]);			
+			headers.add("USER_ID", strings[1]);			
+
 		}
 	    request.setHeaders((InBoundHeaders)headers);		
 	    return request;

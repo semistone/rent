@@ -57,6 +57,6 @@
  
 	<servlet-mapping>
 		<servlet-name>jersey-serlvet</servlet-name>
-		<url-pattern>/rest/*</url-pattern>
+		<url-pattern>/rent/rest/*</url-pattern>
 	</servlet-mapping>   
 </web-app>

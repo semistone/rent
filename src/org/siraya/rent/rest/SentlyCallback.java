@@ -20,9 +20,10 @@ public class SentlyCallback {
 	public Response receiveMessage(@QueryParam("from")String from,@QueryParam("text")String text) throws Exception{
 		logger.debug("receive message "+text +" from "+from);
 		String deviceId="test";
+		String userId = "xxx";
 		String authCode="1234";
 		logger.debug("mobile service is "+mobileAuthService);
-		mobileAuthService.verifyAuthCode(deviceId, authCode);
+		mobileAuthService.verifyAuthCode(deviceId, userId,authCode);
 		return Response.status(200).build();
 	}
 }

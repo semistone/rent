@@ -2,6 +2,7 @@ package org.siraya.rent.rest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.Map;
+import java.util.HashMap;
 import javax.ws.rs.core.NewCookie;
 @Component
 @Path("/user")
@@ -27,12 +29,14 @@ public class UserRestApi {
 	private IMobileAuthService mobileAuthService;
     private static Logger logger = LoggerFactory.getLogger(UserRestApi.class);
 
-
 	@POST
 	@Consumes("application/json")
-	public Response create(Map<String,String> request){
+	@Produces("application/json")
+	public Response post(@HeaderParam("DEVICE_ID") String deviceId,
+			@HeaderParam("USER_ID") String userId,
+			Map<String,String> request){
 		logger.debug("call new device");
-		return this.newDevice(request);
+		return this.newDevice(deviceId,userId,request);
 	}
 	/**
      * create new device and assign a device id for it.
@@ -42,39 +46,54 @@ public class UserRestApi {
      */
 	@POST
 	@Consumes("application/json")
+	@Produces("application/json")
 	@Path("/new_device")
-	public Response newDevice(Map<String,String> request){
+	public Response newDevice(@HeaderParam("DEVICE_ID") String deviceId,
+			@HeaderParam("USER_ID") String userId,
+			Map<String,String> request){
+		HashMap<String,String> response = new HashMap<String,String>();
 		try {
 			String cc=request.get("country_code");
 			String mobilePhone=request.get("mobile_phone");
+
 			User user =userService.newUserByMobileNumber(Integer.parseInt(cc), mobilePhone);
 			Device device = new Device();
+			device.setId(deviceId);
 			device.setUser(user);
 			userService.newDevice(device);
 			
 			//
 			// set device id into cookie
 			//
-			NewCookie deviceCookie = new NewCookie(
-					"D",
-					device.getId(), 
-					"/", 
-					null,
-					1,
-					"no comment",
-					1073741823, // maxAge max int value/2
-					false); 
-                        String response = "{}";
-			return Response.status(200).entity(response).cookie(deviceCookie).build();
+
+			response.put("device_id", device.getId());
+			response.put("user_id", device.getUserId());
+			NewCookie deviceCookie = this.createDeviceCookie(device);
+			return Response.status(200).entity(response).cookie(deviceCookie)
+					.build();
 		}catch(java.lang.NumberFormatException e){
 			logger.error("country code or mobile number must be number",e);
-			return Response.status(401).entity("country code or mobile number must be number").build();						
+			response.put("err_msg", "country code or mobile number must be number");
+			return Response.status(401).entity(response).build();						
 		}catch(Exception e) {
 			logger.error("exception "+e.getMessage(),e);
+			response.put("err_msg", e.getMessage());
 			return Response.status(500).entity(e.getMessage()).build();			
 		}
 	}
-	
+
+	/**
+	 * create device cookie
+	 * @param device
+	 * @return
+	 */
+	private NewCookie createDeviceCookie(Device device) {
+		String value= device.getId()+":"+device.getUser();
+		NewCookie deviceCookie = new NewCookie("D", value, "/",
+				null, 1, "no comment", 1073741823, // maxAge max int value/2
+				false);
+		return deviceCookie;
+	}
 	/**
 	 * send auth message
 	 * @param deviceId
@@ -82,15 +101,19 @@ public class UserRestApi {
 	 */
 	@POST
 	@Consumes("application/json")
+	@Produces("application/json")
 	@Path("/send_mobile_auth_message")
-	public Response sendMobileAuthMessage(@HeaderParam("DEVICE_ID") String deviceId,Map<String,String> request){
+	public Response sendMobileAuthMessage(@HeaderParam("DEVICE_ID") String deviceId,
+			@HeaderParam("USER_ID") String userId,
+			Map<String,String> request){
+		HashMap<String,String> response = new HashMap<String,String>();
 		try {
-			mobileAuthService.sendAuthMessage(deviceId);
-                        String response = "{}";
-			return Response.status(200).entity(response).build();
+			mobileAuthService.sendAuthMessage(deviceId,userId);
+			return Response.status(200).build();
 		}catch(Exception e) {
 			logger.error("exception "+e.getMessage(),e);
-			return Response.status(500).entity(e.getMessage()).build();		
+			response.put("err_msg", e.getMessage());
+			return Response.status(500).entity(response).build();		
 		}
 	}
 	
@@ -103,15 +126,18 @@ public class UserRestApi {
 	@POST
 	@Consumes("application/json")
 	@Path("/verify_mobile_auth_code")
-	public Response verifyMobileAuthCode(@HeaderParam("DEVICE_ID") String deviceId,Map<String,String> request) {
+	public Response verifyMobileAuthCode(@HeaderParam("DEVICE_ID") String deviceId,
+			@HeaderParam("USER_ID") String userId,
+			Map<String,String> request) {
+		HashMap<String,String> response = new HashMap<String,String>();
 		try {
 			String authCode = request.get("auth_code");
-			mobileAuthService.verifyAuthCode(deviceId, authCode);
-                        String response = "{}";
-			return Response.status(200).entity(response).build();
+			mobileAuthService.verifyAuthCode(deviceId, userId,authCode);
+			return Response.status(200).build();
 		} catch (Exception e) {
 			logger.error("exception " + e.getMessage(), e);
-			return Response.status(500).entity(e.getMessage()).build();
+			response.put("err_msg", e.getMessage());
+			return Response.status(500).entity(response).build();
 		}
 	}
 	

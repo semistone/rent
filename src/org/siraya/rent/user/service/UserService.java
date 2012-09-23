@@ -95,7 +95,8 @@ public class UserService implements IUserService {
 	 */
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
 	public void newDevice(Device device) throws Exception {
-		//
+    	User user = device.getUser();
+    	//
 		// check device count.
 		//
 		int count=deviceDao.getDeviceCountByUserId(device.getUserId());
@@ -107,18 +108,30 @@ public class UserService implements IUserService {
 		//
 		// check user status
 		//
-		if (device.getUser().getStatus() == UserStatus.Remove.getStatus()) {
+		if (user.getStatus() == UserStatus.Remove.getStatus()) {
 			throw new Exception("user status is removed");
 		}
+		//
+		// generate new device id
+		//
+		if (device.getId() == null) {
+			String id = java.util.UUID.randomUUID().toString();			
+			device.setId(id);
+		}else {
+			Device oldDevice = deviceDao.getDeviceByDeviceIdAndUserId(device.getId(),user.getId());
+			if (oldDevice != null) {
+				// old device exist
+				return;
+			} else {
+				// old device not exist
 		
-		String id = java.util.UUID.randomUUID().toString();
-		device.setId(id);
-		device.setStatus(DeviceStatus.Init.getStatus());
-		Random r = new Random();
-		device.setToken(String.valueOf(r.nextInt(9999)));
-		deviceDao.newDevice(device);
-		logger.debug("insert device");
-		
+				device.setStatus(DeviceStatus.Init.getStatus());
+				Random r = new Random();
+				device.setToken(String.valueOf(r.nextInt(9999)));
+				deviceDao.newDevice(device);
+				logger.debug("insert device");				
+			}
+		}		
 	}
 
 
