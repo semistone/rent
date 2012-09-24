@@ -27,7 +27,7 @@ public class TestIDeviceDao  extends AbstractJUnit4SpringContextTests{
     	device.setToken("1234");
     	device.setModified(time/1000);
     	deviceDao.newDevice(device);
-        int ret=deviceDao.updateStatusAndRetryCount(device.getId(), 2, 0, time/1000);
+        int ret=deviceDao.updateStatusAndRetryCount(device.getId(),device.getUserId(), 2, 0, time/1000);
         Assert.assertEquals(1, ret);
         ret = deviceDao.getDeviceCountByUserId(userId);
         Assert.assertEquals(1, ret);

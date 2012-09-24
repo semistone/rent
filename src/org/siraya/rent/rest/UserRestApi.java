@@ -2,6 +2,7 @@ package org.siraya.rent.rest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
@@ -37,6 +38,44 @@ public class UserRestApi {
 			Map<String,String> request){
 		logger.debug("call new device");
 		return this.newDevice(deviceId,userId,request);
+	}
+
+	@DELETE
+	@Produces("application/json")
+	public Response delete(@HeaderParam("DEVICE_ID") String deviceId,
+			@HeaderParam("USER_ID") String userId){
+		HashMap<String,String> response = new HashMap<String,String>();
+		try{
+			Device device = new Device();
+			device.setUserId(userId);
+			device.setId(deviceId);
+			userService.removeDevice(device);
+			return Response.status(200).entity(response).build();
+		}catch(Exception e){
+			logger.error("exception "+e.getMessage(),e);
+			response.put("err_msg", e.getMessage());
+			return Response.status(500).entity(e.getMessage()).build();	
+		}
+	}
+	
+	@GET
+	@Produces("application/json")
+	public Response get(@HeaderParam("DEVICE_ID") String deviceId,
+			@HeaderParam("USER_ID") String userId){
+		logger.debug("call new device");
+		Device device = new Device();
+		if (deviceId == null || userId == null) {
+			logger.debug("device id or user id is null");
+			return Response.status(401).build();			
+		}
+
+		device.setUserId(userId);
+		device.setId(deviceId);
+		device = userService.getDevice(device);
+		if (device == null) {
+			return Response.status(401).entity(device).build();
+		}
+		return Response.status(200).entity(device).build();
 	}
 	/**
      * create new device and assign a device id for it.
@@ -88,12 +127,14 @@ public class UserRestApi {
 	 * @return
 	 */
 	private NewCookie createDeviceCookie(Device device) {
-		String value= device.getId()+":"+device.getUser();
+		String value= device.getId()+":"+device.getUserId();
 		NewCookie deviceCookie = new NewCookie("D", value, "/",
 				null, 1, "no comment", 1073741823, // maxAge max int value/2
 				false);
 		return deviceCookie;
 	}
+	
+
 	/**
 	 * send auth message
 	 * @param deviceId

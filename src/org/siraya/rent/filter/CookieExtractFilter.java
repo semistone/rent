@@ -19,8 +19,15 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		if (cookies.containsKey("D")){
 			String value = cookies.get("D").getValue();
 		    String[] strings=value.split(":");
-			headers.add("DEVICE_ID", strings[0]);			
-			headers.add("USER_ID", strings[1]);			
+		    int len = strings.length;
+		    if (len > 0){
+		    	logger.debug("set device id as "+strings[0]);
+			    headers.add("DEVICE_ID", strings[0]);					    	
+		    } 
+		    if (len > 1){
+		    	logger.debug("set user id as "+strings[1]);
+		    	headers.add("USER_ID", strings[1]);
+		    }
 
 		}
 	    request.setHeaders((InBoundHeaders)headers);		

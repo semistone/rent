@@ -9,6 +9,18 @@ import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.dao.IUserDAO;
 import org.siraya.rent.user.dao.IDeviceDao;
 public interface IUserService {
+	
+	/**
+	 * remove device
+	 * @param device
+	 */
+	public void removeDevice(Device device) throws Exception;
+	
+	/**
+	 * get device 
+	 * @param device
+	 */
+	 public Device getDevice(Device device);
 	/**
 	 * add new user by mobile number.
 	 * create one user, must unique mobile number.

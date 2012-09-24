@@ -18,6 +18,10 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		var mobile_phone = this.$el.find('#mobile_phone').val();
 		if (mobile_phone.substring(0, 1) == '0') {
 			mobile_phone = country_code + mobile_phone.substring(1);
+		}else if (mobile_phone.substring(0, 1) == '+'){			
+			// do nothing
+		}else{
+			mobile_phone = country_code + mobile_phone;
 		}
 		var _this = this;
 		this.model.save({

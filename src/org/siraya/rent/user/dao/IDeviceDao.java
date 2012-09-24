@@ -40,9 +40,12 @@ public interface IDeviceDao {
     @ResultMap("rent.mapper.DeviceResultMap")
     public Device getDeviceByDeviceIdAndUserId(@Param("deviceId")String deviceId,@Param("userId")String userId);
     
-    @Update("update DEVICE set STATUS = #{newStatus}, AUTH_RETRY=AUTH_RETRY+1, MODIFIED=#{modified} where ID = #{id} and (STATUS= #{oldStatus} or STATUS=#{newStatus})")
-    public int updateStatusAndRetryCount(@Param("id")String id,@Param("newStatus")int newStatus,@Param("oldStatus")int oldStatus,@Param("modified")Long modified);
+    @Update("update DEVICE set STATUS = #{newStatus}, AUTH_RETRY=AUTH_RETRY+1, MODIFIED=#{modified} where ID = #{id} and USER_ID=#{userId} and (STATUS= #{oldStatus} or STATUS=#{newStatus})")
+    public int updateStatusAndRetryCount(@Param("id")String id,@Param("userId")String userId,@Param("newStatus")int newStatus,@Param("oldStatus")int oldStatus,@Param("modified")Long modified);
 
-    @Update("update DEVICE set STATUS = #{newStatus}, MODIFIED=#{modified} where ID = #{id} and STATUS= #{oldStatus}")    
-    public int updateDeviceStatus(@Param("id")String id,@Param("newStatus")int newStatus,@Param("oldStatus")int oldStatus,@Param("modified")Long modified);
+    @Update("update DEVICE set STATUS = #{newStatus}, MODIFIED=#{modified} where ID = #{id} and USER_ID=#{userId} and  STATUS= #{oldStatus}")    
+    public int updateDeviceStatus(@Param("id")String id,@Param("userId")String userId,@Param("newStatus")int newStatus,@Param("oldStatus")int oldStatus,@Param("modified")Long modified);
+
+    @Update("update DEVICE set STATUS = '3', MODIFIED=#{modified} where ID = #{id} and USER_ID=#{userId}")    
+    public int updateRemovedDeviceStatus(@Param("id")String id,@Param("userId")String userId,@Param("modified")Long modified);
 }

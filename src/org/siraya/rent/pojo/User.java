@@ -4,6 +4,8 @@ import java.util.regex.Pattern;
 
 import junit.framework.Assert;
 import java.util.Locale;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
 public class User {
     private static  Pattern mobilePhonePattern = Pattern.compile("^\\d*$");
     private static  Pattern emailPattern = Pattern.compile("^[A-Za-z0-9._%'-]+@[A-Za-z0-9.-]+\\.[a-zA-Z]{1,4}$");
@@ -144,6 +146,7 @@ public class User {
      *
      * @mbggenerated Mon Sep 10 16:50:24 CST 2012
      */
+	@JsonIgnore
     public String getMobilePhone() {
         return mobilePhone;
     }
@@ -247,6 +250,7 @@ public class User {
      *
      * @mbggenerated Mon Sep 10 16:50:24 CST 2012
      */
+	@JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -295,6 +299,7 @@ public class User {
      *
      * @mbggenerated Mon Sep 10 16:50:24 CST 2012
      */
+	@JsonIgnore
     public String getNationalId() {
         return nationalId;
     }

@@ -32,7 +32,7 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService{
 			return;
 		}
 		String requestUri="http://sent.ly/command/sendsms?username={username}&password={password}&text={text}&to={to}";
-		Map<String, String> vars=new <String, String>HashMap();
+		Map<String, String> vars=new HashMap<String, String>();
 		vars.put("username", (String)setting.get("username"));
 		vars.put("password", (String)setting.get("password"));
 		vars.put("to", to);

@@ -1,5 +1,6 @@
 package org.siraya.rent.pojo;
 import org.siraya.rent.pojo.User;
+import org.codehaus.jackson.annotate.JsonIgnore;
 public class Device {
 	private String id;
 	private String userId;
@@ -26,6 +27,8 @@ public class Device {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
+	
+	@JsonIgnore
 	public String getToken() {
 		return token;
 	}
@@ -86,6 +89,7 @@ public class Device {
 	public void setAuthRetry(int authRetry) {
 		this.authRetry = authRetry;
 	}	
+
 	public User getUser() {
 		return user;
 	}

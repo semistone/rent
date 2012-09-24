@@ -67,6 +67,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 					one(deviceDao)
 							.updateStatusAndRetryCount(
 									with(any(String.class)),
+									with(any(String.class)),
 									with(any(int.class)), 
 									with(any(int.class)),
 									with(any(long.class)));
@@ -98,6 +99,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 					
 					one(deviceDao)
 							.updateStatusAndRetryCount(
+									with(any(String.class)),
 									with(any(String.class)),
 									with(any(int.class)), 
 									with(any(int.class)),

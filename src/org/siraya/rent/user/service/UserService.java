@@ -36,6 +36,45 @@ public class UserService implements IUserService {
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
+    public void removeDevice (Device device) throws Exception{
+    	logger.debug("remove device ");
+    	int ret =deviceDao.updateRemovedDeviceStatus(device.getId(),device.getUserId(),
+    			device.getModified());
+    	if (ret != 1) {
+    		throw new Exception("update count is not 1");
+    	}
+    }
+    
+    /**
+     * get device info, only can get information with correct device id and user id
+     * @param device
+     */
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
+    public Device getDevice(Device device){
+    	String userId = device.getUserId();
+    	logger.debug("get device from database");
+    	Device tmp = deviceDao.getDeviceByDeviceIdAndUserId(device.getId(), userId);
+    	if (tmp == null) {
+    		logger.debug("device is null");
+    		return null;
+    	}
+    	if (tmp.getStatus() == DeviceStatus.Removed.getStatus()) {
+    		logger.debug("device status is removed ");
+    		return null;
+    	}
+    	if (device.getStatus() == DeviceStatus.Authed.getStatus()) {
+    		//
+    		// only authed device can get user info
+    		//
+    		logger.debug("get user from database");
+        	User user = userDao.getUserByUserId(userId);
+        	logger.debug("mobile phone is "+user.getMobilePhone());
+        	device.setUser(user);    		
+    	}
+    	return device;
+    }
+    
 	/**
 	 * new user mobile number
 	 * 

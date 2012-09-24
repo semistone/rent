@@ -74,7 +74,8 @@ public class MobileAuthService implements IMobileAuthService {
 		// update status
 		//
 		device.setModified(0);
-		int ret =deviceDao.updateStatusAndRetryCount(device.getId(), DeviceStatus.Authing.getStatus(),
+		int ret =deviceDao.updateStatusAndRetryCount(device.getId(), device.getUserId(),
+				DeviceStatus.Authing.getStatus(),
 				DeviceStatus.Init.getStatus(), device.getModified());
 		Assert.assertEquals("update device status count is not 1",1, ret);
 
@@ -140,7 +141,8 @@ public class MobileAuthService implements IMobileAuthService {
 			// if fail update retry status
 			//
 			logger.debug("token is "+token);
-			int ret =deviceDao.updateStatusAndRetryCount(device.getId(), DeviceStatus.Authing.getStatus(),
+			int ret =deviceDao.updateStatusAndRetryCount(device.getId(), device.getUserId(),
+					DeviceStatus.Authing.getStatus(),
 					DeviceStatus.Init.getStatus(), device.getModified());
 			Assert.assertEquals("update device status count is not 1",1, ret);
 			throw new Exception("device id "+device.getId()+" enter auth code not match "+authCode);
@@ -149,7 +151,8 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		// update device and user in database.
 		//
-		deviceDao.updateStatusAndRetryCount(device.getId(),DeviceStatus.Authed.getStatus(),
+		deviceDao.updateStatusAndRetryCount(device.getId(),device.getUserId(),
+				DeviceStatus.Authed.getStatus(),
 				DeviceStatus.Authing.getStatus(),
 				device.getModified());
 		User user = device.getUser();
