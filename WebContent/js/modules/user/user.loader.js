@@ -19,7 +19,7 @@ $LAB.setOptions({BasePath:"../js/"})
     ).script(
         "libs/mustache-min.js",
         "libs/underscore-min.js",
-    	"libs/backbone-min.js",
+    	"libs/backbone.js",
     	"modules/user/model.user.js",
 		"modules/user/view.user.js"
     ).wait(function(){
@@ -29,7 +29,6 @@ $LAB.setOptions({BasePath:"../js/"})
             	    logger.debug('new register view');
             	    var model = new RENT.user.model.UserModel({});
                     var register = new RENT.user.view.RegisterView({el:'#main',model:model}); 
-                    register.render();
             });
         });
     });

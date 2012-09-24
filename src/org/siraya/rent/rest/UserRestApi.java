@@ -2,6 +2,7 @@ package org.siraya.rent.rest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
@@ -164,7 +165,7 @@ public class UserRestApi {
 	 * @param authCode
 	 * @return
 	 */
-	@POST
+	@PUT
 	@Consumes("application/json")
 	@Path("/verify_mobile_auth_code")
 	public Response verifyMobileAuthCode(@HeaderParam("DEVICE_ID") String deviceId,

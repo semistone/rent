@@ -1,13 +1,33 @@
 RENT.user.view.RegisterView = Backbone.View.extend({
 	initialize : function() {
-		this.tmpl = $('#tmpl_register_form').html();
-		_.bindAll(this, 'render', 'new_device');
+		_.bindAll(this, 'render', 'new_device', 'step1','step2');
 		this.$el = $(this.el);
+		this.model.bind('change',this.render);
+		this.model.fetch();
 	},
 	render : function() {
+		var status =this.model.get('status')
+		logger.debug("render user status:"+status);
+		if (status == undefined) {
+			this.step1();
+		} else if (status == 0){
+			this.step2();
+		}
+		
+	},
+	step1: function(){
+		this.tmpl = $('#tmpl_register_form').html();
 		logger.debug('render register view');
 		this.$el.html(this.tmpl);
-		this.$el.find('#register_button').val($.i18n.prop('user.register'));
+		this.$el.find('#register_button').val($.i18n.prop('user.register'));	
+	},
+	step2: function(){
+		this.model.unbind('change');
+		var step2 = new RENT.user.view.RegisterStep2View({
+			el : this.el,
+			model : this.model
+		});
+		step2.render();
 	},
 	events : {
 		"click #register_button" : "new_device"
@@ -30,11 +50,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		}, {
 			success : function(model, response) {
 				logger.debug('step1 success');
-				var step2 = new RENT.user.view.RegisterStep2View({
-					el : _this.el,
-					model : this.model
-				});
-				step2.render();
+				_this.step2();
 			},
 			error : function(model, response) {
 				logger.error('step1 error response:' + response);
@@ -57,7 +73,9 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		this.$el.html(this.tmpl);
 	},
 	do_verify : function() {
-		logger.debug('click do verify button');
+		var auth_code = this.$el.find('#auth_code').val();
+		logger.debug('click do verify button auth code is '+auth_code);
+		this.model.verify_mobile_auth_code(auth_code);
 	}
 });
 
