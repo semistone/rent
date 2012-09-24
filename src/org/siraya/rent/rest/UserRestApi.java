@@ -30,7 +30,7 @@ public class UserRestApi {
 	@Autowired
 	private IMobileAuthService mobileAuthService;
     private static Logger logger = LoggerFactory.getLogger(UserRestApi.class);
-
+    private Device device;
 	@POST
 	@Consumes("application/json")
 	@Produces("application/json")
@@ -38,7 +38,16 @@ public class UserRestApi {
 			@HeaderParam("USER_ID") String userId,
 			Map<String,String> request){
 		logger.debug("call new device");
-		return this.newDevice(deviceId,userId,request);
+		Response response =  this.newDevice(deviceId,userId,request);
+		if (response.getStatus() == 200) {
+			//
+			// send mobile auth message
+			//
+			Response response2 = this.sendMobileAuthMessage(device.getId(),device.getUserId());
+			logger.debug("rebuild response");
+			response = Response.fromResponse(response).status(response2.getStatus()).build();
+		}
+		return response;
 	}
 
 	@DELETE
@@ -47,7 +56,7 @@ public class UserRestApi {
 			@HeaderParam("USER_ID") String userId){
 		HashMap<String,String> response = new HashMap<String,String>();
 		try{
-			Device device = new Device();
+			device = new Device();
 			device.setUserId(userId);
 			device.setId(deviceId);
 			userService.removeDevice(device);
@@ -64,7 +73,7 @@ public class UserRestApi {
 	public Response get(@HeaderParam("DEVICE_ID") String deviceId,
 			@HeaderParam("USER_ID") String userId){
 		logger.debug("call new device");
-		Device device = new Device();
+		device = new Device();
 		if (deviceId == null || userId == null) {
 			logger.debug("device id or user id is null");
 			return Response.status(401).build();			
@@ -97,7 +106,7 @@ public class UserRestApi {
 			String mobilePhone=request.get("mobile_phone");
 
 			User user =userService.newUserByMobileNumber(Integer.parseInt(cc), mobilePhone);
-			Device device = new Device();
+			device = new Device();
 			device.setId(deviceId);
 			device.setUser(user);
 			userService.newDevice(device);
@@ -109,6 +118,7 @@ public class UserRestApi {
 			response.put("device_id", device.getId());
 			response.put("user_id", device.getUserId());
 			NewCookie deviceCookie = this.createDeviceCookie(device);
+			
 			return Response.status(200).entity(response).cookie(deviceCookie)
 					.build();
 		}catch(java.lang.NumberFormatException e){
@@ -146,8 +156,7 @@ public class UserRestApi {
 	@Produces("application/json")
 	@Path("/send_mobile_auth_message")
 	public Response sendMobileAuthMessage(@HeaderParam("DEVICE_ID") String deviceId,
-			@HeaderParam("USER_ID") String userId,
-			Map<String,String> request){
+			@HeaderParam("USER_ID") String userId){
 		HashMap<String,String> response = new HashMap<String,String>();
 		try {
 			mobileAuthService.sendAuthMessage(deviceId,userId);

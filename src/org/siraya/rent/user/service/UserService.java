@@ -133,7 +133,7 @@ public class UserService implements IUserService {
 	 *    3.send auth code through mobile number.
 	 */
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
-	public void newDevice(Device device) throws Exception {
+	public Device newDevice(Device device) throws Exception {
     	User user = device.getUser();
     	//
 		// check device count.
@@ -156,22 +156,23 @@ public class UserService implements IUserService {
 		if (device.getId() == null) {
 			String id = java.util.UUID.randomUUID().toString();			
 			device.setId(id);
-		}else {
-			Device oldDevice = deviceDao.getDeviceByDeviceIdAndUserId(device.getId(),user.getId());
-			if (oldDevice != null) {
-				// old device exist
-				return;
-			} else {
-				// old device not exist
-		
-				device.setStatus(DeviceStatus.Init.getStatus());
-				Random r = new Random();
-				device.setToken(String.valueOf(r.nextInt(9999)));
-				deviceDao.newDevice(device);
-				logger.debug("insert device");				
-				
-			}
-		}		
+		}
+		Device oldDevice = deviceDao.getDeviceByDeviceIdAndUserId(
+				device.getId(), user.getId());
+		if (oldDevice != null) {
+			logger.debug("old device exist");
+		} else {
+			// old device not exist
+
+			device.setStatus(DeviceStatus.Init.getStatus());
+			Random r = new Random();
+			device.setToken(String.valueOf(r.nextInt(9999)));
+			deviceDao.newDevice(device);
+			logger.debug("insert device");
+
+		}
+		return device;
+			
 	}
 
 

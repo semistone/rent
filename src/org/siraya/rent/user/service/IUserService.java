@@ -34,7 +34,7 @@ public interface IUserService {
 	 * @param device
 	 * @return
 	 */
-	public void newDevice(Device device) throws Exception;
+	public Device newDevice(Device device) throws Exception;
 
 	/**
 	 * update user email

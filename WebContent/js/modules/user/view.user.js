@@ -3,7 +3,9 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		_.bindAll(this, 'render', 'new_device', 'step1','step2');
 		this.$el = $(this.el);
 		this.model.bind('change',this.render);
-		this.model.fetch();
+		this.model.fetch({
+			error: this.render
+		});
 	},
 	render : function() {
 		var status =this.model.get('status')

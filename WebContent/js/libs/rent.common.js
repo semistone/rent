@@ -51,5 +51,20 @@ var RENT = {
             callback: callback
         });     
     },
-    	
+    bindLoadingPage:function(){
+    	logger.debug('bind loading page to #supersized-loader');
+    	$("#supersized-loader")
+    	.ajaxStart(function(){
+    		logger.debug("loading page show");
+    		$(this).show();
+    	})
+    	.ajaxStop(function(){
+    		logger.debug("loading page hide");
+    	    $(this).hide();
+    	});  
+    }	
 }
+// initialize 
+$(function(){
+	RENT.bindLoadingPage();
+});

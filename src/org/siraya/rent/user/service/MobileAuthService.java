@@ -31,6 +31,7 @@ public class MobileAuthService implements IMobileAuthService {
     
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
     public void sendAuthMessage(String deviceId,String userId)throws Exception{
+    	logger.debug("device id is "+deviceId+" user id is "+userId);
 		Device device = deviceDao.getDeviceByDeviceIdAndUserId(deviceId,userId);
 		Assert.assertNotNull("device id not exist ",device);
 		device.setUser(userDao.getUserByUserId(device.getUserId()));
@@ -140,7 +141,7 @@ public class MobileAuthService implements IMobileAuthService {
 			//
 			// if fail update retry status
 			//
-			logger.debug("token is "+token);
+			logger.debug("token not match, token is "+token);
 			int ret =deviceDao.updateStatusAndRetryCount(device.getId(), device.getUserId(),
 					DeviceStatus.Authing.getStatus(),
 					DeviceStatus.Init.getStatus(), device.getModified());
@@ -151,12 +152,14 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		// update device and user in database.
 		//
+		logger.debug("update device status to authed");
 		deviceDao.updateStatusAndRetryCount(device.getId(),device.getUserId(),
 				DeviceStatus.Authed.getStatus(),
 				DeviceStatus.Authing.getStatus(),
 				device.getModified());
 		User user = device.getUser();
 		if (user.getStatus() == UserStatus.Init.getStatus()){
+			logger.debug("update user status to authed");
 			user.setModified((long)0);
 			userDao.updateUserStatus(user.getId(), UserStatus.Authed.getStatus()
 					,  UserStatus.Init.getStatus(), user.getModified());

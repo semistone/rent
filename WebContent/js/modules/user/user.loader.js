@@ -22,7 +22,7 @@ $LAB.setOptions({BasePath:"../js/"})
     	"libs/backbone.js",
     	"modules/user/model.user.js",
 		"modules/user/view.user.js"
-    ).wait(function(){
+    ).wait(function(){ 
         $(document).ready(function(){
             RENT.loadTemplate("../user/tmpl.register.html",
                 function(){
