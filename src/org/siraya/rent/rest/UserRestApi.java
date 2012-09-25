@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.HashMap;
 import javax.ws.rs.core.NewCookie;
+import java.net.HttpURLConnection;
 @Component
 @Path("/user")
 public class UserRestApi {
@@ -39,7 +40,7 @@ public class UserRestApi {
 			Map<String,String> request){
 		logger.debug("call new device");
 		Response response =  this.newDevice(deviceId,userId,request);
-		if (response.getStatus() == 200) {
+		if (response.getStatus() == HttpURLConnection.HTTP_OK) {
 			//
 			// send mobile auth message
 			//
@@ -60,11 +61,11 @@ public class UserRestApi {
 			device.setUserId(userId);
 			device.setId(deviceId);
 			userService.removeDevice(device);
-			return Response.status(200).entity(response).build();
+			return Response.status(HttpURLConnection.HTTP_OK).entity(response).build();
 		}catch(Exception e){
 			logger.error("exception "+e.getMessage(),e);
 			response.put("err_msg", e.getMessage());
-			return Response.status(500).entity(e.getMessage()).build();	
+			return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(e.getMessage()).build();	
 		}
 	}
 	
@@ -76,16 +77,16 @@ public class UserRestApi {
 		device = new Device();
 		if (deviceId == null || userId == null) {
 			logger.debug("device id or user id is null");
-			return Response.status(401).build();			
+			return Response.status(HttpURLConnection.HTTP_NOT_FOUND).build();			
 		}
 
 		device.setUserId(userId);
 		device.setId(deviceId);
 		device = userService.getDevice(device);
 		if (device == null) {
-			return Response.status(401).entity(device).build();
+			return Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity(device).build();
 		}
-		return Response.status(200).entity(device).build();
+		return Response.status(HttpURLConnection.HTTP_OK).entity(device).build();
 	}
 	/**
      * create new device and assign a device id for it.
@@ -119,16 +120,16 @@ public class UserRestApi {
 			response.put("user_id", device.getUserId());
 			NewCookie deviceCookie = this.createDeviceCookie(device);
 			
-			return Response.status(200).entity(response).cookie(deviceCookie)
+			return Response.status(HttpURLConnection.HTTP_OK).entity(response).cookie(deviceCookie)
 					.build();
 		}catch(java.lang.NumberFormatException e){
 			logger.error("country code or mobile number must be number",e);
 			response.put("err_msg", "country code or mobile number must be number");
-			return Response.status(401).entity(response).build();						
+			return Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity(response).build();						
 		}catch(Exception e) {
 			logger.error("exception "+e.getMessage(),e);
 			response.put("err_msg", e.getMessage());
-			return Response.status(500).entity(e.getMessage()).build();			
+			return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(e.getMessage()).build();			
 		}
 	}
 
@@ -160,11 +161,11 @@ public class UserRestApi {
 		HashMap<String,String> response = new HashMap<String,String>();
 		try {
 			mobileAuthService.sendAuthMessage(deviceId,userId);
-			return Response.status(200).build();
+			return Response.status(HttpURLConnection.HTTP_OK).build();
 		}catch(Exception e) {
 			logger.error("exception "+e.getMessage(),e);
 			response.put("err_msg", e.getMessage());
-			return Response.status(500).entity(response).build();		
+			return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(response).build();		
 		}
 	}
 	
@@ -184,11 +185,11 @@ public class UserRestApi {
 		try {
 			String authCode = request.get("auth_code");
 			mobileAuthService.verifyAuthCode(deviceId, userId,authCode);
-			return Response.status(200).build();
+			return Response.status(HttpURLConnection.HTTP_OK).build();
 		} catch (Exception e) {
 			logger.error("exception " + e.getMessage(), e);
 			response.put("err_msg", e.getMessage());
-			return Response.status(500).entity(response).build();
+			return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(response).build();
 		}
 	}
 	
@@ -205,7 +206,7 @@ public class UserRestApi {
 				"no comment",
 				1073741823, // maxAge max int value/2
 				false);
-		return Response.status(200).entity("OK").cookie(lastVisited).build();
+		return Response.status(HttpURLConnection.HTTP_OK).entity("OK").cookie(lastVisited).build();
 	}
 
 	void setUserService(IUserService userService) {
