@@ -14,6 +14,9 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			this.step1();
 		} else if (status == 0){
 			this.step2();
+		} else if (status == 2) {
+			logger.debug('user has authed show step3 page');
+			new RENT.user.view.RegisterStep3View({el:this.el}).render();
 		}
 		
 	},
@@ -68,17 +71,32 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 	initialize : function() {
 		this.tmpl = $('#tmpl_register_step2').html();
 		this.$el = $(this.el);
-		_.bindAll(this, 'render');
+		_.bindAll(this, 'render','do_verify');
 	},
 	render : function() {
 		logger.debug('render register step2');
 		this.$el.html(this.tmpl);
 	},
 	do_verify : function() {
+		var success, error,_this;
+		_this = this;
+		success = function(data, textStatus, jqXHR){
+			logger.debug("verify success "+textStatus);
+			new RENT.user.view.RegisterStep3View({el:_this.el}).render();
+		};
+		error = function(jqXHR, textStatus, errorThrown){
+			logger.debug("verify fail "+textStatus);
+		};
 		var auth_code = this.$el.find('#auth_code').val();
 		logger.debug('click do verify button auth code is '+auth_code);
-		this.model.verify_mobile_auth_code(auth_code);
+		this.model.verify_mobile_auth_code(auth_code,{success:success, error:error});
 	}
 });
-
+RENT.user.view.RegisterStep3View = Backbone.View.extend({
+	render:function(){
+		var step3_template = $('#tmpl_register_step3').html();
+		this.$el.html(step3_template);
+	}
+});
+		
 

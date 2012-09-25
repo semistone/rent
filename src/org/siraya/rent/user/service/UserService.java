@@ -53,16 +53,19 @@ public class UserService implements IUserService {
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
     public Device getDevice(Device device){
     	String userId = device.getUserId();
-    	logger.debug("get device from database");
+    	logger.debug("get device from database user id "+userId+" device id "+device.getId());
     	Device tmp = deviceDao.getDeviceByDeviceIdAndUserId(device.getId(), userId);
     	if (tmp == null) {
     		logger.debug("device is null");
     		return null;
+    	} else {
+    		device = tmp;
     	}
-    	if (tmp.getStatus() == DeviceStatus.Removed.getStatus()) {
+    	if (device.getStatus() == DeviceStatus.Removed.getStatus()) {
     		logger.debug("device status is removed ");
     		return null;
     	}
+    	logger.debug("device status is "+device.getStatus());
     	if (device.getStatus() == DeviceStatus.Authed.getStatus()) {
     		//
     		// only authed device can get user info
