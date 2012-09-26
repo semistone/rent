@@ -6,7 +6,7 @@ $LAB.setOptions({BasePath:"../js/"})
 		}
     })
     .script(
-        "libs/jquery-1.5.1.min.js",
+        "//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js",
         "libs/jquery.i18n.properties-min.js",
         "libs/rent.common.js",
         "modules/user/namespace.user.js"
@@ -32,4 +32,6 @@ $LAB.setOptions({BasePath:"../js/"})
                     var register = new RENT.user.view.RegisterView({el:'#main',model:model}); 
             });
         });
-    });
+    }).script(
+        "//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"
+    );

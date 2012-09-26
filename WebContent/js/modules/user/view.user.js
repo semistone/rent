@@ -53,7 +53,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		this.$el.html(this.tmpl);
 		this.$el.find("#register_form").validate();
 		this.$el.find('#mobile_phone').rules('add', {
-			regex : /^\d{10,15}$/
+			regex : /^\+?\d{10,15}$/
 		});
 		//
 		// l10n translate
@@ -84,7 +84,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		if (mobile_phone.substring(0, 1) == '0') {
 			mobile_phone = country_code + mobile_phone.substring(1);
 		}else if (mobile_phone.substring(0, 1) == '+'){			
-			logger.debug('do nothing');
+			mobile_phone = mobile_phone.substring(1);
 		}else{
 			mobile_phone = country_code + mobile_phone;
 		}
@@ -95,8 +95,9 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			logger.debug('step1 success');
 			_this.step2();
 		};
-		var error = function(jqXHR, textStatus, errorThrown) {
-			logger.error('step1 error response:' + textStatus);
+		var error = function(model,resp) {
+			logger.error('step1 error response:' + resp.status);
+			$('#error_dialog').dialog();
 		};
 		this.model.save({
 			country_code : country_code,
