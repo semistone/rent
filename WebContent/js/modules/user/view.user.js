@@ -38,11 +38,11 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 				el : this.el
 			}).render();
 		}
-		
+		this.model.unbind('change');	
 	},
 	step2: function(){
 		logger.debug('render register view step2');
-		this.model.unbind('change');
+
 		new RENT.user.view.RegisterStep2View({
 			el : this.el,
 			model : this.model
@@ -97,7 +97,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		};
 		var error = function(model,resp) {
 			logger.error('step1 error response:' + resp.status);
-			$('#error_dialog').dialog();
+			RENT.simpleErrorDialog($.i18n.prop('general.error.500'),'');
 		};
 		this.model.save({
 			country_code : country_code,

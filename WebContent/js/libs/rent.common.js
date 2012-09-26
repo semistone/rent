@@ -62,7 +62,22 @@ var RENT = {
     		logger.debug("loading page hide");
     	    $(this).hide();
     	});  
-    }	
+    },
+    simpleErrorDialog:function(title,msg){
+		var dialog = $('#error_dialog');
+		dialog.text(msg);
+		$('#error_dialog').dialog({
+			title: title,
+			buttons : [ {
+				text : $.i18n.prop('general.OK'),
+				click : function() {
+					$(this).dialog("close");
+				}
+			} ],
+			resize : false,
+			modal : true
+		});
+    }
 }
 // initialize 
 $(function(){
