@@ -3,16 +3,26 @@
 //
 RENT.user.view.RegisterView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render', 'new_device_event', 'step1', 'step2');
+		_.bindAll(this, 'render', 'new_device_event', 'step1', 'step2','error');
 		this.$el = $(this.el);
 		this.model.bind('change',this.render);
-		this.model.fetch({
-			error: this.render // do render when fetch error
-		});
+		this.model.bind('error',this.error);
+		this.model.fetch();
 		$.validator.addMethod("regex", function(value, element, re) {
 			return re.test(value);
 		}, 'Format is wrong');
 
+	},
+	error :function(model,resp){
+		var status = resp.status;
+		if (status == 404) { // no such user, goto step1
+			this.render();			
+			return;
+		} else {
+			new RENT.user.view.ErrorView({
+				el : this.el
+			}).render();
+		}
 	},
 	render : function() {
 		var status =this.model.get('status')
@@ -171,3 +181,14 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 });
 		
 
+RENT.user.view.ErrorView = Backbone.View.extend({
+	render:function(){
+		var error_template = $('#tmpl_register_error').html();
+		this.$el.html(error_template);
+		//
+		// i18n
+		//
+		this.$el.find('#i18n_error').text(
+				$.i18n.prop('user.register.error'));
+	}
+});
