@@ -18,8 +18,9 @@ $LAB.setOptions({BasePath:"../js/"})
         }
     ).script(
         "libs/mustache-min.js",
-        "libs/underscore-min.js",
+        "libs/underscore.js",
     	"libs/backbone.js",
+    	'libs/jquery.validate.js',
     	"modules/user/model.user.js",
 		"modules/user/view.user.js"
     ).wait(function(){ 

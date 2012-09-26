@@ -1,69 +1,106 @@
+//
+// step1 view
+//
 RENT.user.view.RegisterView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render', 'new_device', 'step1','step2');
+		_.bindAll(this, 'render', 'new_device_event', 'step1', 'step2');
 		this.$el = $(this.el);
 		this.model.bind('change',this.render);
 		this.model.fetch({
-			error: this.render
+			error: this.render // do render when fetch error
 		});
+		$.validator.addMethod("regex", function(value, element, re) {
+			return re.test(value);
+		}, 'Format is wrong');
+
 	},
 	render : function() {
 		var status =this.model.get('status')
 		logger.debug("render user status:"+status);
 		if (status == undefined) {
+			logger.debug('render register view step1');
 			this.step1();
-		} else if (status == 0){
+		} else if (status == 0 || status == 1){
 			this.step2();
 		} else if (status == 2) {
-			logger.debug('user has authed show step3 page');
-			new RENT.user.view.RegisterStep3View({el:this.el}).render();
+			logger.debug('render register view step3');
+			new RENT.user.view.RegisterStep3View({
+				el : this.el
+			}).render();
 		}
 		
 	},
-	step1: function(){
-		this.tmpl = $('#tmpl_register_form').html();
-		logger.debug('render register view');
-		this.$el.html(this.tmpl);
-		this.$el.find('#register_button').val($.i18n.prop('user.register'));	
-	},
 	step2: function(){
+		logger.debug('render register view step2');
 		this.model.unbind('change');
-		var step2 = new RENT.user.view.RegisterStep2View({
+		new RENT.user.view.RegisterStep2View({
 			el : this.el,
 			model : this.model
+		}).render();
+	},
+	step1: function(){
+		this.tmpl = $('#tmpl_register_form').html();
+		this.$el.html(this.tmpl);
+		this.$el.find("#register_form").validate();
+		this.$el.find('#mobile_phone').rules('add', {
+			regex : /^\d{10,15}$/
 		});
-		step2.render();
+		//
+		// l10n translate
+		//
+		this.$el.find('#register_button').val($.i18n.prop('user.register'));
+		this.$el.find('#i18n_mobile_phone').text(
+				$.i18n.prop('user.register.mobile_phone'));
+		this.$el.find('#i18n_country_code').text(
+				$.i18n.prop('user.register.country_code'));	
+
 	},
+
 	events : {
-		"click #register_button" : "new_device"
+		"click #register_button" : "new_device_event"
 	},
-	new_device : function() {
+	
+	new_device_event : function() {
 		logger.debug('click new device button');
+        var formvalidate = this.$el.find("#register_form").valid();
+        if (!formvalidate) {
+        	logger.error('form validate fail');
+        	return;
+        }
 		var country_code = this.$el.find('#country_code').val();
 		var mobile_phone = this.$el.find('#mobile_phone').val();
+		// simple verify
 		if (mobile_phone.substring(0, 1) == '0') {
 			mobile_phone = country_code + mobile_phone.substring(1);
 		}else if (mobile_phone.substring(0, 1) == '+'){			
-			// do nothing
+			logger.debug('do nothing');
 		}else{
 			mobile_phone = country_code + mobile_phone;
 		}
 		var _this = this;
+
+		logger.debug('do save');
+		var success = function(model, response) {
+			logger.debug('step1 success');
+			_this.step2();
+		};
+		var error = function(jqXHR, textStatus, errorThrown) {
+			logger.error('step1 error response:' + textStatus);
+		};
 		this.model.save({
 			country_code : country_code,
 			mobile_phone : mobile_phone
 		}, {
-			success : function(model, response) {
-				logger.debug('step1 success');
-				_this.step2();
-			},
-			error : function(model, response) {
-				logger.error('step1 error response:' + response);
-			},
+			success : success,
+			error : error
 		});
 	},
 
 });
+
+//
+// step2 view 
+//
 RENT.user.view.RegisterStep2View = Backbone.View.extend({
 	events : {
 		"click #verify_button" : "do_verify"
@@ -92,6 +129,10 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		this.model.verify_mobile_auth_code(auth_code,{success:success, error:error});
 	}
 });
+
+//
+// step3 view
+//
 RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	render:function(){
 		var step3_template = $('#tmpl_register_step3').html();
