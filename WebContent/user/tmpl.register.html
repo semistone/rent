@@ -3,7 +3,7 @@
         <div id="bazingaContentInner">
                 <form id="register_form">
                 <div>
-                <h1>Step1</h1>
+                <h1 id="i18n_step1">Step1</h1>
                 <div class="bazingaDivider"></div>
                 <br />
                 <p><span id="i18n_country_code">Country Code </span><span><select name="country_code" id="country_code" class="required"><option  value="886">Taiwan +886</option></select></span> </p>
@@ -17,24 +17,26 @@
 <script id="tmpl_register_step2" type="x-tmpl-mustache">
 <div id="bazingaContent">
         <div id="bazingaContentInner">
-                <div class="bazingaThinColumn">
-                <h1>Step2</h1>
+                <form id="register_form_step2">
+                <div>
+                <h1 id="i18n_step2">Step2</h1>
                 <div class="bazingaDivider"></div>
                 <br />
-                <p><span>Please enter auth code </span><span><input type="text" id="auth_code"/></span> </p>
+                <p><span id="i18n_enter_auth_code">Please enter auth code </span><span><input type="text" class="required" id="auth_code"/></span> </p>
                 <p><span><strong><input type="button" id="verify_button" value="Verify"/></strong></span></p>
                 </div>
+                </form>
         </div>
 </div>
 </script>
 <script id="tmpl_register_step3" type="x-tmpl-mustache">
 <div id="bazingaContent">
         <div id="bazingaContentInner">
-                <div class="bazingaThinColumn">
-                <h1>Done</h1>
+                <div>
+                <h1 id="i18n_step3">Done</h1>
                 <div class="bazingaDivider"></div>
                 <br />
-                <p><span><strong>Your mobile auth has verify success.</strong></span> </p>
+                <p><span><strong id="i18n_auth_success">Your mobile auth has verify success.</strong></span> </p>
                 </div>
         </div>
 </div>

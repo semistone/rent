@@ -53,7 +53,8 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 				$.i18n.prop('user.register.mobile_phone'));
 		this.$el.find('#i18n_country_code').text(
 				$.i18n.prop('user.register.country_code'));	
-
+		this.$el.find('#i18n_step1').text(
+				$.i18n.prop('user.register.step1'));	
 	},
 
 	events : {
@@ -113,10 +114,31 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 	render : function() {
 		logger.debug('render register step2');
 		this.$el.html(this.tmpl);
+		// validate setting
+		this.$el.find("#register_form_step2").validate();
+		this.$el.find('#auth_code').rules('add', {
+			regex : /^\d{1,4}$/
+		});
+		//
+		// i18n
+		//
+		this.$el.find('#i18n_step2').text(
+				$.i18n.prop('user.register.step2'));
+		this.$el.find('#i18n_enter_auth_code').text(
+				$.i18n.prop('user.register.enter_auth_code'));
+		this.$el.find('#verify_button').val(
+				$.i18n.prop('user.register.verify'));
+		
+		
 	},
 	do_verify : function() {
 		var success, error,_this;
 		_this = this;
+        var formvalidate = this.$el.find("#register_form_step2").valid();
+        if (!formvalidate) {
+        	logger.error('form validate fail');
+        	return;
+        }
 		success = function(data, textStatus, jqXHR){
 			logger.debug("verify success "+textStatus);
 			new RENT.user.view.RegisterStep3View({el:_this.el}).render();
@@ -137,6 +159,14 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	render:function(){
 		var step3_template = $('#tmpl_register_step3').html();
 		this.$el.html(step3_template);
+		//
+		// i18n
+		//
+		this.$el.find('#i18n_step3').text(
+				$.i18n.prop('user.register.step3'));
+		this.$el.find('#i18n_auth_success').text(
+				$.i18n.prop('user.register.auth_success'));
+		
 	}
 });
 		
