@@ -7,11 +7,13 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
-
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.core.Response;
 
 import org.siraya.rent.pojo.User;
+import org.siraya.rent.utils.RentException;
+import org.siraya.rent.utils.RentException.RentErrorCode;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.service.IMobileAuthService;
 import org.siraya.rent.user.service.IUserService;
@@ -32,9 +34,10 @@ public class UserRestApi {
 	private IMobileAuthService mobileAuthService;
     private static Logger logger = LoggerFactory.getLogger(UserRestApi.class);
     private Device device;
+    
 	@POST
-	@Consumes("application/json")
-	@Produces("application/json")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response post(@HeaderParam("DEVICE_ID") String deviceId,
 			@HeaderParam("USER_ID") String userId,
 			Map<String,String> request){
@@ -52,7 +55,7 @@ public class UserRestApi {
 	}
 
 	@DELETE
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response delete(@HeaderParam("DEVICE_ID") String deviceId,
 			@HeaderParam("USER_ID") String userId){
 		HashMap<String,String> response = new HashMap<String,String>();
@@ -70,14 +73,13 @@ public class UserRestApi {
 	}
 	
 	@GET
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response get(@HeaderParam("DEVICE_ID") String deviceId,
-			@HeaderParam("USER_ID") String userId){
+			@HeaderParam("USER_ID") String userId) throws Exception{
 		logger.debug("call new device");
 		device = new Device();
-		if (deviceId == null || userId == null) {
-			logger.debug("device id or user id is null");
-			return Response.status(HttpURLConnection.HTTP_NOT_FOUND).build();			
+		if (deviceId == null || userId == null) {	
+			throw new RentException(RentErrorCode.ErrorNotFound, "device id or user id is null");
 		}
 
 		device.setUserId(userId);
@@ -95,8 +97,8 @@ public class UserRestApi {
      * @return
      */
 	@POST
-	@Consumes("application/json")
-	@Produces("application/json")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/new_device")
 	public Response newDevice(@HeaderParam("DEVICE_ID") String deviceId,
 			@HeaderParam("USER_ID") String userId,
@@ -153,8 +155,8 @@ public class UserRestApi {
 	 * @return
 	 */
 	@POST
-	@Consumes("application/json")
-	@Produces("application/json")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/send_mobile_auth_message")
 	public Response sendMobileAuthMessage(@HeaderParam("DEVICE_ID") String deviceId,
 			@HeaderParam("USER_ID") String userId){
@@ -176,7 +178,8 @@ public class UserRestApi {
 	 * @return
 	 */
 	@PUT
-	@Consumes("application/json")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/verify_mobile_auth_code")
 	public Response verifyMobileAuthCode(@HeaderParam("DEVICE_ID") String deviceId,
 			@HeaderParam("USER_ID") String userId,
