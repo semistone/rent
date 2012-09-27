@@ -124,7 +124,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		
 		mobileAuthService.verifyAuthCode(device.getId(),device.getUserId(), authCode);		
 	}
-	@Test(expected=junit.framework.AssertionFailedError.class)   
+	@Test(expected=org.siraya.rent.utils.RentException.class)   
 	public void testRetryMax()throws Exception{
 		try {
 			if (isMock) {
@@ -147,7 +147,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		}
 	}
 	
-	@Test(expected=junit.framework.AssertionFailedError.class)   
+	@Test(expected=org.siraya.rent.utils.RentException.class)   
 	public void testRetryMaxInVerify()throws Exception{
 		//expectation
 		if (isMock) {

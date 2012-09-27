@@ -39,6 +39,7 @@ public class TestUserService   extends AbstractJUnit4SpringContextTests{
 		user.setStatus(0);
 
 		device.setUser(user);
+		device.setId(deviceId);
 		if (isMock){
 			context = new JUnit4Mockery();
 			userDao = context.mock(IUserDAO.class);

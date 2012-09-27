@@ -16,6 +16,8 @@ import java.util.ResourceBundle;
 
 import junit.framework.Assert;
 import org.siraya.rent.user.dao.IUserDAO;
+import org.siraya.rent.utils.RentException;
+import org.siraya.rent.utils.RentException.RentErrorCode;
 @Service("mobileAuthService")
 public class MobileAuthService implements IMobileAuthService {
     @Autowired
@@ -33,7 +35,10 @@ public class MobileAuthService implements IMobileAuthService {
     public void sendAuthMessage(String deviceId,String userId)throws Exception{
     	logger.debug("device id is "+deviceId+" user id is "+userId);
 		Device device = deviceDao.getDeviceByDeviceIdAndUserId(deviceId,userId);
-		Assert.assertNotNull("device id not exist ",device);
+		if (device == null) {
+			throw new RentException(RentErrorCode.ErrorNotFound, "device id not exist");
+
+		}
 		device.setUser(userDao.getUserByUserId(device.getUserId()));
 		this.sendAuthMessage(device);
     }
@@ -50,7 +55,7 @@ public class MobileAuthService implements IMobileAuthService {
 		
 		if (device.getStatus() != DeviceStatus.Init.getStatus()
 				&& device.getStatus() != DeviceStatus.Authing.getStatus()) {
-			throw new Exception("device status isn't init or authing");
+			throw new RentException(RentErrorCode.ErrorStatusViolate, "device status isn't init or authing");
 		}
 		//
 		// check retry count
@@ -58,7 +63,10 @@ public class MobileAuthService implements IMobileAuthService {
 		int retryLimit = (Integer)applicationConfig.get("general").get("auth_retry_limit");
 		int currentRetry = device.getAuthRetry();
 		logger.info("current retry count is "+currentRetry);
-		Assert.assertTrue("auth retry too many time try "+currentRetry, retryLimit > currentRetry  );
+		if (retryLimit < currentRetry ) {
+			throw new RentException(RentErrorCode.ErrorExceedLimit,
+					"auth retry too many time try");
+		}
 		
 		User user = device.getUser();
 		Assert.assertNotNull("user can't be null",user);
@@ -78,7 +86,10 @@ public class MobileAuthService implements IMobileAuthService {
 		int ret =deviceDao.updateStatusAndRetryCount(device.getId(), device.getUserId(),
 				DeviceStatus.Authing.getStatus(),
 				DeviceStatus.Init.getStatus(), device.getModified());
-		Assert.assertEquals("update device status count is not 1",1, ret);
+		if (ret != 1) {
+			throw new RentException(RentErrorCode.ErrorStatusViolate,
+					"update device status count is not 1");
+		}
 
 		//
 		// send message through gateway.
@@ -112,7 +123,8 @@ public class MobileAuthService implements IMobileAuthService {
 		}
 		device.setModified(0); // reset modified to get current time.
 		if (device.getStatus() != DeviceStatus.Authing.getStatus()) {
-			throw new Exception("device auth status not match current status is "+device.getStatus());
+			throw new RentException(RentErrorCode.ErrorStatusViolate,
+					"device auth status not match current status is "+device.getStatus());
 		}
 		//
 		// if device modified + timeout  > current time then throw timeout exception.
@@ -121,7 +133,8 @@ public class MobileAuthService implements IMobileAuthService {
     	long time=java.util.Calendar.getInstance().getTimeInMillis()/1000;
 		int timeout = (Integer)applicationConfig.get("general").get("auth_verify_timeout");
     	if (time > device.getModified() + timeout ) {	
-    		throw new Exception("verify mobile auth code has been timeout");
+			throw new RentException(RentErrorCode.ErrorAuthExpired,
+					"verify mobile auth code has been timeout");
     	}
     	
 		//
@@ -131,7 +144,11 @@ public class MobileAuthService implements IMobileAuthService {
 		if(logger.isDebugEnabled()) {
 			logger.debug("retry limit is "+retryLimit+" current auth retry is "+device.getAuthRetry());
 		}
-		Assert.assertTrue("mobile verify auth retry too many time try:"+device.getAuthRetry()+" > "+retryLimit, device.getAuthRetry() <= retryLimit);
+		if (device.getAuthRetry() > retryLimit) {
+			throw new RentException(RentErrorCode.ErrorExceedLimit,
+					"mobile verify auth retry too many time try:"
+							+ device.getAuthRetry() + " > " + retryLimit);
+		}
 
 		//
 		// check auth code
@@ -145,8 +162,13 @@ public class MobileAuthService implements IMobileAuthService {
 			int ret =deviceDao.updateStatusAndRetryCount(device.getId(), device.getUserId(),
 					DeviceStatus.Authing.getStatus(),
 					DeviceStatus.Init.getStatus(), device.getModified());
-			Assert.assertEquals("update device status count is not 1",1, ret);
-			throw new Exception("device id "+device.getId()+" enter auth code not match "+authCode);
+			if (ret != 1) {
+				throw new RentException(RentErrorCode.ErrorStatusViolate,
+						"update device status count is not 1");
+			}
+			throw new RentException(RentErrorCode.ErrorAuthFail,
+					"device id "+device.getId()+" enter auth code not match");
+
 		}
 		
 		//
