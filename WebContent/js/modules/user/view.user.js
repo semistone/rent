@@ -170,6 +170,9 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 // step3 view
 //
 RENT.user.view.RegisterStep3View = Backbone.View.extend({
+	initialize : function() {
+		this.model.unbind();
+	},
 	render:function(){
 		var step3_template = $('#tmpl_register_step3').html();
 		this.$el.html(step3_template);
