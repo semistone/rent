@@ -64,6 +64,17 @@ public class MobileAuthService implements IMobileAuthService {
 		int currentRetry = device.getAuthRetry();
 		logger.info("current retry count is "+currentRetry);
 		if (retryLimit < currentRetry ) {
+			//
+			// retry too many times, change to suspend status.
+			//
+			logger.debug("update to suspend status");
+			int ret = deviceDao.updateStatusAndRetryCount(device.getId(),
+					device.getUserId(), DeviceStatus.Suspend.getStatus(),
+					DeviceStatus.Authing.getStatus(), device.getModified());
+			if (ret != 1) {
+				throw new RentException(RentErrorCode.ErrorStatusViolate,
+						"update device status count is not 1");
+			}
 			throw new RentException(RentErrorCode.ErrorExceedLimit,
 					"auth retry too many time try");
 		}

@@ -27,15 +27,25 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 	render : function() {
 		var status =this.model.get('status')
 		logger.debug("render user status:"+status);
-		if (status == undefined) {
+		switch (status) {
+		case undefined:
 			logger.debug('render register view step1');
 			this.step1();
-		} else if (status == 0 || status == 1){
+			break;
+		case 0:
+		case 1:
 			this.step2();
-		} else if (status == 2) {
+			break;
+		case 2:
 			logger.debug('render register view step3');
-			this.model.unbind();  
+			this.model.unbind();
 			new RENT.user.view.RegisterStep3View({
+				el : this.el
+			}).render();
+			break;
+		default: // show ooop
+			logger.error('user status is removed or suspend');
+			new RENT.user.view.ErrorView({
 				el : this.el
 			}).render();
 		}

@@ -4,7 +4,8 @@ public enum DeviceStatus {
 	Init(0),
 	Authing(1),
 	Authed(2),
-	Removed(3);
+	Removed(3),
+	Suspend(4);
 
 	private int status;	
 	
