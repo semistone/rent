@@ -10,7 +10,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		this.model.fetch();
 		$.validator.addMethod("regex", function(value, element, re) {
 			return re.test(value);
-		}, 'Format is wrong');
+		}, $.i18n.prop('rent.error.validate_format'));
 
 	},
 	error :function(model,resp){
@@ -34,14 +34,15 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			this.step2();
 		} else if (status == 2) {
 			logger.debug('render register view step3');
+			this.model.unbind();  
 			new RENT.user.view.RegisterStep3View({
 				el : this.el
 			}).render();
-		}	
+		}
 	},
 	step2: function(){
 		logger.debug('render register view step2');
-
+		this.model.unbind(); // before change view must unbind all event
 		new RENT.user.view.RegisterStep2View({
 			el : this.el,
 			model : this.model
@@ -63,7 +64,8 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		this.$el.find('#i18n_country_code').text(
 				$.i18n.prop('user.register.country_code'));	
 		this.$el.find('#i18n_step1').text(
-				$.i18n.prop('user.register.step1'));	
+				$.i18n.prop('user.register.step1'));
+		this.model.unbind(); // finish render 
 	},
 
 	events : {
@@ -117,11 +119,9 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		"click #verify_button" : "do_verify"
 	},
 	initialize : function() {
-		this.model.unbind();
 		this.tmpl = $('#tmpl_register_step2').html();
 		this.$el = $(this.el);
 		_.bindAll(this, 'render','do_verify');
-		this.model.bind('change',this.render);
 		this.model.bind('error',this.error);
 	},
 	render : function() {
@@ -152,9 +152,12 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
         	logger.error('form validate fail');
         	return;
         }
-		success = function(data, textStatus, jqXHR){
-			logger.debug("verify success "+textStatus);
-			new RENT.user.view.RegisterStep3View({el:_this.el}).render();
+		success = function(data, textStatus, jqXHR) {
+			logger.debug("verify success " + textStatus);
+			_this.model.unbind();
+			new RENT.user.view.RegisterStep3View({
+				el : _this.el
+			}).render();
 		};
 		var auth_code = this.$el.find('#auth_code').val();
 		logger.debug('click do verify button auth code is '+auth_code);
@@ -170,9 +173,6 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 // step3 view
 //
 RENT.user.view.RegisterStep3View = Backbone.View.extend({
-	initialize : function() {
-		this.model.unbind();
-	},
 	render:function(){
 		var step3_template = $('#tmpl_register_step3').html();
 		this.$el.html(step3_template);
