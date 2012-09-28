@@ -37,8 +37,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			new RENT.user.view.RegisterStep3View({
 				el : this.el
 			}).render();
-		}
-		this.model.unbind('change');	
+		}	
 	},
 	step2: function(){
 		logger.debug('render register view step2');
@@ -97,11 +96,11 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		};
 		var error = function(model,resp) {
 			logger.error('step1 error response:' + resp.status);
-			RENT.simpleErrorDialog($.i18n.prop('general.error.500'),'');
+			RENT.simpleErrorDialog(resp);
 		};
 		this.model.save({
-			country_code : country_code,
-			mobile_phone : mobile_phone
+			countryCode : country_code,
+			mobilePhone : mobile_phone
 		}, {
 			success : success,
 			error : error
@@ -118,9 +117,12 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		"click #verify_button" : "do_verify"
 	},
 	initialize : function() {
+		this.model.unbind();
 		this.tmpl = $('#tmpl_register_step2').html();
 		this.$el = $(this.el);
 		_.bindAll(this, 'render','do_verify');
+		this.model.bind('change',this.render);
+		this.model.bind('error',this.error);
 	},
 	render : function() {
 		logger.debug('render register step2');
@@ -154,12 +156,13 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 			logger.debug("verify success "+textStatus);
 			new RENT.user.view.RegisterStep3View({el:_this.el}).render();
 		};
-		error = function(jqXHR, textStatus, errorThrown){
-			logger.debug("verify fail "+textStatus);
-		};
 		var auth_code = this.$el.find('#auth_code').val();
 		logger.debug('click do verify button auth code is '+auth_code);
-		this.model.verify_mobile_auth_code(auth_code,{success:success, error:error});
+		this.model.verify_mobile_auth_code(auth_code,{success:success});
+	},
+	error :function(model,resp){
+		logger.error("verify fail ");
+		RENT.simpleErrorDialog(resp, '');
 	}
 });
 

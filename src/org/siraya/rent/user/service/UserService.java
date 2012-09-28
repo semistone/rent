@@ -8,6 +8,8 @@ import org.siraya.rent.user.dao.IUserDAO;
 import org.siraya.rent.user.dao.IVerifyEventDao;
 import org.siraya.rent.utils.EncodeUtility;
 import org.siraya.rent.utils.IApplicationConfig;
+import org.siraya.rent.utils.RentException;
+import org.siraya.rent.utils.RentException.RentErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +44,7 @@ public class UserService implements IUserService {
     	int ret =deviceDao.updateRemovedDeviceStatus(device.getId(),device.getUserId(),
     			device.getModified());
     	if (ret != 1) {
-    		throw new Exception("update count is not 1");
+    		throw new RentException(RentErrorCode.ErrorStatusViolate, "update count is not 1");
     	}
     }
     
@@ -56,14 +58,12 @@ public class UserService implements IUserService {
     	logger.debug("get device from database user id "+userId+" device id "+device.getId());
     	Device tmp = deviceDao.getDeviceByDeviceIdAndUserId(device.getId(), userId);
     	if (tmp == null) {
-    		logger.debug("device is null");
-    		return null;
+    		throw new RentException(RentErrorCode.ErrorNotFound, "device id not exist in database");
     	} else {
     		device = tmp;
     	}
     	if (device.getStatus() == DeviceStatus.Removed.getStatus()) {
-    		logger.debug("device status is removed ");
-    		return null;
+    		throw new RentException(RentErrorCode.ErrorRemoved, "device status is removed");
     	}
     	logger.debug("device status is "+device.getStatus());
     	if (device.getStatus() == DeviceStatus.Authed.getStatus()) {
@@ -93,10 +93,16 @@ public class UserService implements IUserService {
 		logger.debug("check cc code");
 		mobilePhone = mobilePhone.trim();
 		Map<String, Object> mobileCountryCode = applicationConfig.get("mobile_country_code");
-		Assert.assertTrue("cc not exist in mobile country code " + cc,
-				mobileCountryCode.containsKey(cc));
-		Assert.assertTrue("cc code not start with "+cc,
-				mobilePhone.startsWith(Integer.toString(cc)));
+
+		if (!mobileCountryCode.containsKey(cc)) {
+    		throw new RentException(RentErrorCode.ErrorCountryNotSupport, "cc not exist in mobile country code " + cc);
+
+		}
+		
+		if (!mobilePhone.startsWith(Integer.toString(cc))) {
+    		throw new RentException(RentErrorCode.ErrorInvalidParameter,"cc code not start with "+cc);			
+		}
+
 
 		//
 		// setup user object
@@ -145,13 +151,13 @@ public class UserService implements IUserService {
 		int maxDevice = ((Integer)applicationConfig.get("general").get("max_device_count")).intValue();
 		logger.debug("user id is "+device.getUserId()+" device count is "+count+" max device is "+maxDevice);
 		if (count > maxDevice) {
-			throw new Exception("current user have too many device");
+    		throw new RentException(RentErrorCode.ErrorExceedLimit, "current user have too many device");
 		}
 		//
 		// check user status
 		//
 		if (user.getStatus() == UserStatus.Remove.getStatus()) {
-			throw new Exception("user status is removed");
+    		throw new RentException(RentErrorCode.ErrorRemoved, "user status is removed");
 		}
 		//
 		// generate new device id
@@ -199,7 +205,7 @@ public class UserService implements IUserService {
     			//
     			// same email.
     			//
-    			throw new Exception("same email have been setted");
+        		throw new RentException(RentErrorCode.ErrorUpdateSameItem, "same email have been setted");
     		}
     		
     		//
@@ -213,7 +219,7 @@ public class UserService implements IUserService {
     		if (verifyEvent != null
 					&& verifyEvent.getStatus() == VerifyEvent.VerifyStatus.Authed
 							.getStatus()) {
-				throw new Exception("old email have been verified. can't reset email");
+        		throw new RentException(RentErrorCode.ErrorStatusViolate, "old email have been verified. can't reset email");
 			}
     	}
     	
@@ -257,7 +263,7 @@ public class UserService implements IUserService {
     	logger.debug("update login id and password in database");
     	int ret =userDao.updateUserLoginIdAndPassword(user);	
     	if (ret == 0 ) {
-    		throw new Exception("update cnt =0, only empty login id can be update");
+    		throw new RentException(RentErrorCode.ErrorCanNotOverwrite, "update cnt =0, only empty login id can be update");
     	}
 	}
 

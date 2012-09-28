@@ -1,7 +1,7 @@
 package org.siraya.rent.utils;
 
-public class RentException extends Exception {
-	//static final long serialVersionUID ; 
+public class RentException extends RuntimeException {
+	static final long serialVersionUID = 1L ; 
 	RentErrorCode errorCode;
 	/**
 	 * Exception error code
@@ -16,7 +16,12 @@ public class RentException extends Exception {
 		ErrorNotFound(4),
 		ErrorExceedLimit(5),
 		ErrorAuthExpired(6),
-		ErrorAuthFail(7);
+		ErrorAuthFail(7),
+		ErrorRemoved(8),
+		ErrorUpdateSameItem(9),
+		ErrorCountryNotSupport(10),
+		ErrorCanNotOverwrite(11),
+		ErrorInvalidParameter(12);
 		private int code;	
 		
 		

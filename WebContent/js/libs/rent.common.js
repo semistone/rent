@@ -63,7 +63,10 @@ var RENT = {
     	    $(this).hide();
     	});  
     },
-    simpleErrorDialog:function(title,msg){
+    simpleErrorDialog:function(resp,msg){
+		var resp = $.parseJSON(resp.responseText);
+		var title = $.i18n.prop('rent.error_msg.'+resp.errorCode);
+		logger.error('ajax response error message:'+resp.errorMsg);
 		var dialog = $('#error_dialog');
 		dialog.text(msg);
 		$('#error_dialog').dialog({

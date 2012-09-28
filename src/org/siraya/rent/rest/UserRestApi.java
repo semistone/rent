@@ -34,13 +34,19 @@ public class UserRestApi {
 	private IMobileAuthService mobileAuthService;
     private static Logger logger = LoggerFactory.getLogger(UserRestApi.class);
     private Device device;
-    
-	@POST
+    private static Map<String,String> OK;
+    public UserRestApi (){
+    	if (OK == null) {
+    		OK = new HashMap<String,String>();
+    		OK.put("status", "SUCCESS");
+    	}
+    }
+    @POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response post(@HeaderParam("DEVICE_ID") String deviceId,
 			@HeaderParam("USER_ID") String userId,
-			Map<String,String> request){
+			Map<String,String> request) throws Exception{
 		logger.debug("call new device");
 		Response response =  this.newDevice(deviceId,userId,request);
 		if (response.getStatus() == HttpURLConnection.HTTP_OK) {
@@ -57,19 +63,12 @@ public class UserRestApi {
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response delete(@HeaderParam("DEVICE_ID") String deviceId,
-			@HeaderParam("USER_ID") String userId){
-		HashMap<String,String> response = new HashMap<String,String>();
-		try{
-			device = new Device();
-			device.setUserId(userId);
-			device.setId(deviceId);
-			userService.removeDevice(device);
-			return Response.status(HttpURLConnection.HTTP_OK).entity(response).build();
-		}catch(Exception e){
-			logger.error("exception "+e.getMessage(),e);
-			response.put("err_msg", e.getMessage());
-			return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(e.getMessage()).build();	
-		}
+			@HeaderParam("USER_ID") String userId) throws Exception{
+		device = new Device();
+		device.setUserId(userId);
+		device.setId(deviceId);
+		userService.removeDevice(device);
+		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();		
 	}
 	
 	@GET
@@ -85,9 +84,6 @@ public class UserRestApi {
 		device.setUserId(userId);
 		device.setId(deviceId);
 		device = userService.getDevice(device);
-		if (device == null) {
-			return Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity(device).build();
-		}
 		return Response.status(HttpURLConnection.HTTP_OK).entity(device).build();
 	}
 	/**
@@ -102,36 +98,28 @@ public class UserRestApi {
 	@Path("/new_device")
 	public Response newDevice(@HeaderParam("DEVICE_ID") String deviceId,
 			@HeaderParam("USER_ID") String userId,
-			Map<String,String> request){
+			Map<String,String> request) throws Exception{
 		HashMap<String,String> response = new HashMap<String,String>();
 		try {
-			String cc=request.get("country_code");
-			String mobilePhone=request.get("mobile_phone");
+			String cc=request.get("countryCode");
+			String mobilePhone=request.get("mobilePhone");
 
 			User user =userService.newUserByMobileNumber(Integer.parseInt(cc), mobilePhone);
 			device = new Device();
 			device.setId(deviceId);
 			device.setUser(user);
-			userService.newDevice(device);
+			device = userService.newDevice(device);
 			
 			//
 			// set device id into cookie
 			//
 
-			response.put("device_id", device.getId());
-			response.put("user_id", device.getUserId());
 			NewCookie deviceCookie = this.createDeviceCookie(device);
 			
-			return Response.status(HttpURLConnection.HTTP_OK).entity(response).cookie(deviceCookie)
+			return Response.status(HttpURLConnection.HTTP_OK).entity(device).cookie(deviceCookie)
 					.build();
 		}catch(java.lang.NumberFormatException e){
-			logger.error("country code or mobile number must be number",e);
-			response.put("err_msg", "country code or mobile number must be number");
-			return Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity(response).build();						
-		}catch(Exception e) {
-			logger.error("exception "+e.getMessage(),e);
-			response.put("err_msg", e.getMessage());
-			return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(e.getMessage()).build();			
+			throw new RentException(RentErrorCode.ErrorInvalidParameter, "country code or mobile number must be number");
 		}
 	}
 
@@ -159,16 +147,10 @@ public class UserRestApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/send_mobile_auth_message")
 	public Response sendMobileAuthMessage(@HeaderParam("DEVICE_ID") String deviceId,
-			@HeaderParam("USER_ID") String userId){
-		HashMap<String,String> response = new HashMap<String,String>();
-		try {
-			mobileAuthService.sendAuthMessage(deviceId,userId);
-			return Response.status(HttpURLConnection.HTTP_OK).build();
-		}catch(Exception e) {
-			logger.error("exception "+e.getMessage(),e);
-			response.put("err_msg", e.getMessage());
-			return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(response).build();		
-		}
+			@HeaderParam("USER_ID") String userId) throws Exception{
+		mobileAuthService.sendAuthMessage(deviceId,userId);
+		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
+
 	}
 	
 	/**
@@ -183,17 +165,10 @@ public class UserRestApi {
 	@Path("/verify_mobile_auth_code")
 	public Response verifyMobileAuthCode(@HeaderParam("DEVICE_ID") String deviceId,
 			@HeaderParam("USER_ID") String userId,
-			Map<String,String> request) {
-		HashMap<String,String> response = new HashMap<String,String>();
-		try {
-			String authCode = request.get("auth_code");
-			mobileAuthService.verifyAuthCode(deviceId, userId,authCode);
-			return Response.status(HttpURLConnection.HTTP_OK).build();
-		} catch (Exception e) {
-			logger.error("exception " + e.getMessage(), e);
-			response.put("err_msg", e.getMessage());
-			return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(response).build();
-		}
+			Map<String,Object> request) throws Exception{
+		String authCode = (String)request.get("authCode");
+		mobileAuthService.verifyAuthCode(deviceId, userId, authCode);
+		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
 	}
 	
 	@GET

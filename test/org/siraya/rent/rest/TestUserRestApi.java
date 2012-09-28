@@ -53,6 +53,7 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 			context.checking(new Expectations() {
 				{
 					one(userService).newDevice(with(any(Device.class)));
+					will(returnValue(device));
 					one(userService).newUserByMobileNumber(cc, mobilePhone);
 					will(returnValue(user));
 				}
