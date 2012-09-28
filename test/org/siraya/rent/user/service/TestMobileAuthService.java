@@ -23,7 +23,9 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 	private Mockery context;
 	String deviceId= "123";
 	String userId= "456";
+	String mobilePhone="12313131";
 	Device device =null;
+	User user = new User();
 	private String authCode = "1234";	
 	private IDeviceDao deviceDao;
 	private IUserDAO userDao;
@@ -33,8 +35,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		if (isMock){
 			context = new JUnit4Mockery();
 		}
-		User user = new User();
-		user.setId("userid123");
+		user.setId(userId);
 		user.setCc("TW");
 		user.setLang("zh");
 		user.setStatus(0);
@@ -124,6 +125,51 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		
 		mobileAuthService.verifyAuthCode(device.getId(),device.getUserId(), authCode);		
 	}
+	
+	@Test 
+	public void testVerifyAuthCodeByMobilePhone(){
+		//expectation
+		if (isMock) {
+			device.setStatus(1);
+			context.checking(new Expectations() {
+				{
+					one(userDao).getUserByMobilePhone(mobilePhone);
+					will(returnValue(user));	
+				
+					one(deviceDao).getDeviceByUserIdAndStatusAuthing(userId);								
+					will(returnValue(device));
+
+					one(userDao).getUserByUserId(device.getUserId());
+					will(returnValue(device.getUser()));
+					
+					one(deviceDao)
+							.updateStatusAndRetryCount(
+									with(any(String.class)),
+									with(any(String.class)),
+									with(any(int.class)), 
+									with(any(int.class)),
+									with(any(long.class)));
+					will(returnValue(1));
+					one(deviceDao).getDeviceByDeviceIdAndUserId(device.getId(),device.getUserId());
+					will(returnValue(device));
+					
+
+					
+					one(userDao).updateUserStatus(
+							with(any(String.class)),
+							with(any(int.class)),
+							with(any(int.class)),
+							with(any(long.class)));
+					will(returnValue(1));
+			
+				}
+			});	
+		}
+				
+		mobileAuthService.verifyAuthCodeByMobilePhone(mobilePhone, authCode);		
+	}
+	
+	
 	@Test(expected=org.siraya.rent.utils.RentException.class)   
 	public void testRetryMax()throws Exception{
 		try {

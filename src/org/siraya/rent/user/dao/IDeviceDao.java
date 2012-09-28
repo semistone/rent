@@ -48,4 +48,8 @@ public interface IDeviceDao {
 
     @Update("update DEVICE set STATUS = '3', MODIFIED=#{modified} where ID = #{id} and USER_ID=#{userId}")    
     public int updateRemovedDeviceStatus(@Param("id")String id,@Param("userId")String userId,@Param("modified")Long modified);
+
+    @Select("select * from DEVICE where USER_ID=#{userId} and STATUS='1'") 
+    @ResultMap("rent.mapper.DeviceResultMap")
+    public Device getDeviceByUserIdAndStatusAuthing(String userId);
 }

@@ -132,6 +132,10 @@ public class MobileAuthService implements IMobileAuthService {
 		if (device.getUser() == null) {
 			device.setUser(userDao.getUserByUserId(device.getUserId()));			
 		}
+		_verifyAuthCode(device,authCode);
+	}
+
+	private void _verifyAuthCode(Device device,String  authCode){
 		device.setModified(0); // reset modified to get current time.
 		if (device.getStatus() != DeviceStatus.Authing.getStatus()) {
 			throw new RentException(RentErrorCode.ErrorStatusViolate,
@@ -199,5 +203,16 @@ public class MobileAuthService implements IMobileAuthService {
 		}
 		
 	}
-
+	
+	/**
+	 * 
+	 */
+	public void verifyAuthCodeByMobilePhone(String mobildPhone,String authCode){
+		User user = userDao.getUserByMobilePhone(mobildPhone);
+		if (user == null) {
+			throw new RentException(RentErrorCode.ErrorNotFound,"use not found");
+		}
+		Device device = deviceDao.getDeviceByUserIdAndStatusAuthing(user.getId());
+		_verifyAuthCode(device,authCode);
+	}
 }

@@ -8,6 +8,8 @@ public interface IMobileAuthService {
 	
 	public void verifyAuthCode(String deviceId,String userId,String authCode) throws Exception;
 	
+	public void verifyAuthCodeByMobilePhone(String mobilePhone,String authCode);
+	
 	void setDeviceDao(IDeviceDao deviceDao);
 
 	void setUserDao(IUserDAO userDao);
