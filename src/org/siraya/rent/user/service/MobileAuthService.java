@@ -212,7 +212,12 @@ public class MobileAuthService implements IMobileAuthService {
 		if (user == null) {
 			throw new RentException(RentErrorCode.ErrorNotFound,"use not found");
 		}
+		logger.debug("get device for user "+user.getId());
 		Device device = deviceDao.getDeviceByUserIdAndStatusAuthing(user.getId());
+		if (device == null) {
+			throw new RentException(RentErrorCode.ErrorNotFound,"device not found");			
+		}
+		device.setUser(user);
 		_verifyAuthCode(device,authCode);
 	}
 }
