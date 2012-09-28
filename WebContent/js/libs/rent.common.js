@@ -43,7 +43,7 @@ var RENT = {
     	if (callback == undefined) callback=function(){};
         $.i18n.properties({
             name: resFiles, //['xxx','yy']
-            path: extra_path + '../i18n/',
+            path: extra_path + 'i18n/',
             mode:'map', // "map" option is mandatory if your bundle keys contain Javascript Reserved Words, such as ' in string resource
             cache:true,
             language:lang,
@@ -63,14 +63,12 @@ var RENT = {
     	    $(this).hide();
     	});  
     },
-    simpleErrorDialog:function(resp,msg){
-		var resp = $.parseJSON(resp.responseText);
-		var title = $.i18n.prop('rent.error_msg.'+resp.errorCode);
-		logger.error('ajax response error message:'+resp.errorMsg);
+
+	simpleDialog : function(title, msg) {
 		var dialog = $('#error_dialog');
 		dialog.text(msg);
 		$('#error_dialog').dialog({
-			title: title,
+			title : title,
 			buttons : [ {
 				text : $.i18n.prop('general.OK'),
 				click : function() {
@@ -80,7 +78,13 @@ var RENT = {
 			resize : false,
 			modal : true
 		});
-    }
+	},
+    simpleErrorDialog:function(resp,msg){
+		var resp = $.parseJSON(resp.responseText);
+		var title = $.i18n.prop('rent.error_msg.' + resp.errorCode);
+		logger.error('ajax response error message:' + resp.errorMsg);
+		this.simpleDialog(title, msg);
+    },	
 }
 // initialize 
 $(function(){

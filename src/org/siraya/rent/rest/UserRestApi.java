@@ -142,7 +142,7 @@ public class UserRestApi {
 	 * @param deviceId
 	 * @return
 	 */
-	@POST
+	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/send_mobile_auth_message")

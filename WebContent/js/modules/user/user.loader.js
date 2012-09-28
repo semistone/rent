@@ -1,4 +1,4 @@
-$LAB.setOptions({BasePath:"../js/"})
+$LAB.setOptions({BasePath:"js/"})
     .script(function(){
 		var debug = /debug=1/;
 		if (debug.exec(window.location.href)) {
@@ -25,7 +25,7 @@ $LAB.setOptions({BasePath:"../js/"})
 		"modules/user/view.user.js"
     ).wait(function(){ 
         $(document).ready(function(){
-            RENT.loadTemplate("../user/tmpl.register.html",
+            RENT.loadTemplate("user/tmpl.register.html",
                 function(){
             	    logger.debug('new register view');
             	    var model = new RENT.user.model.UserModel({});

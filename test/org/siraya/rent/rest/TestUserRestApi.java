@@ -60,8 +60,8 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 			});
 		}
     	long time=java.util.Calendar.getInstance().getTimeInMillis();    	
-    	request.put("country_code", Integer.toString(cc));
-    	request.put("mobile_phone",mobilePhone);
+    	request.put("countryCode", Integer.toString(cc));
+    	request.put("mobilePhone",mobilePhone);
 		Response response = userRestApi.newDevice(this.deviceId,this.userId,request);
 		Assert.assertEquals(200, response.getStatus());
 	}
@@ -90,7 +90,7 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 			});
 		};
 		request.put("device_id", this.deviceId);
-		request.put("auth_code", this.authCode);
+		request.put("authCode", this.authCode);
 
 		Response response = userRestApi.verifyMobileAuthCode(deviceId, userId,request);
 		Assert.assertEquals(200, response.getStatus());
