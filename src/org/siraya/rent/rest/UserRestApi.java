@@ -46,7 +46,7 @@ public class UserRestApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response post(@HeaderParam("DEVICE_ID") String deviceId,
 			@HeaderParam("USER_ID") String userId,
-			Map<String,String> request) throws Exception{
+			Map<String,Object> request) throws Exception{
 		logger.debug("call new device");
 		Response response =  this.newDevice(deviceId,userId,request);
 		if (response.getStatus() == HttpURLConnection.HTTP_OK) {
@@ -98,11 +98,11 @@ public class UserRestApi {
 	@Path("/new_device")
 	public Response newDevice(@HeaderParam("DEVICE_ID") String deviceId,
 			@HeaderParam("USER_ID") String userId,
-			Map<String,String> request) throws Exception{
+			Map<String,Object> request) throws Exception{
 		HashMap<String,String> response = new HashMap<String,String>();
 		try {
-			String cc=request.get("countryCode");
-			String mobilePhone=request.get("mobilePhone");
+			String cc=(String)request.get("countryCode");
+			String mobilePhone=(String)request.get("mobilePhone");
 
 			User user =userService.newUserByMobileNumber(Integer.parseInt(cc), mobilePhone);
 			device = new Device();

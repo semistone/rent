@@ -1,12 +1,12 @@
 RENT.user.model.UserModel = Backbone.Model.extend({
 	url : '/rest/user/',
+	//
+	// verify mobile auth code
+	//
 	verify_mobile_auth_code:function(auth_code,options){
 		options = $.extend(options,{
-			url: this.url+'verify_mobile_auth_code',
-			silent: true
+			url: this.url+'verify_mobile_auth_code'
 		});
-		this.sync({
-			'authCode' : auth_code
-		}, options);
+		this.save('authCode',auth_code, options);
 	}
 });

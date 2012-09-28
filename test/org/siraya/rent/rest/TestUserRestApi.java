@@ -34,10 +34,10 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 	private String mobilePhone= "886234242342";
 	private Device device = new Device();
 	private User  user = new User();
-	private java.util.Map<String, String> request;
+	private java.util.Map<String, Object> request;
 	@Before
 	public void setUp(){
-		request = new java.util.HashMap<String,String>();
+		request = new java.util.HashMap<String,Object>();
 		if (isMock){
 			context = new JUnit4Mockery();
 			mobileAuthService = context.mock(IMobileAuthService.class);	
