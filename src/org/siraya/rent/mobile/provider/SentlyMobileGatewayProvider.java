@@ -28,6 +28,7 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService{
 	public void sendSMS(String to,String message) throws Exception{
 		Map<String,Object> setting=applicationConfig.get("sently");
 		logger.info("send sms to "+to+"\nmeesage:"+message+"\n");
+		message = java.net.URLEncoder.encode(message,"UTF-8");
 		if (setting.get("debug").equals(true) ) {
 			logger.info("send sms in debug mode don't send anything");
 			return;
@@ -38,9 +39,9 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService{
 		vars.put("to", to);
 		vars.put("text", message);
 		String result = restTemplate.getForObject(REQUEST_URI, String.class,vars);
-		if (result.startsWith("Error")) {
+		if (result.startsWith("Error:")) {
 			logger.debug("sently result is "+result);
-			int code = Integer.parseInt(result.substring(5, 6));
+			int code = Integer.parseInt(result.substring(6, 7));
 			throw new RentException(RentErrorCode.ErrorMobileGateway,"send sms fail "+this.errorMsg(code));
 		}
 	}

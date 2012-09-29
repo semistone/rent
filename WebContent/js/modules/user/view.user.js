@@ -164,7 +164,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 				RENT.simpleDialog('',$.i18n.prop('user.register.send_success'));
 			},
 			error : function(resp, text) {
-				RENT.simpleErrorDialog(resp);
+				RENT.simpleErrorDialog(resp,'');
 			}
 		});
 	},

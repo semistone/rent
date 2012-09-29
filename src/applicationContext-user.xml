@@ -18,5 +18,8 @@
            	http://www.springframework.org/schema/util/spring-util.xsd">
 
     <context:component-scan base-package="org.siraya.rent.utils;org.siraya.rent.user" />
-    <bean id="userRestApi" class="org.siraya.rent.rest.UserRestApi" />    
+    <bean id="userRestApi" class="org.siraya.rent.rest.UserRestApi" /> 
+    <bean id="adminRestApi" class="org.siraya.rent.rest.AdminRestApi" /> 
+
+       
 </beans>

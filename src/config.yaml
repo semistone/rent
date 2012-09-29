@@ -11,6 +11,7 @@ general:
     max_device_count: 3
     auth_retry_limit: 3
     auth_verify_timeout : 1800
+    admin_user: 00000000
 sently:
     username: semistone
     password: semistone
