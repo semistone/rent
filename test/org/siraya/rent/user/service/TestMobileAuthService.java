@@ -182,7 +182,11 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 
 						one(userDao).getUserByUserId(device.getUserId());
 						will(returnValue(device.getUser()));
-
+						one(deviceDao).updateStatusAndRetryCount(with(any(String.class)),
+								with(any(String.class)),
+								with(any(int.class)), 
+								with(any(int.class)),
+								with(any(long.class)));
 					}
 				});	
 			}

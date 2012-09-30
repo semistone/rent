@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.core.Response;
 
+import org.siraya.rent.filter.UserAuthorizeData;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
@@ -25,15 +26,18 @@ import java.util.Map;
 import java.util.HashMap;
 import javax.ws.rs.core.NewCookie;
 import java.net.HttpURLConnection;
-@Component
+@Component("userRestApi")
 @Path("/user")
 public class UserRestApi {
 	@Autowired
 	private IUserService userService;
 	@Autowired
 	private IMobileAuthService mobileAuthService;
-    private static Logger logger = LoggerFactory.getLogger(UserRestApi.class);
-    private Device device;
+
+	private UserAuthorizeData userAuthorizeData;
+
+
+	private static Logger logger = LoggerFactory.getLogger(UserRestApi.class);
     private static Map<String,String> OK;
     public UserRestApi (){
     	if (OK == null) {
@@ -44,16 +48,14 @@ public class UserRestApi {
     @POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response post(@HeaderParam("DEVICE_ID") String deviceId,
-			@HeaderParam("USER_ID") String userId,
-			Map<String,Object> request) throws Exception{
+	public Response post(Map<String,Object> request) throws Exception{
 		logger.debug("call new device");
-		Response response =  this.newDevice(deviceId,userId,request);
+		Response response =  this.newDevice(request);
 		if (response.getStatus() == HttpURLConnection.HTTP_OK) {
 			//
 			// send mobile auth message
 			//
-			Response response2 = this.sendMobileAuthMessage(device.getId(),device.getUserId());
+			Response response2 = this.sendMobileAuthMessage();
 			logger.debug("rebuild response");
 			response = Response.fromResponse(response).status(response2.getStatus()).build();
 		}
@@ -62,9 +64,9 @@ public class UserRestApi {
 
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response delete(@HeaderParam("DEVICE_ID") String deviceId,
-			@HeaderParam("USER_ID") String userId) throws Exception{
-		device = new Device();
+	public Response delete(String userId) throws Exception{
+		String deviceId = this.userAuthorizeData.getDeviceId();
+		Device device = new Device();
 		device.setUserId(userId);
 		device.setId(deviceId);
 		userService.removeDevice(device);
@@ -73,10 +75,11 @@ public class UserRestApi {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response get(@HeaderParam("DEVICE_ID") String deviceId,
-			@HeaderParam("USER_ID") String userId) throws Exception{
+	public Response get() throws Exception{
 		logger.debug("call new device");
-		device = new Device();
+		Device device = new Device();
+		String deviceId = this.userAuthorizeData.getDeviceId();
+		String userId = this.userAuthorizeData.getUserId();
 		if (deviceId == null || userId == null) {	
 			throw new RentException(RentErrorCode.ErrorNotFound, "device id or user id is null");
 		}
@@ -96,20 +99,23 @@ public class UserRestApi {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/new_device")
-	public Response newDevice(@HeaderParam("DEVICE_ID") String deviceId,
-			@HeaderParam("USER_ID") String userId,
-			Map<String,Object> request) throws Exception{
-		HashMap<String,String> response = new HashMap<String,String>();
+	public Response newDevice(Map<String,Object> request) throws Exception{
+		String deviceId = this.userAuthorizeData.getDeviceId();
 		try {
 			String cc=(String)request.get("countryCode");
 			String mobilePhone=(String)request.get("mobilePhone");
 
 			User user =userService.newUserByMobileNumber(Integer.parseInt(cc), mobilePhone);
-			device = new Device();
+			Device device = new Device();
 			device.setId(deviceId);
 			device.setUser(user);
 			device = userService.newDevice(device);
-			
+			//
+			// set user authroized data for send auth message next .
+			//
+			this.userAuthorizeData.setDeviceId(device.getId());
+			this.userAuthorizeData.setUserId(device.getUserId());
+
 			//
 			// set device id into cookie
 			//
@@ -146,8 +152,9 @@ public class UserRestApi {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/send_mobile_auth_message")
-	public Response sendMobileAuthMessage(@HeaderParam("DEVICE_ID") String deviceId,
-			@HeaderParam("USER_ID") String userId) throws Exception{
+	public Response sendMobileAuthMessage() throws Exception{
+		String deviceId = this.userAuthorizeData.getDeviceId();
+		String userId = this.userAuthorizeData.getUserId();
 		mobileAuthService.sendAuthMessage(deviceId,userId);
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
 
@@ -163,9 +170,9 @@ public class UserRestApi {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/verify_mobile_auth_code")
-	public Response verifyMobileAuthCode(@HeaderParam("DEVICE_ID") String deviceId,
-			@HeaderParam("USER_ID") String userId,
-			Map<String,Object> request) throws Exception{
+	public Response verifyMobileAuthCode(Map<String,Object> request) throws Exception{
+		String deviceId = this.userAuthorizeData.getDeviceId();
+		String userId = this.userAuthorizeData.getUserId();
 		String authCode = (String)request.get("authCode");
 		mobileAuthService.verifyAuthCode(deviceId, userId, authCode);
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
@@ -195,4 +202,12 @@ public class UserRestApi {
 	void setMobileAuthService(IMobileAuthService mobileAuthService) {
 		this.mobileAuthService = mobileAuthService;
 	}
+	
+    public UserAuthorizeData getUserAuthorizeData() {
+		return userAuthorizeData;
+	}
+	public void setUserAuthorizeData(UserAuthorizeData userAuthorizeData) {
+		this.userAuthorizeData = userAuthorizeData;
+	}
+
 }

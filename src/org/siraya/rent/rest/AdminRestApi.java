@@ -2,7 +2,6 @@ package org.siraya.rent.rest;
 import java.util.Map;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("adminRestApi")
 @Path("/admin")
 public class AdminRestApi {
     @Autowired

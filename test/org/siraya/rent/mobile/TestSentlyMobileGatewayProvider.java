@@ -67,7 +67,7 @@ public class TestSentlyMobileGatewayProvider {
 					will(returnValue(setting));
 					one(restTemplate).getForObject(with(any(String.class)),
 							with(any(Class.class)), with(any(HashMap.class)));
-					will(returnValue("Error1"));
+					will(returnValue("Error:1"));
 				}
 			});
 		}

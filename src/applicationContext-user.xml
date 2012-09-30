@@ -16,10 +16,16 @@
            	http://www.springframework.org/schema/context/spring-context.xsd
 			http://www.springframework.org/schema/util
            	http://www.springframework.org/schema/util/spring-util.xsd">
+    <bean id="userAuthorizeData" class="org.siraya.rent.filter.UserAuthorizeData" scope="request">
+        <aop:scoped-proxy/>
+    </bean>
+    <bean id="cookieExtractFilter" class="org.siraya.rent.filter.CookieExtractFilter" scope="singleton">
+        <property name="userAuthorizeData" ref="userAuthorizeData"/>
+    </bean>
+    <bean id="userRestApi" class="org.siraya.rent.rest.UserRestApi" scope="singleton">
+        <property name="userAuthorizeData" ref="userAuthorizeData"/>
+    </bean>
+    <context:component-scan base-package="org.siraya.rent.utils;org.siraya.rent.user;org.siraya.rent.rest;
+    org.siraya.rent.filter" />
 
-    <context:component-scan base-package="org.siraya.rent.utils;org.siraya.rent.user" />
-    <bean id="userRestApi" class="org.siraya.rent.rest.UserRestApi" /> 
-    <bean id="adminRestApi" class="org.siraya.rent.rest.AdminRestApi" /> 
-
-       
 </beans>

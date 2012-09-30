@@ -23,7 +23,12 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 		response.put("errorMsg", exception.getMessage());
 		response.put("errorCode",
 				Integer.toString(code.getStatus()));
-		return Response.status(mapToHttpStatusCode(code))
+
+		Response.Status status = mapToHttpStatusCode(code);
+		if (status == Response.Status.INTERNAL_SERVER_ERROR) {
+			logger.error("error",exception);
+		}
+		return Response.status(status)
 				.entity(response).type(MediaType.APPLICATION_JSON).build();
 	}
 	

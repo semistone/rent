@@ -14,7 +14,7 @@ import org.siraya.rent.user.service.IUserService;
 import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.pojo.User;
-
+import org.siraya.rent.filter.UserAuthorizeData;
 import javax.ws.rs.core.Response;
 
 import junit.framework.Assert;
@@ -44,6 +44,10 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 			userRestApi.setMobileAuthService(mobileAuthService);
 			userService = context.mock(IUserService.class);	
 			userRestApi.setUserService(userService);
+			UserAuthorizeData userAuthorizeData = new UserAuthorizeData();
+			userAuthorizeData.setUserId(userId);
+			userAuthorizeData.setDeviceId(deviceId);
+			userRestApi.setUserAuthorizeData(userAuthorizeData);
 			
 		}
 	}
@@ -62,7 +66,7 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
     	long time=java.util.Calendar.getInstance().getTimeInMillis();    	
     	request.put("countryCode", Integer.toString(cc));
     	request.put("mobilePhone",mobilePhone);
-		Response response = userRestApi.newDevice(this.deviceId,this.userId,request);
+		Response response = userRestApi.newDevice(request);
 		Assert.assertEquals(200, response.getStatus());
 	}
 
@@ -76,7 +80,7 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 			});
 		};
 		request.put("device_id", this.deviceId);
-		Response response = userRestApi.sendMobileAuthMessage(deviceId,userId);
+		Response response = userRestApi.sendMobileAuthMessage();
 		Assert.assertEquals(200, response.getStatus());
 	}
 	
@@ -92,7 +96,7 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 		request.put("device_id", this.deviceId);
 		request.put("authCode", this.authCode);
 
-		Response response = userRestApi.verifyMobileAuthCode(deviceId, userId,request);
+		Response response = userRestApi.verifyMobileAuthCode(request);
 		Assert.assertEquals(200, response.getStatus());
 	}
 }
