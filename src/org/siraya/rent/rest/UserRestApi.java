@@ -33,7 +33,8 @@ public class UserRestApi {
 	private IUserService userService;
 	@Autowired
 	private IMobileAuthService mobileAuthService;
-
+	@Autowired
+	private CookieUtils cookieUtils;
 	private UserAuthorizeData userAuthorizeData;
 
 
@@ -76,7 +77,7 @@ public class UserRestApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response get() throws Exception{
-		logger.debug("call new device");
+		logger.debug("call get device");
 		Device device = new Device();
 		String deviceId = this.userAuthorizeData.getDeviceId();
 		String userId = this.userAuthorizeData.getUserId();
@@ -120,7 +121,7 @@ public class UserRestApi {
 			// set device id into cookie
 			//
 
-			NewCookie deviceCookie = CookieUtils.createDeviceCookie(device);
+			NewCookie deviceCookie = cookieUtils.createDeviceCookie(device);
 			
 			return Response.status(HttpURLConnection.HTTP_OK).entity(device).cookie(deviceCookie)
 					.build();

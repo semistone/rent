@@ -9,13 +9,19 @@ import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import javax.ws.rs.core.MediaType;
 
 @Provider
+@Component
 public class RentExceptionExceptionMapper implements ExceptionMapper<RentException> {
     private static Logger logger = LoggerFactory.getLogger(RentExceptionExceptionMapper.class);
-	public RentExceptionExceptionMapper(){
+	@Autowired
+	private CookieUtils cookieUtils;
+    public RentExceptionExceptionMapper(){
 
 	}
 	
@@ -38,7 +44,7 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 		if (code == RentException.RentErrorCode.ErrorNullDeviceId) {
 			String id = Device.genId();
 			response.put("deviceId", id);
-			responseBuilder.cookie(CookieUtils.newDeviceCookie(id));
+			responseBuilder.cookie(cookieUtils.newDeviceCookie(id));
 		}
 		return responseBuilder.entity(response).build();
 	}

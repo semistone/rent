@@ -7,7 +7,9 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		this.$el = $(this.el);
 		this.model.bind('change',this.render);
 		this.model.bind('error',this.error);
-		this.model.fetch();
+		if (!this.model.get("from_step2")) {
+			this.model.fetch();			
+		}
 		$.validator.addMethod("regex", function(value, element, re) {
 			return re.test(value);
 		}, $.i18n.prop('rent.error.validate_format'));
@@ -60,7 +62,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 	},
 	step1: function(){
 		this.tmpl = $('#tmpl_register_form').html();
-		this.$el.html(this.tmpl);
+		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
 		this.$el.find("#register_form").validate();
 		this.$el.find('#mobile_phone').rules('add', {
 			regex : /^\+?\d{10,15}$/
@@ -104,6 +106,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		logger.debug('do save');
 		var success = function(model, response) {
 			logger.debug('step1 success');
+			_this.model.set({from_step1:true},{slient:true});
 			_this.step2();
 		};
 		var error = function(model,resp) {
@@ -127,17 +130,19 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 RENT.user.view.RegisterStep2View = Backbone.View.extend({
 	events : {
 		"click #verify_button" : 'do_verify',
-		"click #send_mobile_auth_message" : 'send_mobile_auth_message'
+		"click #send_mobile_auth_message" : 'send_mobile_auth_message',
+		'click #before_button' : 'go_back_step1'
 	},
 	initialize : function() {
 		this.tmpl = $('#tmpl_register_step2').html();
 		this.$el = $(this.el);
-		_.bindAll(this, 'render','do_verify');
+		_.bindAll(this, 'render','do_verify','go_back_step1');
 		this.model.bind('error',this.error);
 	},
 	render : function() {
 		logger.debug('render register step2');
-		this.$el.html(this.tmpl);
+		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
+
 		// validate setting
 		this.$el.find("#register_form_step2").validate();
 		this.$el.find('#auth_code').rules('add', {
@@ -152,6 +157,8 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 				$.i18n.prop('user.register.enter_auth_code'));
 		this.$el.find('#verify_button').val(
 				$.i18n.prop('user.register.verify'));
+		this.$el.find('#before_button').val(
+				$.i18n.prop('general.before'));
 		
 		this.$el.find('#send_mobile_auth_message').val(
 				$.i18n.prop('user.register.send_mobile_auth_message'));
@@ -190,6 +197,13 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 	error :function(model,resp){
 		logger.error("verify fail ");
 		RENT.simpleErrorDialog(resp, '');
+	},
+	go_back_step1 : function() {
+		this.model.set({from_step2:true, status:undefined},{silent:true});
+		new RENT.user.view.RegisterView({
+			el : this.el,
+			model : this.model
+		}).render();
 	}
 });
 

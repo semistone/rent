@@ -17,3 +17,5 @@ sently:
     username: semistone
     password: semistone
     debug: true
+keydb:
+    cookie: thebestsecretkey

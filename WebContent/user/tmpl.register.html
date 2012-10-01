@@ -12,7 +12,7 @@
                       <option  value="81">Japen +81</option>
                       <option  value="1">Unit State +1</option>
                 </select></span> </p>
-                <p><span id="i18n_mobile_phone">Mobile Phone Number </span><span><input type="text" name="mobile_phone" class="required" maxlength="15"  id="mobile_phone"/></span> </p>
+                <p><span id="i18n_mobile_phone">Mobile Phone Number </span><span><input type="text" name="mobile_phone" class="required" maxlength="15"  id="mobile_phone" value="{{mobilePhone}}"/></span> </p>
                 <p><span><strong><input type="button" id="register_button" value="Register"/></strong></span></p>
                 </div><!--bazingaThinColumn-->    
                 </form>
@@ -28,7 +28,8 @@
                 <div class="bazingaDivider"></div>
                 <br />
                 <p><span id="i18n_enter_auth_code">Please enter auth code </span><span><input type="text" class="required" id="auth_code"/></span> </p>
-                <p><span><strong><input type="button" id="verify_button" /></strong></span> 
+                <p>{{#from_step1}}<span><strong><input type="button" id="before_button" /></strong></span> {{/from_step1}}
+                   <span><strong><input type="button" id="verify_button" /></strong></span> 
                    <span><strong><input type="button" id="send_mobile_auth_message"/></strong></span></p>
                 </div>
                 </form>

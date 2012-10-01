@@ -1,6 +1,7 @@
 package org.siraya.rent.filter;
 
 
+import org.siraya.rent.rest.CookieUtils;
 import org.siraya.rent.user.service.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,10 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 	private IUserService userService;
 	@Autowired
 	private UserAuthorizeData userAuthorizeData;
+	@Autowired
+	private CookieUtils cookieUtils;
+	
+	
 	public UserAuthorizeData getUserAuthorizeData() {
 		return userAuthorizeData;
 	}
@@ -32,27 +37,25 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 	@Override
 	public ContainerRequest filter(ContainerRequest request) {
 		logger.debug("pass filter");
-		logger.debug("user service is "+userService);
 		Map<String,Cookie>cookies = request.getCookies();
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
 		if (cookies.containsKey("D")){
 			String value = cookies.get("D").getValue();
-		    String[] strings=value.split(":");
-		    int len = strings.length;
-		    if (len > 0){
-		    	logger.debug("set device id as "+strings[0]);
-			    headers.add("DEVICE_ID", strings[0]);	
-			    userAuthorizeData.setDeviceId(strings[0]);
-
-		    } 
-		    if (len > 1){
-		    	logger.debug("set user id as "+strings[1]);
-		    	headers.add("USER_ID", strings[1]);
-			    userAuthorizeData.setUserId(strings[1]);
-		    }
-
-		} 
-		if (!headers.containsKey("DEVICE_ID")) {
+			cookieUtils.extractDeviceCookie(value,userAuthorizeData);
+			if (userAuthorizeData.getDeviceId() != null)
+				headers.add("DEVICE_ID", userAuthorizeData.getDeviceId());
+			if (userAuthorizeData.getUserId() != null)
+				headers.add("USER_ID", userAuthorizeData.getUserId());    
+		} else {
+			if (headers.containsKey("DEVICE_ID")) {
+				userAuthorizeData.setDeviceId(headers.getFirst("DEVICE_ID"));				
+			}
+			if (headers.containsKey("USER_ID")) {
+				userAuthorizeData.setUserId(headers.getFirst("USER_ID"));				
+			}
+		}
+		
+		if (userAuthorizeData.getDeviceId() == null) {
 			throw new RentException(RentErrorCode.ErrorNullDeviceId, "no device cookie");			
 		}
 	    request.setHeaders((InBoundHeaders)headers);		

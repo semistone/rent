@@ -1,8 +1,37 @@
 package org.siraya.rent.utils;
  
+import java.security.Key;
 import java.security.MessageDigest; 
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import org.siraya.rent.utils.RentException;
+
+/**
+ * Encryp utility.
+ * 
+ * @author User
+ *
+ */
 public class EncodeUtility {
+	private static final String ALGO = "AES";
+	private final byte[] keyValue;
+	
+	public EncodeUtility(String keyValue) {
+		this.keyValue = keyValue.getBytes();
+	}
+	
+	private static byte[] hex2Byte(String str)
+    {
+       byte[] bytes = new byte[str.length() / 2];
+       for (int i = 0; i < bytes.length; i++)
+       {
+          bytes[i] = (byte) Integer
+                .parseInt(str.substring(2 * i, 2 * i + 2), 16);
+       }
+       return bytes;
+    }
+	
 	private static String byte2hex(byte[] b) {
 		String hs = "";
 		String stmp = "";
@@ -30,4 +59,52 @@ public class EncodeUtility {
 		return byte2hex(sha.digest());
 
 	}
+	
+
+	/**
+	 * encrypt
+	 * @param Data
+	 * @return
+	 * @throws Exception
+	 */
+	public String encrypt(String Data){
+		try {
+			Key key = generateKey();
+			Cipher c = Cipher.getInstance(ALGO);
+			c.init(Cipher.ENCRYPT_MODE, key);
+			byte[] encVal = c.doFinal(Data.getBytes());
+			String encryptedValue = byte2hex(encVal);
+			return encryptedValue;
+		}catch(Exception e){
+			throw new RentException(RentException.RentErrorCode.ErrorGeneral,e.getMessage());
+		}
+	}
+
+	/**
+	 * decrypt
+	 * @param encryptedData
+	 * @return
+	 * @throws Exception
+	 */
+	public  String decrypt(String encryptedData) {
+		try{
+			Key key = generateKey();
+			Cipher c = Cipher.getInstance(ALGO);
+			c.init(Cipher.DECRYPT_MODE, key);
+			byte[] decordedValue = hex2Byte(encryptedData);
+			byte[] decValue = c.doFinal(decordedValue);
+			String decryptedValue = new String(decValue);
+			return decryptedValue;
+		}catch(Exception e){
+			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
+					"decrypt data:"+encryptedData+" error:"+e.getMessage());
+
+		}
+	}
+
+	private  Key generateKey() throws Exception {
+		Key key = new SecretKeySpec(keyValue, ALGO);
+		return key;
+	}
+	
 }
