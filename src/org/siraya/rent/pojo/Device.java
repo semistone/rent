@@ -1,4 +1,6 @@
 package org.siraya.rent.pojo;
+import java.util.Random;
+
 import org.siraya.rent.pojo.User;
 import org.codehaus.jackson.annotate.JsonIgnore;
 public class Device {
@@ -15,6 +17,10 @@ public class Device {
 	private String lastLoginTime;
 	private User user;
 
+	public void genToken(){
+		Random r  = new Random();
+		this.setToken(String.format("%06d", r.nextInt(999999)));
+	}
 	public static String genId(){
 		return java.util.UUID.randomUUID().toString();
 	}

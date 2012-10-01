@@ -19,7 +19,8 @@ public class TestIDeviceDao  extends AbstractJUnit4SpringContextTests{
     	long time=java.util.Calendar.getInstance().getTimeInMillis();
     	String userId = "i"+time;
     	String loginId="d"+time;
-    	device.setId("id"+time);
+    	String id="id"+time;
+    	device.setId(id);
     	device.setUserId(userId);
 
     	device.setCreated(time/1000);
@@ -39,7 +40,8 @@ public class TestIDeviceDao  extends AbstractJUnit4SpringContextTests{
         //
         ret = deviceDao.getDeviceCountByUserId(userId);
         Assert.assertEquals(1, ret);
-        
+        ret = deviceDao.getDeviceCountByDeviceId(id);
+        Assert.assertEquals(1, ret);
     	Device device2=deviceDao.getDeviceByDeviceIdAndUserId(device.getId(),device.getUserId());
         Assert.assertEquals(device.getCreated(), device2.getCreated());
         Assert.assertEquals(1, device2.getAuthRetry());

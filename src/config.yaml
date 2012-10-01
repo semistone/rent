@@ -9,6 +9,7 @@ mobile_country_code:
        timezone: Beijing
 general:
     max_device_count: 3
+    max_user_per_device: 3
     auth_retry_limit: 3
     auth_verify_timeout : 1800
     admin_user: 00000000

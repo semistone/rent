@@ -154,6 +154,15 @@ public class UserService implements IUserService {
     		throw new RentException(RentErrorCode.ErrorExceedLimit, "current user have too many device");
 		}
 		//
+		// check how many user in this device
+		//
+		count = deviceDao.getDeviceCountByDeviceId(device.getId());
+		maxDevice = ((Integer)applicationConfig.get("general").get("max_user_per_device")).intValue();
+		logger.debug("device id is "+device.getId()+" user count is "+count+" max user is "+maxDevice);
+		if (count > maxDevice) {
+    		throw new RentException(RentErrorCode.ErrorExceedLimit, "current device have too many users");
+		}
+		//
 		// check user status
 		//
 		if (user.getStatus() == UserStatus.Remove.getStatus()) {
@@ -172,10 +181,8 @@ public class UserService implements IUserService {
 			logger.debug("old device exist");
 		} else {
 			// old device not exist
-
 			device.setStatus(DeviceStatus.Init.getStatus());
-			Random r = new Random();
-			device.setToken(String.valueOf(r.nextInt(9999)));
+			device.genToken();
 			deviceDao.newDevice(device);
 			logger.debug("insert device");
 

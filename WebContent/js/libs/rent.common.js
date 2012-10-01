@@ -87,7 +87,23 @@ var RENT = {
 		var title = $.i18n.prop('rent.error_msg.' + resp.errorCode);
 		logger.error('ajax response error message:' + resp.errorMsg);
 		this.simpleDialog(title, msg);
-    },	
+    },
+    getLang:function(){
+    	//
+    	// from url, cookie, user preference,browser default.
+    	//
+		var pattern = /lang=([^&]*)/;
+		var match=pattern.exec(window.location.href);
+		if (match) {
+			var language = match[1];
+	    	logger.debug('get lang from href, lang is '+language);
+			return language;
+		}
+		
+    	var language = window.navigator.userLanguage || window.navigator.language;
+    	logger.debug('get lang from browser default setting, lang is '+language);
+    	return language;
+    }
 }
 // initialize 
 $(function(){

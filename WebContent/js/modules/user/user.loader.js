@@ -12,7 +12,7 @@ $LAB.setOptions({BasePath:"js/"})
         "modules/user/namespace.user.js"
     ).wait(function(){
     		RENT.setDebugLogger();
-        	RENT.setLangRes('en-US', ['rent_user']);
+        	RENT.setLangRes(RENT.getLang(), ['rent_user']);
     		$(document).ready(function(){
             });
         }

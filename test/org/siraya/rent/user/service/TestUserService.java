@@ -72,7 +72,8 @@ public class TestUserService   extends AbstractJUnit4SpringContextTests{
 
 					one(deviceDao).getDeviceCountByUserId(userId);
 					will(returnValue(1));
-					
+					one(deviceDao).getDeviceCountByDeviceId(deviceId);
+					will(returnValue(1));					
 				}
 			});
 		}

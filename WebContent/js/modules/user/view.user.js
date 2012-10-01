@@ -141,7 +141,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		// validate setting
 		this.$el.find("#register_form_step2").validate();
 		this.$el.find('#auth_code').rules('add', {
-			regex : /^\d{1,4}$/
+			regex : /^\d{6}$/
 		});
 		//
 		// i18n
