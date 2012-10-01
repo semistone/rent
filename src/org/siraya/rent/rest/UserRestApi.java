@@ -120,7 +120,7 @@ public class UserRestApi {
 			// set device id into cookie
 			//
 
-			NewCookie deviceCookie = this.createDeviceCookie(device);
+			NewCookie deviceCookie = CookieUtils.createDeviceCookie(device);
 			
 			return Response.status(HttpURLConnection.HTTP_OK).entity(device).cookie(deviceCookie)
 					.build();
@@ -129,18 +129,7 @@ public class UserRestApi {
 		}
 	}
 
-	/**
-	 * create device cookie
-	 * @param device
-	 * @return
-	 */
-	private NewCookie createDeviceCookie(Device device) {
-		String value= device.getId()+":"+device.getUserId();
-		NewCookie deviceCookie = new NewCookie("D", value, "/",
-				null, 1, "no comment", 1073741823, // maxAge max int value/2
-				false);
-		return deviceCookie;
-	}
+
 	
 
 	/**

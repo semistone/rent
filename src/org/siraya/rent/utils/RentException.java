@@ -21,7 +21,8 @@ public class RentException extends RuntimeException {
 		ErrorUpdateSameItem(9),
 		ErrorCountryNotSupport(10),
 		ErrorCanNotOverwrite(11),
-		ErrorInvalidParameter(12);
+		ErrorInvalidParameter(12),
+		ErrorNullDeviceId(13);
 		private int code;	
 		
 		

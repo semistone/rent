@@ -6,7 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import org.siraya.rent.utils.RentException;
+import org.siraya.rent.utils.RentException.RentErrorCode;
 import java.util.Map;
 import javax.ws.rs.core.MultivaluedMap;
 import com.sun.jersey.spi.container.ContainerRequest;
@@ -31,7 +32,6 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 	@Override
 	public ContainerRequest filter(ContainerRequest request) {
 		logger.debug("pass filter");
-	    System.out.println(this.userAuthorizeData);
 		logger.debug("user service is "+userService);
 		Map<String,Cookie>cookies = request.getCookies();
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
@@ -51,6 +51,9 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 			    userAuthorizeData.setUserId(strings[1]);
 		    }
 
+		} 
+		if (!headers.containsKey("DEVICE_ID")) {
+			throw new RentException(RentErrorCode.ErrorNullDeviceId, "no device cookie");			
 		}
 	    request.setHeaders((InBoundHeaders)headers);		
 	    return request;

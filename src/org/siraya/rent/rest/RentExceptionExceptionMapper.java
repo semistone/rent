@@ -3,12 +3,15 @@ package org.siraya.rent.rest;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
+
+import org.siraya.rent.pojo.Device;
 import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import javax.ws.rs.core.MediaType;
+
 @Provider
 public class RentExceptionExceptionMapper implements ExceptionMapper<RentException> {
     private static Logger logger = LoggerFactory.getLogger(RentExceptionExceptionMapper.class);
@@ -28,8 +31,16 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 		if (status == Response.Status.INTERNAL_SERVER_ERROR) {
 			logger.error("error",exception);
 		}
-		return Response.status(status)
-				.entity(response).type(MediaType.APPLICATION_JSON).build();
+		Response.ResponseBuilder responseBuilder = Response.status(status).type(MediaType.APPLICATION_JSON);
+		//
+		// if no device id, then set device id cookie
+		//
+		if (code == RentException.RentErrorCode.ErrorNullDeviceId) {
+			String id = Device.genId();
+			response.put("deviceId", id);
+			responseBuilder.cookie(CookieUtils.newDeviceCookie(id));
+		}
+		return responseBuilder.entity(response).build();
 	}
 	
 	/**
@@ -40,6 +51,7 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 	private static Response.Status mapToHttpStatusCode(RentErrorCode code){
 		switch (code.getStatus()) {
 		case 4:// ErrorNotFound
+		case 13: // ErrorNullDeviceId
 			return Response.Status.NOT_FOUND;
 		case 12://ErrorInvalidParameter
 			return Response.Status.BAD_REQUEST;

@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 import junit.framework.Assert;
 import java.util.Locale;
-
+import org.siraya.rent.utils.RentException;
 import org.codehaus.jackson.annotate.JsonIgnore;
 public class User {
     private static  Pattern mobilePhonePattern = Pattern.compile("^\\d*$");
@@ -160,8 +160,10 @@ public class User {
      * @mbggenerated Mon Sep 10 16:50:24 CST 2012
      */
     public void setMobilePhone(String mobilePhone) {
-		Assert.assertTrue("phone number format error", mobilePhonePattern
-				.matcher(mobilePhone).find());
+    	if (!mobilePhonePattern.matcher(mobilePhone).find()) {
+    		throw new RentException(RentException.RentErrorCode.ErrorInvalidParameter,
+    				"phone number format error "+mobilePhone);
+    	}
         this.mobilePhone = mobilePhone == null ? null : mobilePhone.trim();
     }
 

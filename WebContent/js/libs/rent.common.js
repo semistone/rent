@@ -19,6 +19,9 @@ var logger = {
 		}
 }; 
 var RENT = {
+    CONSTANTS:{
+    	APIs_BASE_DIR: './'
+    },
     loadTemplate: function(templ_file_path, callback){
 	    $.get(templ_file_path, function(data) {
 	        $('body').append(data);

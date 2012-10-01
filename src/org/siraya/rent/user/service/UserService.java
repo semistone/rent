@@ -163,7 +163,7 @@ public class UserService implements IUserService {
 		// generate new device id
 		//
 		if (device.getId() == null) {
-			String id = java.util.UUID.randomUUID().toString();			
+			String id = Device.genId();			
 			device.setId(id);
 		}
 		Device oldDevice = deviceDao.getDeviceByDeviceIdAndUserId(

@@ -15,6 +15,10 @@ public class Device {
 	private String lastLoginTime;
 	private User user;
 
+	public static String genId(){
+		return java.util.UUID.randomUUID().toString();
+	}
+	
 	public String getId() {
 		return id;
 	}

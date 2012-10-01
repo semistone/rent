@@ -1,5 +1,5 @@
 RENT.user.model.UserModel = Backbone.Model.extend({
-	url : 'rest/user/',
+	url : RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/',
 	//
 	// verify mobile auth code
 	//
