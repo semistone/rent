@@ -238,6 +238,10 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		},function(){
 			$(this).removeClass('focus');
 		})
+		//
+		// animation affect.
+		//
+		this.$el.find('#i18n_auth_success').fadeOut(3000);
 	},
 	name_device_popup:function(){
 		logger.debug('click name device popup');
