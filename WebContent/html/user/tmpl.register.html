@@ -43,8 +43,19 @@
                 <h1 id="i18n_step3">Done</h1>
                 <div class="bazingaDivider"></div>
                 <br />
-                <p><span><strong id="i18n_auth_success">Your mobile auth has verify success.</strong></span> </p>
+                <span><h2><strong class="success" id="i18n_auth_success"></strong></h2></span>
                 </div>
+  				<section class="menuSection">
+  	    		    <h2 id="i18n_register_manage_tool"></h2>
+	  				<article id='name_device_button' class="menuItem">  				
+                        <h3 id="i18n_named_my_devices"></h3>
+	    				<div class="bazingaClear"></div>
+	    			</article>
+     				<article class="menuItem">  				
+                        <a href="menu.html"><h3 id="i18n_show_my_devices"></h3></a>
+	    				<div class="bazingaClear"></div>
+	    			</article>    
+			</section>
         </div>
 </div>
 </script>
@@ -59,5 +70,16 @@
                 <p><span><strong id="i18n_error_msg"></strong></span> </p>
                 </div>
         </div>
+</div>
+</script>
+
+<script id="tmpl_dialog_form" type="x-tmpl-mustache">
+<div id="dialog-form" title="">
+<form>
+<fieldset>
+	<label id="i18n_name" for="name"></label>
+	<input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" /><p>
+</fieldset>
+</form>
 </div>
 </script>

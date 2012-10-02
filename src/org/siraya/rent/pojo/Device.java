@@ -99,7 +99,8 @@ public class Device {
 	public void setAuthRetry(int authRetry) {
 		this.authRetry = authRetry;
 	}	
-
+	
+	@JsonIgnore
 	public User getUser() {
 		return user;
 	}

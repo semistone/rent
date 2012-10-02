@@ -15,5 +15,12 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 			url : this.url + 'send_mobile_auth_message'
 		});
 		Backbone.sync("update",this, options);
+	},
+	name_device : function(name,options){
+		this.set('name',name,{silent:true});
+		options = $.extend(options, {
+			url : this.url + 'name_device'
+		});
+		Backbone.sync("update",this, options);	
 	}
 });

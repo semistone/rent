@@ -61,7 +61,8 @@ input:invalid, textarea:invalid { background-color: #f0dddd; }
 table { border-collapse: collapse; border-spacing: 0; }
 td { vertical-align: top; }
 
-
+.success {border: 1px solid; margin: 10px 0px; padding:5px 5px 5px 30px;  }
+.focus{background-color: #FFBABA;}
 /* ==|== primary styles =====================================================
    Author: Bazina Designs www.bazingadesigns.com/en
    ========================================================================== */

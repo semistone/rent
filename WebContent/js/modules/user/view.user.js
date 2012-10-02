@@ -42,7 +42,8 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			logger.debug('render register view step3');
 			this.model.unbind();
 			new RENT.user.view.RegisterStep3View({
-				el : this.el
+				el : this.el,
+				model: this.model
 			}).render();
 			break;
 		default: // show ooop
@@ -187,7 +188,8 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 			logger.debug("verify success " + textStatus);
 			_this.model.unbind();
 			new RENT.user.view.RegisterStep3View({
-				el : _this.el
+				el : _this.el,
+				model: _this.model
 			}).render();
 		};
 		var auth_code = this.$el.find('#auth_code').val();
@@ -211,6 +213,10 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 // step3 view
 //
 RENT.user.view.RegisterStep3View = Backbone.View.extend({
+	
+	events : {
+		"click #name_device_button" : 'name_device_popup'
+	},
 	render:function(){
 		var step3_template = $('#tmpl_register_step3').html();
 		this.$el.html(step3_template);
@@ -221,7 +227,57 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 				$.i18n.prop('user.register.step3'));
 		this.$el.find('#i18n_auth_success').text(
 				$.i18n.prop('user.register.auth_success'));
+		this.$el.find('#i18n_show_my_devices').text(
+				$.i18n.prop('user.register.show_my_devices'));		
+		this.$el.find('#i18n_register_manage_tool').text(
+				$.i18n.prop('user.register.register_manage_tool'));	
+		this.$el.find('#i18n_named_my_devices').text(
+				$.i18n.prop('user.register.named_my_devices'));	
+		$('.menuItem').hover(function(){
+			$(this).addClass('focus');
+		},function(){
+			$(this).removeClass('focus');
+		})
+	},
+	name_device_popup:function(){
+		logger.debug('click name device popup');
+		var template = $('#tmpl_dialog_form').html();
+		this.$el.append(template);
+		//
+		// i18n
+		//
+		this.$el.find('#i18n_name').text(
+				$.i18n.prop('general.name'));
+		this.$el.find('#dialog-form').attr('title',
+				$.i18n.prop('user.register.name_device_title'));
 		
+		var _this = this;
+		var myButtons = {};
+		myButtons[$.i18n.prop('general.save')] = function(){
+			logger.debug('click name device popup save');
+			var name = $('#name').val();
+			logger.debug('name is '+name);
+			var _dialog = this;
+			_this.model.name_device(name, {
+				success : function() {
+					logger.debug('click name device popup save success');
+					$(_dialog).dialog("close");
+				},
+				error : function() {
+					logger.debug('click name device popup save error');
+					alert('error');
+				}
+			});
+		};
+		myButtons[$.i18n.prop('general.cancel')] = function(){
+			$( this ).dialog( "close" );
+		}
+		$('#dialog-form').dialog({
+			height: 300,
+			width: 350,
+			modal: true,
+			buttons: myButtons
+		});
 	}
 });
 		

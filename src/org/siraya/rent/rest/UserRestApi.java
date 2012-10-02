@@ -168,6 +168,15 @@ public class UserRestApi {
 		mobileAuthService.verifyAuthCode(deviceId, userId, authCode);
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
 	}
+
+	@PUT
+	@Path("/name_device")
+	public Response nameDevice(Map<String,Object> request){
+		String name = (String)request.get("name");
+		
+		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();		
+	}
+
 	
 	@GET
 	@Path("/test")
@@ -185,6 +194,7 @@ public class UserRestApi {
 		return Response.status(HttpURLConnection.HTTP_OK).entity("OK").cookie(lastVisited).build();
 	}
 
+	
 	void setUserService(IUserService userService) {
 		this.userService = userService;
 	}
