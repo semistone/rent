@@ -9,19 +9,25 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.PathParam;
+import org.siraya.rent.pojo.Device;
+import org.siraya.rent.filter.UserAuthorizeData;
+import org.siraya.rent.user.service.IUserService;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import org.siraya.rent.utils.RentException;
 @Component("adminRestApi")
 @Path("/admin")
 public class AdminRestApi {
     @Autowired
     private IApplicationConfig applicationConfig;
     private static Logger logger = LoggerFactory.getLogger(AdminRestApi.class);
-
+	@Autowired
+	private UserAuthorizeData userAuthorizeData;
+	@Autowired
+	private IUserService userService;
     public AdminRestApi(){
     	logger.debug("new admin rest api");
     }
@@ -37,4 +43,26 @@ public class AdminRestApi {
 		response.put("flag", new Boolean(flag));
     	return Response.status(HttpURLConnection.HTTP_OK).entity(response).build();
     }
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/show_token")
+	public Response show_token(){
+		String deviceId = userAuthorizeData.getDeviceId();
+		String userId = userAuthorizeData.getUserId();
+		if (userId == null) {
+			throw new RentException(RentException.RentErrorCode.ErrorInvalidParameter,"user id is null");
+		}
+		if (!applicationConfig.get("general").get("debug").equals(Boolean.TRUE)) {
+			throw new RentException(RentException.RentErrorCode.ErrorPermissionDeny,"only support in debug mode");
+		}
+		Device device = new Device();
+		device.setId(deviceId);
+		device.setUserId(userId);
+		device = userService.getDevice(device);
+		
+		HashMap<String,String> response = new HashMap<String,String>();
+		response.put("token", device.getToken());
+		return Response.status(HttpURLConnection.HTTP_OK).entity(response).build();
+	}
 }

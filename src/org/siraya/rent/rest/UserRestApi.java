@@ -35,6 +35,7 @@ public class UserRestApi {
 	private IMobileAuthService mobileAuthService;
 	@Autowired
 	private CookieUtils cookieUtils;
+	@Autowired
 	private UserAuthorizeData userAuthorizeData;
 
 

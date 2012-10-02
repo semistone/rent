@@ -23,7 +23,8 @@ public class RentException extends RuntimeException {
 		ErrorCanNotOverwrite(11),
 		ErrorInvalidParameter(12),
 		ErrorNullDeviceId(13),
-		ErrorGeneral(14);
+		ErrorGeneral(14),
+		ErrorPermissionDeny(15);
 		private int code;	
 		
 		
