@@ -19,6 +19,7 @@ public class TestCookieUtils  extends AbstractJUnit4SpringContextTests{
 	public void testNewCookie(){
 		NewCookie cookie = cookieUtils.newDeviceCookie("test");
 	}
+	
 	@Test 	
 	public void testNewCookie2()throws Exception{
 		Device device = new Device();
@@ -31,6 +32,12 @@ public class TestCookieUtils  extends AbstractJUnit4SpringContextTests{
 		UserAuthorizeData userAuthorizeData=new UserAuthorizeData();
 		cookieUtils.extractDeviceCookie(deviceCookie, userAuthorizeData);
 		Assert.assertEquals(deviceId, userAuthorizeData.getDeviceId());
+	}
+	
+	@Test
+	public void testRemoveCookie(){
+		NewCookie cookie =cookieUtils.removeDeviceCookie();
+		Assert.assertEquals(-1, cookie.getMaxAge());
 	}
 
 }

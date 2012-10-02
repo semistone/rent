@@ -46,6 +46,10 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 			response.put("deviceId", id);
 			responseBuilder.cookie(cookieUtils.newDeviceCookie(id));
 		}
+		if (code == RentException.RentErrorCode.ErrorCookieFormat) {
+			responseBuilder.cookie(cookieUtils.removeDeviceCookie());
+		}
+
 		return responseBuilder.entity(response).build();
 	}
 	

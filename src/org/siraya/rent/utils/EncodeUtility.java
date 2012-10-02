@@ -2,10 +2,13 @@ package org.siraya.rent.utils;
  
 import java.security.Key;
 import java.security.MessageDigest; 
+import java.util.Map;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import org.siraya.rent.utils.RentException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Encryp utility.
@@ -13,12 +16,17 @@ import org.siraya.rent.utils.RentException;
  * @author User
  *
  */
+@Service("encodeUtility")
 public class EncodeUtility {
 	private static final String ALGO = "AES";
-	private final byte[] keyValue;
-	
-	public EncodeUtility(String keyValue) {
-		this.keyValue = keyValue.getBytes();
+
+    @Autowired
+    private IApplicationConfig applicationConfig;
+    
+
+
+	public EncodeUtility() {
+		
 	}
 	
 	private static byte[] hex2Byte(String str)
@@ -67,9 +75,9 @@ public class EncodeUtility {
 	 * @return
 	 * @throws Exception
 	 */
-	public String encrypt(String Data){
+	public String encrypt(String Data,String keyName){
 		try {
-			Key key = generateKey();
+			Key key = generateKey(keyName);
 			Cipher c = Cipher.getInstance(ALGO);
 			c.init(Cipher.ENCRYPT_MODE, key);
 			byte[] encVal = c.doFinal(Data.getBytes());
@@ -86,9 +94,9 @@ public class EncodeUtility {
 	 * @return
 	 * @throws Exception
 	 */
-	public  String decrypt(String encryptedData) {
+	public  String decrypt(String encryptedData,String keyName) {
 		try{
-			Key key = generateKey();
+			Key key = generateKey(keyName);
 			Cipher c = Cipher.getInstance(ALGO);
 			c.init(Cipher.DECRYPT_MODE, key);
 			byte[] decordedValue = hex2Byte(encryptedData);
@@ -102,9 +110,18 @@ public class EncodeUtility {
 		}
 	}
 
-	private  Key generateKey() throws Exception {
+	private  Key generateKey(String keyName) throws Exception {
+    	Map<String,Object> setting = applicationConfig.get("keydb");
+    	byte[] keyValue =((String)setting.get(keyName)).getBytes();
 		Key key = new SecretKeySpec(keyValue, ALGO);
 		return key;
 	}
 	
+	public IApplicationConfig getApplicationConfig() {
+		return applicationConfig;
+	}
+
+	public void setApplicationConfig(IApplicationConfig applicationConfig) {
+		this.applicationConfig = applicationConfig;
+	}
 }

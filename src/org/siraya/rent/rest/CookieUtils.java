@@ -3,36 +3,24 @@ package org.siraya.rent.rest;
 import javax.ws.rs.core.NewCookie;
 import org.siraya.rent.filter.UserAuthorizeData;
 import org.siraya.rent.pojo.Device;
-import org.siraya.rent.utils.IApplicationConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.siraya.rent.utils.EncodeUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
+import org.siraya.rent.utils.RentException;
 @Service("cookieUtils")
 public class CookieUtils {
-    @Autowired
-    private IApplicationConfig applicationConfig;
+	@Autowired
     private EncodeUtility encodeUtility;
     private boolean isInit = false;
     private static Logger logger = LoggerFactory.getLogger(CookieUtils.class);
+    private final static String keyName="cookie";
 
-    private void init(){
-    	if (this.isInit) {
-    		return;
-    	}
-    	Map<String,Object> setting = applicationConfig.get("keydb");
-    	String key=(String)setting.get("cookie");
-    	encodeUtility = new EncodeUtility(key);
-    	this.isInit= true;
-    }
-    
     public NewCookie createDeviceCookie(Device device){
-    	init();
+
 		String value= device.getId()+":"+device.getUserId();
-		value = encodeUtility.encrypt(value);
+		value = encodeUtility.encrypt(value, keyName);
 		logger.debug("cookie value is "+value);
 		NewCookie deviceCookie = new NewCookie("D", value, "/",
 				null, 1, "no comment", 1073741823, // maxAge max int value/2
@@ -41,19 +29,29 @@ public class CookieUtils {
 	}
 	
     public  NewCookie newDeviceCookie(String Id){    	
-    	init(); // temp solution
     	String value= Id+":";
-		value = encodeUtility.encrypt(value);
+		value = encodeUtility.encrypt(value,keyName);
 		logger.debug("cookie value is "+value);
 		NewCookie deviceCookie = new NewCookie("D", value, "/",
 				null, 1, "no comment", 1073741823, // maxAge max int value/2
 				false);
 		return deviceCookie;	
 	}
+	
+    public  NewCookie removeDeviceCookie(){    	
+		NewCookie deviceCookie = new NewCookie("D", "", "/",
+				null, 1, "remove this cookie", -1, 
+				false);
+		return deviceCookie;	
+	} 
     
     public void extractDeviceCookie(String deviceCookie,UserAuthorizeData userAuthorizeData){
-    	init(); // temp solution
-    	deviceCookie = encodeUtility.decrypt(deviceCookie);
+    	try{
+    		deviceCookie = encodeUtility.decrypt(deviceCookie,keyName);
+    	}catch (RentException e){
+    		throw new RentException(RentException.RentErrorCode.ErrorCookieFormat,
+    				"unknown cookie format");
+    	}
     	String[] strings=deviceCookie.split(":");
 	    int len = strings.length;
 	    if (len > 0){
