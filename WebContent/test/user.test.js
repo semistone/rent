@@ -17,7 +17,8 @@ asyncTest('test get null user and return 404', function(assert) {
 
 
 asyncTest('test new device', function(assert) {
-	$.cookie("D", "test_device",{path:'/'});
+	var test_device_cookie_value="B0559903B6F1A374BA0F1AEC8CBC6C6B9D688F00D39C706C082258C3C6C5A00F"
+	$.cookie("D", test_device_cookie_value,{path:'/'});
 	var user = new RENT.user.model.UserModel();
 	options = {
 		success:function(){
