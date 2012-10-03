@@ -2,8 +2,8 @@
 define([
   'jQuery',
   'logger',
-  'modules/user/model.user',
-  'modules/user/view.user',
+  './model.user',
+  './view.user',
   'RentCommon'
 ], function($, logger, UserModel, RegisterView, RENT){
   var initialize = function(){

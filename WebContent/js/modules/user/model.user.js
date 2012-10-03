@@ -2,7 +2,7 @@ define([
   'jQuery',
   'Backbone',
   'RentCommon',
-  'modules/user/namespace.user'
+  './namespace.user'
 ], function($, Backbone, RENT) {
 RENT.user.model.UserModel = Backbone.Model.extend({
 	url : RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/',

@@ -2,8 +2,8 @@
 define([
   'jQuery',
   'logger',
-  'modules/backyard/model.backyard',
-  'modules/backyard/view.backyard',
+  './model.backyard',
+  './view.backyard',
   'RentCommon'
 ], function($, logger, BackyardModel, BackyardView, RENT){
   var initialize = function(){

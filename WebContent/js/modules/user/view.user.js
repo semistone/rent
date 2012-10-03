@@ -9,7 +9,7 @@ define([
   'RentCommon',
   'logger',
   'text!../../../html/user/tmpl.register.html',
-  'modules/user/namespace.user'
+  './namespace.user'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
 $('body').append(template);	
