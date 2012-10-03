@@ -10,7 +10,9 @@ require.config({
     jQueryUI: 'libs/jquery-ui/jquery-ui',
     Mustache: 'libs/mustache/mustache',
     logger:   'libs/log4javascript/log4javascript',
-    RentCommon:  'libs/rent-common/rent-common'
+    RentCommon:  'libs/rent-common/rent-common',
+    Validate: 'libs/jquery-validate/jquery-validate',
+    i18N:'libs/jquery-i18n/jquery-i18n'
   }
 
 });
@@ -18,12 +20,12 @@ require.config({
 require([
   // Load our app module and pass it to our definition function
   'modules/user/user.loader',
-  'order!libs/jquery/jquery-min',
+  'order!jQuery',
   'order!jQueryUI',
-  'order!libs/underscore/underscore-min',
-  'order!libs/backbone/backbone-min',
-  'order!libs/jquery-validate/jquery-validate',
-  'order!libs/jquery-i18n/jquery-i18n'
+  'order!Underscore',
+  'order!Backbone',
+  'order!Validate',
+  'order!i18N'
 ], function(User){
   // The "app" dependency is passed in as "App"
   // Again, the other dependencies passed in are not "AMD" therefore don't pass a parameter to this function
