@@ -1,23 +1,9 @@
-var logger = {
-		debug: function(msg) {
+define([
+  'jQuery',
+  'logger',
+  'jQueryUI'
+], function($, logger) {
 
-		},
-		error: function(msg) {
-
-		},
-		warn: function(msg) {
-
-		},
-		info: function(msg) {
-			
-		},
-		fatal: function(msg) {
-		
-		},
-		trace: function(msg){
-		
-		}
-}; 
 var RENT = {
     CONSTANTS:{
     	APIs_BASE_DIR: './'
@@ -30,16 +16,7 @@ var RENT = {
 	            }
 	    });
 	},
-	// called in LAB.js loader
-	setDebugLogger:function(){	
-		if (typeof log4javascript == "undefined") {			
-			return;
-		} else {
-			logger = log4javascript.getDefaultLogger();
-			// enabled or disabled all logging
-			log4javascript.setEnabled(true);		
-		}
-	},
+
     // set language and resource file and css for locale
     setLangRes: function (lang, resFiles, extraPath,callback) { // extraPath maybe '../'
     	var extra_path = (extraPath ? extraPath : '');
@@ -54,9 +31,9 @@ var RENT = {
             callback: callback
         });     
     },
-    bindLoadingPage:function(){
+    bindLoadingPage:function(loading_id){
     	logger.debug('bind loading page to #supersized-loader');
-    	$("#supersized-loader")
+    	$(loading_id)
     	.ajaxStart(function(){
     		logger.debug("loading page show");
     		$(this).show();
@@ -65,6 +42,7 @@ var RENT = {
     		logger.debug("loading page hide");
     	    $(this).hide();
     	});  
+    	
     },
 
 	simpleDialog : function(title, msg) {
@@ -105,7 +83,5 @@ var RENT = {
     	return language;
     }
 }
-// initialize 
-$(function(){
-	RENT.bindLoadingPage();
+return RENT;
 });
