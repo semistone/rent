@@ -1,6 +1,20 @@
 //
 // step1 view
 //
+define([
+  'jQuery',
+  'Underscore',
+  'Backbone',
+  'Mustache',
+  'RentCommon',
+  'logger',
+  'text!../../../html/user/tmpl.register.html',
+  'modules/user/namespace.user'
+  ], function($, _, Backbone, Mustache, RENT, logger,template) {
+
+$('body').append(template);	
+RENT.bindLoadingPage("#supersized-loader");
+
 RENT.user.view.RegisterView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'new_device_event', 'step1', 'step2','error');
@@ -296,4 +310,7 @@ RENT.user.view.ErrorView = Backbone.View.extend({
 		this.$el.find('#i18n_error').text(
 				$.i18n.prop('user.register.error'));
 	}
+});
+
+return RENT.user.view.RegisterView;
 });
