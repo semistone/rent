@@ -83,5 +83,8 @@ var RENT = {
     	return language;
     }
 }
+$(function(){
+	RENT.bindLoadingPage("#supersized-loader");
+});
 return RENT;
 });

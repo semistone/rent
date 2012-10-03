@@ -11,9 +11,7 @@ define([
   'text!../../../html/backyard/tmpl.backyard.html',
   './namespace.backyard'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
-
 $('body').append(template);	
-RENT.bindLoadingPage("#supersized-loader");
 
 RENT.backyard.view.MainView = Backbone.View.extend({
 	events : {

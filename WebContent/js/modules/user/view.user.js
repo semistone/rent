@@ -13,7 +13,6 @@ define([
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
 $('body').append(template);	
-RENT.bindLoadingPage("#supersized-loader");
 
 RENT.user.view.RegisterView = Backbone.View.extend({
 	initialize : function() {
