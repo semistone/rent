@@ -5,7 +5,9 @@ define([
   './namespace.user'
 ], function($, Backbone, RENT) {
 RENT.user.model.UserModel = Backbone.Model.extend({
-	url : RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/',
+	initialize:function(){
+		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/';
+	},
 	//
 	// verify mobile auth code
 	//

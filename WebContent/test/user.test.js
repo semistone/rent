@@ -1,3 +1,11 @@
+//
+// step1 view
+//
+define([
+  'jQuery',
+  'RentCommon',
+  'modules/user/model.user'
+  ], function($,RENT) {
 module("User");
 RENT.CONSTANTS.APIs_BASE_DIR = '../';
 
@@ -31,4 +39,6 @@ asyncTest('test new device', function(assert) {
 		}
 	}
 	user.save({mobilePhone:'886'+Math.ceil(new Date().getTime()/1000), countryCode:'886'},options);
+});
+
 });

@@ -4,19 +4,35 @@
     <title>User Module Smoke Test Suite</title>
     <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.10.0.css" type="text/css" media="screen">
     <script type="text/javascript" src="http://code.jquery.com/qunit/qunit-1.10.0.js"></script>
-    <script type="text/javascript" src="../js/libs/json2.js"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
-    <script type="text/javascript" src=" http://cdn.jsdelivr.net/jquery.cookie/1.2/jquery.cookie.js"></script>
-    <script type="text/javascript" src="../js/libs/underscore-min.js"></script>
-    <script type="text/javascript" src="../js/libs/backbone-min.js"></script>
-    <script type="text/javascript" src="../js/libs/log4javascript.js"></script>
-    <script type="text/javascript" src="../js/libs/rent.common.js"></script>
-   
-    <!-- Your tests file goes here -->
-    <script type="text/javascript" src="user.test.js"></script>
-    <script type="text/javascript" src="../js/modules/user/namespace.user.js"></script>
-    <script type="text/javascript" src="../js/modules/user/model.user.js"></script>
+    <script type="text/javascript" src="../js/libs/require/require.js"></script>
+<script type="text/javascript">
 
+require.config({
+      baseUrl: '../js',
+	  paths: {
+	    jQuery: 'libs/jquery/jquery',
+	    Underscore: 'libs/underscore/underscore',
+	    Backbone: 'libs/backbone/backbone',
+	    jQueryUI: 'libs/jquery-ui/jquery-ui',
+	    logger:   'libs/log4javascript/log4javascript',
+	    jQueryCookie: 'libs/jquery-cookie/jquery-cookie',
+	    RentCommon:  'libs/rent-common/rent-common'
+	  }
+
+	});
+
+	require([
+	  // Load our app module and pass it to our definition function
+	  '../test/user.test',
+	  'order!jQuery',
+	  'order!jQueryCookie',
+	  'order!Underscore',
+	  'order!Backbone'
+	], function(Test){
+
+	});
+
+  </script>    
 </head>
 <body>
     <h1 id="qunit-header">User Module Smoke Test Suite</h1>
