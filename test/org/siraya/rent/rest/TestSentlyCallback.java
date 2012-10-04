@@ -31,7 +31,7 @@ public class TestSentlyCallback {
 	@Test   
 	public void testReceiveMessage()throws Exception{
 		String from = "+3123123131";
-		String text = "xx @2332 xx";
+		String text = "xx R:2332 xx";
 		if (isMock) {
 			context.checking(new Expectations() {
 				{

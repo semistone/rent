@@ -52,7 +52,7 @@ public class TestSentlyMobileGatewayProvider {
 				}
 			});
 		}
-    	mobileGatewayService.sendSMS("886936072281", "Hello world");
+    	mobileGatewayService.sendSMS("886936072281", "中文測試");
     }
     
     

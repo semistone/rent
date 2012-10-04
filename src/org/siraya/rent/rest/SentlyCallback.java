@@ -21,7 +21,7 @@ public class SentlyCallback {
 	@Autowired
 	private IMobileAuthService mobileAuthService;
     private static Logger logger = LoggerFactory.getLogger(SentlyCallback.class);
-    private static  Pattern mobilePhonePattern = Pattern.compile("@(\\d*)");
+    private static  Pattern mobilePhonePattern = Pattern.compile("R:(\\d*)");
  
     
     @GET
@@ -30,10 +30,10 @@ public class SentlyCallback {
 		Matcher  matcher =mobilePhonePattern.matcher(text);
 		String authCode;
 		if(matcher.find(0)){
-			authCode = matcher.group(0).substring(1);
+			authCode = matcher.group(0).substring(2);
 			logger.debug("auth code is "+authCode);
 		}else{
-			throw new RentException(RentErrorCode.ErrorInvalidParameter,"can not match @ + digits");
+			throw new RentException(RentErrorCode.ErrorInvalidParameter,"can not match R: + digits");
 		}
 
 		if (from.trim().substring(0, 1).equals("+")) {
