@@ -16,7 +16,7 @@ public class Authorizer implements SecurityContext {
         this.principal = new Principal() {
 
             public String getName() {
-                return user.username;
+                return user.getUserId();
             }
         };
     }
