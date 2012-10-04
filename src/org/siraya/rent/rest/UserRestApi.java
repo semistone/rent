@@ -173,7 +173,11 @@ public class UserRestApi {
 	@Path("/name_device")
 	public Response nameDevice(Map<String,Object> request){
 		String name = (String)request.get("name");
-		
+		Device device = new Device();
+		device.setId(this.userAuthorizeData.getDeviceId());
+		device.setUserId(this.userAuthorizeData.getUserId());
+		device.setName(name);
+		userService.nameDevice(device);
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();		
 	}
 

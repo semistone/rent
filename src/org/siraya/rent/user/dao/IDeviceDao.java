@@ -59,4 +59,7 @@ public interface IDeviceDao {
     @Select("select * from DEVICE where USER_ID=#{userId} and STATUS='1' order by MODIFIED desc") 
     @ResultMap("rent.mapper.DeviceResultMap")
     public Device getDeviceByUserIdAndStatusAuthing(String userId);
+    
+    @Update("update DEVICE set NAME = #{name}, MODIFIED=#{modified} where ID = #{id} and USER_ID=#{userId}")
+    public int nameDevice(Device device);
 }

@@ -62,6 +62,8 @@ public interface IUserService {
 	 */
 	public void updateUserInfo(User user);
 	
+	public void nameDevice(Device device);
+	
 	public void setUserDao(IUserDAO dao);
 
 	public void setDeviceDao(IDeviceDao dao);

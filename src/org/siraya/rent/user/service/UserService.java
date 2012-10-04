@@ -274,6 +274,12 @@ public class UserService implements IUserService {
     	}
 	}
 
+    public void nameDevice(Device device) {
+    	int ret = this.deviceDao.nameDevice(device);
+    	if (ret == 0 ) {
+    		throw new RentException(RentErrorCode.ErrorCanNotOverwrite, "update cnt =0, only empty login id can be update");
+    	}
+    }
 	@Override
 	public void verifyEmail(String userId, String authCode) {
 		// TODO Auto-generated method stub
