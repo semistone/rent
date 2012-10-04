@@ -18,8 +18,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.siraya.rent.utils.RentException;
+import javax.annotation.security.RolesAllowed;
 @Component("adminRestApi")
 @Path("/admin")
+@RolesAllowed({"admin"})
 public class AdminRestApi {
     @Autowired
     private IApplicationConfig applicationConfig;

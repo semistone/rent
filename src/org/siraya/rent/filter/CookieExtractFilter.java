@@ -46,6 +46,11 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		if (this.isExclude(path)){
 			return request;
 		}
+		//
+		// test security context
+		//
+		userAuthorizeData.request = request;
+		
 		logger.debug("pass filter");
 		Map<String,Cookie>cookies = request.getCookies();
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
@@ -67,6 +72,10 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		
 		if (userAuthorizeData.getDeviceId() == null) {
 			throw new RentException(RentErrorCode.ErrorNullDeviceId, "no device cookie");			
+		}
+		if (userAuthorizeData.getUserId() != null) {
+			logger.debug("set security context");
+			request.setSecurityContext(new Authorizer(userAuthorizeData));
 		}
 	    request.setHeaders((InBoundHeaders)headers);		
 	    return request;
