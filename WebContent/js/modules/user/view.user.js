@@ -258,43 +258,9 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	},
 	name_device_popup:function(){
 		logger.debug('click name device popup');
-		var template = $('#tmpl_dialog_form').html();
-		this.$el.append(template);
-		//
-		// i18n
-		//
-		this.$el.find('#i18n_name').text(
-				$.i18n.prop('general.name'));
-		this.$el.find('#dialog-form').attr('title',
-				$.i18n.prop('user.register.name_device_title'));
-		
-		var _this = this;
-		var myButtons = {};
-		myButtons[$.i18n.prop('general.save')] = function(){
-			logger.debug('click name device popup save');
-			var name = $('#name').val();
-			logger.debug('name is '+name);
-			var _dialog = this;
-			_this.model.name_device(name, {
-				success : function() {
-					logger.debug('click name device popup save success');
-					$(_dialog).dialog("close");
-				},
-				error : function() {
-					logger.debug('click name device popup save error');
-					alert('error');
-				}
-			});
-		};
-		myButtons[$.i18n.prop('general.cancel')] = function(){
-			$( this ).dialog( "close" );
-		}
-		$('#dialog-form').dialog({
-			height: 300,
-			width: 350,
-			modal: true,
-			buttons: myButtons
-		});
+		new RENT.user.view.NameDeviceView({
+			el : this.el,
+			model : this.model}).render();
 	}
 });
 		
@@ -311,5 +277,62 @@ RENT.user.view.ErrorView = Backbone.View.extend({
 	}
 });
 
+RENT.user.view.NameDeviceView = Backbone.View.extend({
+	initialize : function() {
+		this.tmpl = $('#tmpl_dialog_form').html();
+		_.bindAll(this, 'render','save');
+		this.$el.find("#register_form").validate();
+	},
+	save:function(_this){
+		logger.debug('click name device popup save');
+        var formvalidate = _this.find('#dialog_form').valid();
+        if (!formvalidate) {
+        	logger.error('form validate fail');
+        	return;
+        }
+		var name = this.$el.find('#name').val();
+		logger.debug('name is '+name);
+		this.model.name_device(name, {
+			success : function() {
+				logger.debug('click name device popup save success');
+				_this.dialog("close");
+			},
+			error : function() {
+				logger.debug('click name device popup save error');
+				alert('error');
+			}
+		});
+		
+	},
+	render:function(){
+		this.$el.append(this.tmpl);
+		//
+		// i18n
+		//
+		this.$el.find('#i18n_name').text(
+				$.i18n.prop('general.name'));
+		this.$el.find('#dialog_form_block').attr('title',
+				$.i18n.prop('user.register.name_device_title'));
+		logger.debug(this.$el.html());
+		
+		var _this = this;
+		var myButtons = {};
+		myButtons[$.i18n.prop('general.save')] = function(){
+			_this.save($(this));
+		};
+		myButtons[$.i18n.prop('general.cancel')] = function(){
+			$(this).dialog( "close" );
+		};
+		
+		this.$el.find('#dialog_form_block').dialog({
+			height: 300,
+			width: 350,
+			modal: true,
+			buttons: myButtons
+		});
+
+	}
+	
+});
 return RENT.user.view.RegisterView;
 });

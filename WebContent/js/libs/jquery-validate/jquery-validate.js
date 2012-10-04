@@ -1,3 +1,3 @@
-define(['order!libs/jquery-validate/jquery.validate.min'], function(){
+define(['order!libs/jquery-validate/jquery.validate'], function(){
 
 });
