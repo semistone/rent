@@ -3,7 +3,7 @@ package org.siraya.rent.utils;
 import org.junit.Test;
 import org.junit.Before;
 import java.util.Map;
-
+import java.util.List;
 import junit.framework.Assert;
 public class TestConfig {
 	ApplicationConfig config;
@@ -22,5 +22,10 @@ public class TestConfig {
 	public void testGetGeneralSetting(){
 		int retryLimit = (Integer)config.get("general").get("auth_retry_limit");
 		Assert.assertEquals(3, retryLimit);
+	}
+	@Test 
+	public void testGetFilterExclude(){
+		List<String> exclude =  (List<String>)config.get("filter").get("exclude");		
+		Assert.assertEquals("^/rest/sently_callback", exclude.get(0));
 	}
 }

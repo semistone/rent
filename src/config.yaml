@@ -7,6 +7,8 @@ mobile_country_code:
        country: CN
        lang: zh
        timezone: Beijing
+filter:
+    exclude: ['^sently_callback']
 general:
     max_device_count: 3
     max_user_per_device: 3
