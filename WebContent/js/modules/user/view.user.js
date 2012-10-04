@@ -281,16 +281,19 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 	initialize : function() {
 		this.tmpl = $('#tmpl_dialog_form').html();
 		_.bindAll(this, 'render','save');
-		this.$el.find("#register_form").validate();
 	},
 	save:function(_this){
 		logger.debug('click name device popup save');
+		_this.find("#dialog_form").validate();
+		_this.find('#device_name').rules('add', {
+			regex : /^[^\<\(\)]*$/
+		});
         var formvalidate = _this.find('#dialog_form').valid();
         if (!formvalidate) {
         	logger.error('form validate fail');
         	return;
         }
-		var name = this.$el.find('#name').val();
+		var name = $('#device_name').val();
 		logger.debug('name is '+name);
 		this.model.name_device(name, {
 			success : function() {
@@ -313,7 +316,7 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 				$.i18n.prop('general.name'));
 		this.$el.find('#dialog_form_block').attr('title',
 				$.i18n.prop('user.register.name_device_title'));
-		logger.debug(this.$el.html());
+
 		
 		var _this = this;
 		var myButtons = {};
