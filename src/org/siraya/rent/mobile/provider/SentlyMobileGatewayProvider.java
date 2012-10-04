@@ -28,7 +28,7 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService{
 	public void sendSMS(String to,String message) throws Exception{
 		Map<String,Object> setting=applicationConfig.get("sently");
 		logger.info("send sms to "+to+"\nmeesage:"+message+"\n");
-		//message = java.net.URLEncoder.encode(message,"UTF-8");
+
 		if (setting.get("debug").equals(true) ) {
 			logger.info("send sms in debug mode don't send anything");
 			return;

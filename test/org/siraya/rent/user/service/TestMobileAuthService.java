@@ -39,7 +39,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		user.setCc("TW");
 		user.setLang("zh");
 		user.setStatus(0);
-		user.setMobilePhone("886222222");
+		user.setMobilePhone("8862222");
 		device = new Device();
 		device.setId("test id");
 		device.setUser(user);
