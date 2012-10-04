@@ -1,11 +1,11 @@
 mobile_country_code: 
     886:
        country: TW
-       lang: zh-TW
+       lang: zh
        timezone: Taipei
     86:
        country: CN
-       lang: zh-CN
+       lang: zh
        timezone: Beijing
 general:
     max_device_count: 3
