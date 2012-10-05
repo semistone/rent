@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.dao.IDeviceDao;
+import org.siraya.rent.utils.EncodeUtility;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.pojo.User;
 import org.slf4j.Logger;
@@ -28,6 +29,8 @@ public class MobileAuthService implements IMobileAuthService {
     private IDeviceDao deviceDao;    
     @Autowired
     private IUserDAO userDao;
+	@Autowired
+    private EncodeUtility encodeUtility; 
     private static Logger logger = LoggerFactory.getLogger(MobileAuthService.class);
 	
     
@@ -44,7 +47,7 @@ public class MobileAuthService implements IMobileAuthService {
     }
     /**
 	 * 1. check device status to prevent duplicate auth.
-	 * 2. set auth code by random from 0 - 9999
+	 * 2. set auth code by random from 0 - 999999
 	 * 3. send message.
 	 */
     void sendAuthMessage(Device device) throws Exception{
@@ -60,7 +63,7 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		// check retry count
 		//
-		int retryLimit = (Integer)applicationConfig.get("general").get("auth_retry_limit");
+		int retryLimit = (Integer)applicationConfig.get(User.ENCRYPT_KEY).get("auth_retry_limit");
 		int currentRetry = device.getAuthRetry();
 		logger.info("current retry count is "+currentRetry);
 		if (retryLimit < currentRetry ) {
@@ -85,10 +88,10 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		// prepare message.
 		//
-		String phone=user.getMobilePhone();
+		String phone=encodeUtility.decrypt(user.getMobilePhone(), "general");
 	    ResourceBundle resource = ResourceBundle.getBundle("user",user.getLocale());
 		String message = MessageFormat.format(resource.getString("mobile_auth_message"),
-				device.getId(), device.getToken());
+				device.getId(), encodeUtility.decrypt(device.getToken(), Device.ENCRYPT_KEY));
 		logger.debug("message is "+message);
 		//
 		// update status
@@ -169,7 +172,7 @@ public class MobileAuthService implements IMobileAuthService {
 		// check auth code
 		//
 		String token = device.getToken();
-		if (!authCode.equals(token)) {
+		if (!authCode.equals(this.encodeUtility.decrypt(token, Device.ENCRYPT_KEY))) {
 			//
 			// if fail update retry status
 			//
@@ -208,7 +211,7 @@ public class MobileAuthService implements IMobileAuthService {
 	 * 
 	 */
 	public void verifyAuthCodeByMobilePhone(String mobildPhone,String authCode){
-		User user = userDao.getUserByMobilePhone(mobildPhone);
+		User user = userDao.getUserByMobilePhone(encodeUtility.encrypt(mobildPhone, User.ENCRYPT_KEY));
 		if (user == null) {
 			throw new RentException(RentErrorCode.ErrorNotFound,"use not found");
 		}

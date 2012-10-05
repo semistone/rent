@@ -60,6 +60,6 @@ public interface IDeviceDao {
     @ResultMap("rent.mapper.DeviceResultMap")
     public Device getDeviceByUserIdAndStatusAuthing(String userId);
     
-    @Update("update DEVICE set NAME = #{name}, MODIFIED=#{modified} where ID = #{id} and USER_ID=#{userId}")
+    @Update("update DEVICE set NAME = #{name}, MODIFIED=#{modified} where ID = #{id} and USER_ID=#{userId} and STATUS='2'")
     public int nameDevice(Device device);
 }

@@ -16,10 +16,10 @@ public class Device {
 	private String lastLoginIp;
 	private String lastLoginTime;
 	private User user;
-
-	public void genToken(){
+    public static String ENCRYPT_KEY = "general";
+	public String genToken(){
 		Random r  = new Random();
-		this.setToken(String.format("%06d", r.nextInt(999999)));
+		return String.format("%06d", r.nextInt(999999));
 	}
 	public static String genId(){
 		return java.util.UUID.randomUUID().toString();

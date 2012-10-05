@@ -34,9 +34,7 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 				Integer.toString(code.getStatus()));
 
 		Response.Status status = mapToHttpStatusCode(code);
-		if (status == Response.Status.INTERNAL_SERVER_ERROR) {
-			logger.error("error",exception);
-		}
+		logger.error("error",exception);
 		Response.ResponseBuilder responseBuilder = Response.status(status).type(MediaType.APPLICATION_JSON);
 		//
 		// if no device id, then set device id cookie

@@ -22,3 +22,4 @@ sently:
     debug: true
 keydb:
     cookie: thebestsecretkey
+    general: thebestsecretkey

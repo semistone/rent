@@ -17,11 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.regex.Pattern;
 import java.util.Map;
-import java.util.Random;
-
-import javax.ws.rs.GET;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.dao.IDeviceDao;
 
@@ -35,6 +31,9 @@ public class UserService implements IUserService {
     private IDeviceDao deviceDao;	
     @Autowired
     private IVerifyEventDao verifyEventDao;
+	@Autowired
+    private EncodeUtility encodeUtility;    
+    
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     
@@ -113,8 +112,8 @@ public class UserService implements IUserService {
 		String id = java.util.UUID.randomUUID().toString();
 		user.setId(id);
 
-
-		user.setMobilePhone(mobilePhone);
+		user.validate("mobilePhone", mobilePhone);
+		user.setMobilePhone(encodeUtility.encrypt(mobilePhone, User.ENCRYPT_KEY));
 		user.setCc((String) map.get("country"));
 		user.setLang((String) map.get("lang"));
 		user.setTimezone((String) map.get("timezone"));
@@ -182,7 +181,7 @@ public class UserService implements IUserService {
 		} else {
 			// old device not exist
 			device.setStatus(DeviceStatus.Init.getStatus());
-			device.genToken();
+			device.setToken(this.encodeUtility.encrypt(device.genToken(), Device.ENCRYPT_KEY));
 			deviceDao.newDevice(device);
 			logger.debug("insert device");
 

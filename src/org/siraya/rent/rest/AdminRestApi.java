@@ -12,6 +12,7 @@ import javax.ws.rs.PathParam;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.filter.UserAuthorizeData;
 import org.siraya.rent.user.service.IUserService;
+import org.siraya.rent.utils.EncodeUtility;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,8 @@ public class AdminRestApi {
 	private UserAuthorizeData userAuthorizeData;
 	@Autowired
 	private IUserService userService;
+	@Autowired
+    private EncodeUtility encodeUtility;
     public AdminRestApi(){
     	logger.debug("new admin rest api");
     }
@@ -64,7 +67,7 @@ public class AdminRestApi {
 		device = userService.getDevice(device);
 		
 		HashMap<String,String> response = new HashMap<String,String>();
-		response.put("token", device.getToken());
+		response.put("token", encodeUtility.decrypt(device.getToken(),device.ENCRYPT_KEY));
 		return Response.status(HttpURLConnection.HTTP_OK).entity(response).build();
 	}
 }

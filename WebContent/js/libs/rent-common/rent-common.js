@@ -1,7 +1,8 @@
 define([
   'jQuery',
   'logger',
-  'jQueryUI'
+  'jQueryUI',
+  'i18N'
 ], function($, logger) {
 
 var RENT = {
