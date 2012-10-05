@@ -23,10 +23,10 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 	private Mockery context;
 	String deviceId= "123";
 	String userId= "456";
-	String mobilePhone="12313131";
+	String mobilePhone="87E45511C317F40D40509943AD6AF951";
 	Device device =null;
 	User user = new User();
-	private String authCode = "1234";	
+	private String authCode = "809FFECF2869157CA16B50F1A3E6B75C";	
 	private IDeviceDao deviceDao;
 	private IUserDAO userDao;
 	private boolean isMock = true;
@@ -39,7 +39,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		user.setCc("TW");
 		user.setLang("zh");
 		user.setStatus(0);
-		user.setMobilePhone("8862222");
+		user.setMobilePhone(mobilePhone);
 		device = new Device();
 		device.setId("test id");
 		device.setUser(user);
@@ -123,7 +123,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		
 
 		
-		mobileAuthService.verifyAuthCode(device.getId(),device.getUserId(), authCode);		
+		mobileAuthService.verifyAuthCode(device.getId(),device.getUserId(), "12313131");		
 	}
 	
 	@Test 
@@ -166,7 +166,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 			});	
 		}
 				
-		mobileAuthService.verifyAuthCodeByMobilePhone(mobilePhone, authCode);		
+		mobileAuthService.verifyAuthCodeByMobilePhone("55555555", "12313131");		
 	}
 	
 	
