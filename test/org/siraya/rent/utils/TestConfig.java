@@ -26,6 +26,6 @@ public class TestConfig {
 	@Test 
 	public void testGetFilterExclude(){
 		List<String> exclude =  (List<String>)config.get("filter").get("exclude");		
-		Assert.assertEquals("^/rest/sently_callback", exclude.get(0));
+		Assert.assertEquals("^sently_callback", exclude.get(0));
 	}
 }
