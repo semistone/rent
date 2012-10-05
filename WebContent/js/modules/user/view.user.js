@@ -246,11 +246,22 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 // step3 view
 //
 RENT.user.view.RegisterStep3View = Backbone.View.extend({
-	
+	dotDone:function(){
+		//
+		// redirect back to .done
+		//
+		var query_variable = RENT.getQueryVariables();		  
+		if (query_variable['.done'] != undefined) {
+			logger.info('.done exist '+query_variable['.done']);
+			window.location.replace(query_variable['.done']);
+			return;
+		}		
+	},
 	events : {
 		"click #name_device_button" : 'name_device_popup'
 	},
 	render:function(){
+		this.dotDone();
 		var step3_template = $('#tmpl_register_step3').html();
 		this.$el.html(step3_template);
 		//

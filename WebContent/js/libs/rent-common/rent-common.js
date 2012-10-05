@@ -81,7 +81,19 @@ var RENT = {
     	var language = window.navigator.userLanguage || window.navigator.language;
     	logger.debug('get lang from browser default setting, lang is '+language);
     	return language;
+    },
+    
+    getQueryVariables:function(){
+        var query = window.location.search.substring(1);
+        var vars = query.split('&');
+        var form = {};
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split('=');
+            form[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        }
+        return form;
     }
+    
 }
 $(function(){
 	RENT.bindLoadingPage("#supersized-loader");

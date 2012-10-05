@@ -12,7 +12,7 @@ define([
 	  $(function(){
 		  logger.debug('new backyard view');
 		  var view = new BackyardView({el:'#main',model:model}); 
-		  view.rend();
+		  view.render();
 	  });
   }
   return {
