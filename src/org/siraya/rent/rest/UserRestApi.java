@@ -8,9 +8,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.HeaderParam;
+import java.util.List;
 import javax.ws.rs.core.Response;
-
+import org.siraya.rent.pojo.MobileAuthRequest;
 import org.siraya.rent.filter.UserAuthorizeData;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.utils.RentException;
@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.HashMap;
 import javax.ws.rs.core.NewCookie;
 import java.net.HttpURLConnection;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.DefaultValue;
 @Component("userRestApi")
 @Path("/user")
 public class UserRestApi {
@@ -66,8 +68,9 @@ public class UserRestApi {
 
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response delete(String userId) throws Exception{
+	public Response delete() throws Exception{
 		String deviceId = this.userAuthorizeData.getDeviceId();
+		String userId = this.userAuthorizeData.getUserId();
 		Device device = new Device();
 		device.setUserId(userId);
 		device.setId(deviceId);
@@ -170,6 +173,8 @@ public class UserRestApi {
 	}
 
 	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/name_device")
 	public Response nameDevice(Map<String,Object> request){
 		String name = (String)request.get("name");
@@ -181,23 +186,30 @@ public class UserRestApi {
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();		
 	}
 
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/mobile_auth_request")
+	public Response mobileAuthRequest(MobileAuthRequest request){
+		try {
+			Device device = userService.mobileAuthRequest(request);
+			device.setId(this.userAuthorizeData.getDeviceId());
+			device = userService.getDevice(device);
+			return Response.status(HttpURLConnection.HTTP_OK).entity(device).build();
+		}catch (Exception e) {
+			throw new RentException(RentException.RentErrorCode.ErrorGeneral,e.getMessage());
+		}
+	}
 	
 	@GET
-	@Path("/test")
-	public Response test(@HeaderParam("code") String code){
-		System.out.println("code is "+code);
-		javax.ws.rs.core.NewCookie lastVisited = new javax.ws.rs.core.NewCookie(
-				"lastVisited",
-				"testvalue", 
-				"/", 
-				null,
-				1,
-				"no comment",
-				1073741823, // maxAge max int value/2
-				false);
-		return Response.status(HttpURLConnection.HTTP_OK).entity("OK").cookie(lastVisited).build();
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/list_devices")
+	public List<Device> deviceList(@DefaultValue("20") @QueryParam("limit") int limit ,
+			@DefaultValue("0") @QueryParam("offset")int offset){
+		logger.debug("get devices list limit:"+limit+" offset"+offset);
+		return this.userService.getUserDevices(this.userAuthorizeData.getUserId(), limit, offset);
 	}
-
+	
 	
 	void setUserService(IUserService userService) {
 		this.userService = userService;

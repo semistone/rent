@@ -23,8 +23,8 @@ public class TestCookieUtils  extends AbstractJUnit4SpringContextTests{
 	@Test 	
 	public void testNewCookie2()throws Exception{
 		Device device = new Device();
-		device.setId(deviceId);
-		device.setUserId("6d6b579f-bdae-4396-946d-29431f9dd9f3");
+		device.setId("test new device");
+		device.setUserId("test list devices");
 		NewCookie cookie = cookieUtils.createDeviceCookie(device);
 		String deviceCookie = cookie.getValue();
 		//

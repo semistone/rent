@@ -2,6 +2,7 @@ package org.siraya.rent.user.service;
 
 import junit.framework.Assert;
 
+import org.siraya.rent.pojo.MobileAuthRequest;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.VerifyEvent;
 import org.siraya.rent.user.dao.IUserDAO;
@@ -17,10 +18,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
 import java.util.Map;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.dao.IDeviceDao;
-
+import java.util.List;
 @Service("userService")
 public class UserService implements IUserService {
     @Autowired
@@ -253,7 +255,7 @@ public class UserService implements IUserService {
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class) 
 	public void updateLoginIdAndPassowrd(User user) throws Exception{
     	String userId = user.getId();
-    	User user2 = userDao.getUserByUserId(user.getId());
+    	User user2 = userDao.getUserByUserId(userId);
     	//
     	// check original login id must be null or empty
     	//
@@ -279,6 +281,74 @@ public class UserService implements IUserService {
     		throw new RentException(RentErrorCode.ErrorCanNotOverwrite, "update cnt =0, only empty login id can be update");
     	}
     }
+    
+    /**
+     * get all user devies
+     * @param userId
+     * @return
+     */
+    public List<Device> getUserDevices(String userId, int limit, int offset){
+    	List<Device> ret =  this.deviceDao.getUserDevices(userId, limit ,offset);
+    	if (ret.size() == 0){
+    		throw new RentException(RentErrorCode.ErrorNotFound,"no device found");
+    	}
+    	return ret;
+    }
+    
+    /**
+     * step1: check requestFrom 
+     * step2: check sign
+     * step3: if auth user exist, fetch user id.
+     *        if user not exist, create new user
+     * step4: check expire time.
+     * step4: authUser and mobilePhone can't have together.
+     * step5: save request into database.
+     */
+	public Device mobileAuthRequest(MobileAuthRequest request){
+		String deviceId = "SSO";
+		String userId = request.getRequestFrom();
+		logger.debug("get request from "+userId);
+		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(deviceId,userId);
+		if (requestFrom == null) {
+			throw new RentException(RentErrorCode.ErrorUserExist,"request user not exist");
+		}
+		if (requestFrom.getStatus() != DeviceStatus.ApiKeyOnly.getStatus()) {
+			throw new RentException(RentErrorCode.ErrorPermissionDeny,"request user not authed");			
+		}
+
+		logger.debug("verify request sign");		
+		String sign = EncodeUtility.sha1(request.toString(requestFrom.getToken()));
+		if (!sign.equals(request.getSign())) {
+			throw new RentException(RentErrorCode.ErrorPermissionDeny,"sign verify failed");			
+		}
+		
+		logger.debug("verify expired");
+		long expire = 300;
+		if (request.getRequestTime() < Calendar.getInstance().getTime().getTime()/1000 + expire) {
+			throw new RentException(RentErrorCode.ErrorAuthExpired, "request has expired");			
+		}
+		
+		//
+		// get autu user from friend
+		//
+		
+		//
+		// get auth user from mobile phone
+		//
+		Device device = new Device();
+		String mobilePhone = request.getMobilePhone();
+		if (mobilePhone != null) {
+			User user = this.userDao.getUserByMobilePhone(mobilePhone);
+			device.setUserId(user.getId());
+		}
+		
+		//
+		// save into database.
+		//
+		return device;
+	}
+	
+	
 	@Override
 	public void verifyEmail(String userId, String authCode) {
 		// TODO Auto-generated method stub

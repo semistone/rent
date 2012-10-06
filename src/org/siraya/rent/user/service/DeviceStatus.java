@@ -5,7 +5,8 @@ public enum DeviceStatus {
 	Authing(1),
 	Authed(2),
 	Removed(3),
-	Suspend(4);
+	Suspend(4),
+	ApiKeyOnly(5);
 
 	private int status;	
 	

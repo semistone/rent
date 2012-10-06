@@ -4,10 +4,13 @@ package org.siraya.rent.user.service;
  * 
  * 
  */
+import java.util.List;
+
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.dao.IUserDAO;
 import org.siraya.rent.user.dao.IDeviceDao;
+import org.siraya.rent.pojo.MobileAuthRequest;
 public interface IUserService {
 	
 	/**
@@ -36,6 +39,9 @@ public interface IUserService {
 	 */
 	public Device newDevice(Device device) throws Exception;
 
+	public List<Device> getUserDevices(String userId, int limit, int offset);
+	
+	public Device mobileAuthRequest(MobileAuthRequest request);
 	/**
 	 * update user email
 	 * @param userId

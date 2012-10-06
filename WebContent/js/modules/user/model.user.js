@@ -30,7 +30,24 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 			url : this.url + 'name_device'
 		});
 		Backbone.sync("update",this, options);	
-	}
+	},
+	
+	delete_device : function(options){
+		options = $.extend(options, {
+			url : this.url
+		});
+		Backbone.sync("delete",this, options);	
+	},
+	
 });
+
+RENT.user.collection.UserCollection = Backbone.Collection.extend({
+	model: RENT.user.model.UserModel,
+	initialize:function(){
+		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/list_devices';
+	}
+	 
+});
+
 return RENT.user.model.UserModel;
 });
