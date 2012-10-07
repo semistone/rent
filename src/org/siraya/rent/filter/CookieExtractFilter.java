@@ -73,11 +73,10 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		if (userAuthorizeData.getDeviceId() == null) {
 			throw new RentException(RentErrorCode.ErrorNullDeviceId, "no device cookie");			
 		}
-		if (userAuthorizeData.getUserId() != null) {
-			logger.debug("set security context");
-			request.setSecurityContext(new Authorizer(userAuthorizeData));
-		}
-	    request.setHeaders((InBoundHeaders)headers);		
+		logger.debug("set security context");
+		request.setSecurityContext(new Authorizer(userAuthorizeData));
+	    
+		request.setHeaders((InBoundHeaders)headers);		
 	    return request;
 	}
 
