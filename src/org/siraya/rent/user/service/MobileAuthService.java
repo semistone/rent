@@ -55,9 +55,12 @@ public class MobileAuthService implements IMobileAuthService {
 		// check status and limit
 		//
 		Assert.assertNotNull(device.getToken());
-		
-		if (device.getStatus() != DeviceStatus.Init.getStatus()
-				&& device.getStatus() != DeviceStatus.Authing.getStatus()) {
+		int status = device.getStatus();
+		if (status == DeviceStatus.Removed.getStatus()) {
+			logger.info("this device have been removed, but ask auth again");
+			
+		} else if (status != DeviceStatus.Init.getStatus()
+				&& status != DeviceStatus.Authing.getStatus()) {
 			throw new RentException(RentErrorCode.ErrorStatusViolate, "device status isn't init or authing");
 		}
 		//

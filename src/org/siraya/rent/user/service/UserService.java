@@ -130,7 +130,7 @@ public class UserService implements IUserService {
 			return user;
 		}catch(org.springframework.dao.DuplicateKeyException e){
 			logger.debug("phone number "+mobilePhone+" have been exist in database.");
-			return userDao.getUserByMobilePhone(mobilePhone);
+			return userDao.getUserByMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY));
 		}
 	}
 

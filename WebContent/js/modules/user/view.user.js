@@ -20,9 +20,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		this.$el = $(this.el);
 		this.model.bind('change',this.render);
 		this.model.bind('error',this.error);
-		if (!this.model.get("from_step2")) {
-			this.model.fetch();			
-		}
+		this.model.fetch();
 		$.validator.addMethod("regex", function(value, element, re) {
 			return re.test(value);
 		}, $.i18n.prop('rent.error.validate_format'));
@@ -85,9 +83,6 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'new_device_event');
 		this.$el = $(this.el);
-		if (!this.model.get("from_step2")) {
-			this.model.fetch();			
-		}
 		$.validator.addMethod("regex", function(value, element, re) {
 			return re.test(value);
 		}, $.i18n.prop('rent.error.validate_format'));
@@ -234,7 +229,6 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		RENT.simpleErrorDialog(resp, '');
 	},
 	go_back_step1 : function() {
-		this.model.set({from_step2:true, status:undefined},{silent:true});
 		new RENT.user.view.RegisterView({
 			el : this.el,
 			model : this.model
