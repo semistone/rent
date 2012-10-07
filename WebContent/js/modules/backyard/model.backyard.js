@@ -13,6 +13,13 @@ RENT.backyard.model.MainModel = Backbone.Model.extend({
 			url : this.url + 'show_token'
 		});
 		Backbone.sync("fetch",this, options);
+	},
+	set_sms_gateway_debug_mode:function(mode, options){	
+		if (mode == '') return; 
+		options = $.extend(options, {
+			url : this.url + 'sms_gateway_debug_mode/'+mode
+		});
+		Backbone.sync("update",this, options);
 	}
 });
 return RENT.backyard.model.MainModel;

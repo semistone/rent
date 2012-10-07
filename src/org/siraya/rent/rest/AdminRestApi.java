@@ -5,6 +5,7 @@ import java.util.HashMap;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -15,6 +16,7 @@ import org.siraya.rent.filter.UserAuthorizeData;
 import org.siraya.rent.user.service.IUserService;
 import org.siraya.rent.utils.EncodeUtility;
 import org.siraya.rent.utils.IApplicationConfig;
+import javax.ws.rs.QueryParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +45,15 @@ public class AdminRestApi {
     	}
     }
 
-	@GET
+	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/set_sently_debug_flag/{debug_flag}")
-    public Response put(@PathParam("debug_flag") boolean flag) {
-    	logger.debug("set debug flag "+flag);
+	@Path("/sms_gateway_debug_mode/{mode}")
+    public Response sms_gateway_debug_mode(@PathParam("mode") boolean mode) {
+    	logger.debug("set debug flag "+mode);
     	Map<String,Object> sently = this.applicationConfig.get("sently");
-    	sently.put("debug", flag);
+    	sently.put("debug", mode);
     	HashMap<String,Boolean> response = new HashMap<String,Boolean>();
-		response.put("flag", new Boolean(flag));
+		response.put("mode", new Boolean(mode));
     	return Response.status(HttpURLConnection.HTTP_OK).entity(response).build();
     }
 	
