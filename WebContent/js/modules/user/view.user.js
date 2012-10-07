@@ -246,6 +246,9 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 // step3 view
 //
 RENT.user.view.RegisterStep3View = Backbone.View.extend({
+	initialize : function() {
+		_.bindAll(this, 'render','delete_device');
+	},
 	dotDone:function(){
 		//
 		// redirect back to .done
@@ -258,7 +261,8 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		}		
 	},
 	events : {
-		"click #name_device_button" : 'name_device_popup'
+		"click #name_device_button" : 'name_device_popup',
+		'click #delete_device_link' : 'delete_device'
 	},
 	render:function(){
 		this.dotDone();
@@ -277,11 +281,14 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 				$.i18n.prop('user.register.register_manage_tool'));	
 		this.$el.find('#i18n_named_my_devices').text(
 				$.i18n.prop('user.register.named_my_devices'));	
+		this.$el.find('#i18n_delete_device').text(
+				$.i18n.prop('user.register.delete_device'));
+		
 		$('.menuItem').hover(function(){
 			$(this).addClass('focus');
 		},function(){
 			$(this).removeClass('focus');
-		})
+		});
 		//
 		// animation affect.
 		//
@@ -292,7 +299,18 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		new RENT.user.view.NameDeviceView({
 			el : this.el,
 			model : this.model}).render();
-	}
+	},
+	delete_device:function(){
+		logger.debug('click delete device');
+		this.model.delete_device({
+			success:function(model,resp){
+				RENT.simpleDialog('',$.i18n.prop('user.register.device_delete_success'));			
+			},
+			error:function(model,resp){
+				RENT.simpleErrorDialog(resp,'');
+			}
+		});	
+	},	
 });
 		
 

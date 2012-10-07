@@ -3,6 +3,7 @@ import java.util.Map;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -33,8 +34,13 @@ public class AdminRestApi {
 	private IUserService userService;
 	@Autowired
     private EncodeUtility encodeUtility;
+    private static Map<String,String> OK;
     public AdminRestApi(){
     	logger.debug("new admin rest api");
+    	if (OK == null) {
+    		OK = new HashMap<String,String>();
+    		OK.put("status", "SUCCESS");
+    	}
     }
 
 	@GET
@@ -70,4 +76,5 @@ public class AdminRestApi {
 		response.put("token", encodeUtility.decrypt(device.getToken(),device.ENCRYPT_KEY));
 		return Response.status(HttpURLConnection.HTTP_OK).entity(response).build();
 	}
+
 }

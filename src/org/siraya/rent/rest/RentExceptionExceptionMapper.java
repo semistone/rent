@@ -59,6 +59,7 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 	private static Response.Status mapToHttpStatusCode(RentErrorCode code){
 		switch (code.getStatus()) {
 		case 4:// ErrorNotFound
+		case 8: // ErrorRemoved
 		case 13: // ErrorNullDeviceId
 			return Response.Status.NOT_FOUND;
 		case 12://ErrorInvalidParameter

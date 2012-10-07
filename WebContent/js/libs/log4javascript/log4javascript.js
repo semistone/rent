@@ -1,7 +1,8 @@
-define([
-// Load the original jQuery source file
-  'order!libs/log4javascript/log4javascript-1.0.0'
-], function(){
+var lib_logger = null;
+if (/debug=1/.exec(window.location.href)) {
+	var lib_logger = 'order!libs/log4javascript/log4javascript-1.0.0';
+}
+define([lib_logger], function(){
 	var logger = {
 			debug: function(msg) {
 

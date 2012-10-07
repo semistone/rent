@@ -11,11 +11,14 @@ define([
   'text!../../../html/backyard/tmpl.backyard.html',
   './namespace.backyard'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
-$('body').append(template);	
+
 
 RENT.backyard.view.MainView = Backbone.View.extend({
+	initialize : function() {
+		_.bindAll(this, 'render');
+	},
 	events : {
-		"click #show_token_link" : "show_token"
+		'click #show_token_link' : 'show_token'
 	},
 	show_token:function(){
 		logger.debug('click show token');
@@ -24,9 +27,14 @@ RENT.backyard.view.MainView = Backbone.View.extend({
 				RENT.simpleDialog('','your token is '+model.token);			
 			},
 			error:function(){
-				alert('error');
+				RENT.simpleDialog('','some error happen');
 			}
 		});
+	},
+
+	render:function(){
+		this.tmpl = $('div').append(template).find('#tmpl_backyard_menu').html();
+		this.$el.html(this.tmpl);
 	}
 });
 return RENT.backyard.view.MainView;

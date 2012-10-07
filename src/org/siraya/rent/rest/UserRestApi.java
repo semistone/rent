@@ -4,6 +4,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
@@ -68,8 +69,11 @@ public class UserRestApi {
 
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response delete() throws Exception{
-		String deviceId = this.userAuthorizeData.getDeviceId();
+	public Response delete(@DefaultValue("") @QueryParam("deviceId") String deviceId) throws Exception{
+		if (deviceId == null || deviceId.equals("")) {
+			deviceId = this.userAuthorizeData.getDeviceId();			
+			logger.debug("delete current device");
+		}
 		String userId = this.userAuthorizeData.getUserId();
 		Device device = new Device();
 		device.setUserId(userId);
