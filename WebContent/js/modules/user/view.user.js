@@ -241,7 +241,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 //
 RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render','delete_device');
+		_.bindAll(this, 'render','delete_device','show_my_device');
 	},
 	dotDone:function(){
 		//
@@ -256,7 +256,8 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	},
 	events : {
 		"click #name_device_button" : 'name_device_popup',
-		'click #delete_device_link' : 'delete_device'
+		'click #delete_device_link' : 'delete_device',
+		'click #show_my_devices_link' : 'show_my_device'
 	},
 	render:function(){
 		this.dotDone();
@@ -304,7 +305,16 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 				RENT.simpleErrorDialog(resp,'');
 			}
 		});	
-	},	
+	},
+	show_my_device:function(){
+		logger.debug('click show my devies');
+		var collection = new RENT.user.collection.UserCollection();
+		new RENT.user.view.ShowDevicesView({
+			el : this.el,
+			collection : collection
+		});
+		collection.fetch();
+	}
 });
 		
 
@@ -382,5 +392,30 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 	}
 	
 });
+
+RENT.user.view.ShowDevicesView = Backbone.View.extend({
+	initialize : function() {
+		logger.debug('initialize show devices view');
+		this.tmpl = $('#tmpl_show_devices').html();
+		_.bindAll(this, 'render');
+		this.collection.on('reset',this.render);
+	},
+	render:function(){
+		logger.debug("render devices");
+		var obj = {devices:this.collection.toJSON() };
+		this.$el.html(Mustache.to_html(this.tmpl,obj ));
+		//
+		// i18n
+		//
+		this.$el.find('#i18n_devices').text(
+				$.i18n.prop('user.register.show_devices'));
+		this.$el.find('.i18n_name').text(
+				$.i18n.prop('general.name'));
+		this.$el.find('.i18n_id').text(
+				$.i18n.prop('general.id'));
+		
+	}
+});
+
 return RENT.user.view.RegisterView;
 });

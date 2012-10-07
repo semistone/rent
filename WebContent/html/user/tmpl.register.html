@@ -52,7 +52,7 @@
 	    				<div class="bazingaClear"></div>
 	    			</article>
      				<article class="menuItem">  				
-                        <a href="menu.html"><h3 id="i18n_show_my_devices"></h3></a>
+                        <a id="show_my_devices_link"><h3 id="i18n_show_my_devices"></h3></a>
 	    				<div class="bazingaClear"></div>
 	    			</article> 
      				<article class="menuItem">
@@ -85,5 +85,24 @@
 	<input type="text" name="name" id="device_name" class="required text ui-widget-content" /><p>
 </fieldset>
 </form>
+</div>
+</script>
+<script id="tmpl_show_devices" type="x-tmpl-mustache">
+<div id="bazingaContent">
+        <div id="bazingaContentInner">
+                <div>
+                <h1 id="i18n_devices">Devices</h1>
+                <div class="bazingaDivider"></div>
+                <br />                
+                </div>
+  				<section class="menuSection">
+{{#devices}}
+	  				<article class="menuItem">  				
+                        <h3>{{#name}}<span class="i18n_name">Name:</span>:{{name}}{{/name}}{{^name}}<span class="i18n_id">ID</span>:{{id}}{{/name}}</h3>
+	    				<div class="bazingaClear"></div>
+	    			</article>
+{{/devices}}
+				</section>
+        </div>
 </div>
 </script>
