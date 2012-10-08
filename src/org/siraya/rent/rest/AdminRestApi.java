@@ -1,9 +1,11 @@
 package org.siraya.rent.rest;
+import java.util.List;
 import java.util.Map;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -21,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.siraya.rent.pojo.User;
 import org.siraya.rent.utils.RentException;
 import javax.annotation.security.RolesAllowed;
 @Component("adminRestApi")
@@ -75,8 +78,18 @@ public class AdminRestApi {
 		device = userService.getDevice(device);
 		
 		HashMap<String,String> response = new HashMap<String,String>();
-		response.put("token", encodeUtility.decrypt(device.getToken(),device.ENCRYPT_KEY));
+		response.put("token", encodeUtility.decrypt(device.getToken(),Device.ENCRYPT_KEY));
 		return Response.status(HttpURLConnection.HTTP_OK).entity(response).build();
 	}
-
+	
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/list_users")
+	public List<User> listUsers(@DefaultValue("20") @QueryParam("limit") int limit ,
+			@DefaultValue("0") @QueryParam("offset")int offset){
+		logger.debug("get devices list limit:"+limit+" offset"+offset);
+		return this.userService.getDeviceUsers(this.userAuthorizeData.getDeviceId(), limit, offset);
+	}
+	
 }

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.siraya.rent.pojo.Device;
+import org.siraya.rent.pojo.User;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository("deviceDao")
@@ -66,4 +67,8 @@ public interface IDeviceDao {
     @Select("select * from DEVICE where USER_ID=#{userId} and STATUS !='3' order by MODIFIED desc limit #{limit} offset #{offset}")     
     @ResultMap("rent.mapper.DeviceResultMap")
     public List<Device> getUserDevices(@Param("userId")String userId, @Param("limit")int limit, @Param("offset")int offset);
+
+    @Select("select u.* from DEVICE d,USER u where d.ID=#{deviceId} and d.STATUS !='3' and d.USER_ID = u.ID order by d.MODIFIED desc limit #{limit} offset #{offset}")     
+    @ResultMap("rent.mapper.UserResultMap")
+    public List<User> getDeviceUsers(@Param("deviceId")String deviceId, @Param("limit")int limit, @Param("offset")int offset);
 }

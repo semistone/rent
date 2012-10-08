@@ -41,6 +41,8 @@ public interface IUserService {
 
 	public List<Device> getUserDevices(String userId, int limit, int offset);
 	
+	public List<User> getDeviceUsers(String deviceId, int limit, int offset);
+	 
 	public Device mobileAuthRequest(MobileAuthRequest request);
 	/**
 	 * update user email

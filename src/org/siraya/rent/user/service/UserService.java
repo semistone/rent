@@ -294,6 +294,15 @@ public class UserService implements IUserService {
     	}
     	return ret;
     }
+
+    public List<User> getDeviceUsers(String deviceId, int limit, int offset){
+    	List<User> ret =  this.deviceDao.getDeviceUsers(deviceId, limit ,offset);
+    	if (ret.size() == 0){
+    		throw new RentException(RentErrorCode.ErrorNotFound,"no device found");
+    	}
+    	return ret;
+    }
+
     
     /**
      * step1: check requestFrom 
