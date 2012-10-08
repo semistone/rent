@@ -22,5 +22,11 @@ RENT.backyard.model.MainModel = Backbone.Model.extend({
 		Backbone.sync("update",this, options);
 	}
 });
+RENT.backyard.collection.UserCollection = Backbone.Collection.extend({
+	initialize:function(){
+		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/admin/list_users';
+	}	 
+});
+
 return RENT.backyard.model.MainModel;
 });
