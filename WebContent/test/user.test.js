@@ -78,4 +78,23 @@ asyncTest('test list devices', function(assert) {
 	};
 	collection.fetch(options);
 });
+
+
+
+asyncTest('test name device', function(assert) {
+	var test_device_cookie_value="B0559903B6F1A374BA0F1AEC8CBC6C6B59AC9C0799BA776136A29B67846B5B9B12ED3F2CE1E88838AAEC6289A97A16D6";
+	$.cookie("D", test_device_cookie_value,{path:'/'});
+	var user = new RENT.user.model.UserModel();
+	options = {
+		success:function(){
+			ok(true, 'expect execute success');
+			start();	
+		},
+		error:function(){
+			ok('', 'expect execute success');
+			start();
+		}
+	};
+	user.name_device('test',options);
+});
 });
