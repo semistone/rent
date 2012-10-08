@@ -37,31 +37,33 @@
 </div>
 </script>
 <script id="tmpl_register_step3" type="x-tmpl-mustache">
-<div id="bazingaContent">
-        <div id="bazingaContentInner">
-                <div>
-                <h1 id="i18n_step3">Done</h1>
-                <div class="bazingaDivider"></div>
-                <br />
-                <h2 class="success" id="i18n_auth_success"></h2>
-                </div>
-  				<section class="menuSection">
-  	    		    <h2 id="i18n_register_manage_tool"></h2>
-	  				<article id='name_device_button' class="menuItem">  				
-                        <h3 id="i18n_named_my_devices"></h3>
-	    				<div class="bazingaClear"></div>
-	    			</article>
-     				<article class="menuItem">  				
-                        <a id="show_my_devices_link"><h3 id="i18n_show_my_devices"></h3></a>
-	    				<div class="bazingaClear"></div>
-	    			</article> 
-     				<article class="menuItem">
-						<a id="delete_device_link"><h3 id="i18n_delete_device"></h3></a>
-						<div class="bazingaClear"></div>
-	    			</article>    
-			</section>
-        </div>
+<header id="overview" class="jumbotron subhead">
+<div class="row">
+	<div class="span6">
+    	<h1 id="i18n_step3">Done</h1>
+	</div>
 </div>
+</header>
+<div class="row">
+<div class="span7 offset1">
+	<h2 class="success" id="i18n_auth_success"></h2>
+ 	<h2 id="i18n_register_manage_tool"></h2>
+	<ul class="breadcrumb"> 				
+    	<h4 id="i18n_named_my_devices"></h4>
+	</ul>
+    <ul class="breadcrumb"> 				
+    	<a id="show_my_devices_link"><h4 id="i18n_show_my_devices"></h4></a>
+		<div class="bazingaClear"></div>
+	</ul>
+    <ul class="breadcrumb">
+		<a id="delete_device_link"><h4 id="i18n_delete_device"></h4></a>
+		<div class="bazingaClear"></div>
+	</ul>  
+</div> 
+</div>
+
+  
+
 </script>
 
 <script id="tmpl_register_error" type="x-tmpl-mustache">
