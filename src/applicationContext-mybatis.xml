@@ -27,7 +27,7 @@
 </bean>
 
 <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-    <property name="basePackage" value="org.siraya.rent.user.dao" />
+    <property name="basePackage" value="org.siraya.rent" />
     <property name="sqlSessionFactory" ref="rentSqlSessionFactory" />
 </bean>
 </beans>
