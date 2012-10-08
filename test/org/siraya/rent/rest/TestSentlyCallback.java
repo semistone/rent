@@ -42,7 +42,7 @@ public class TestSentlyCallback {
 					one(mobileAuthService).verifyAuthCodeByMobilePhone("3123123131", "2332");
 					one(applicationConfig).get("sently");
 					HashMap<String,String> setting = new HashMap<String,String>();
-					setting.put("password", "123456789");
+					setting.put("callback_pass", "123456789");
 					will(returnValue(setting));
 				}
 			});

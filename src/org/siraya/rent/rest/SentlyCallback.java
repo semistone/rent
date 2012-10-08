@@ -36,7 +36,7 @@ public class SentlyCallback {
 			@QueryParam("from") String from, @QueryParam("text") String text)
 			throws Exception {
 		logger.debug("receive message " + text + " from " + from);
-		if (!password.equals(applicationConfig.get("sently").get("password"))) {
+		if (!password.equals(applicationConfig.get("sently").get("callback_pass"))) {
 			throw new RentException(
 					RentException.RentErrorCode.ErrorPermissionDeny,
 					"password not match");
