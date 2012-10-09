@@ -53,7 +53,7 @@ public class DontTryService implements IDontTryService{
 
 		}
 		dontTry.setStartDate(cal.getTime());
-		logger.debug("start date is "+dontTry.getStartDate());
+		logger.debug("do try "+name+" start date is "+dontTry.getStartDate());
 		dontTryDao.newCounter(dontTry);
     	dontTry = dontTryDao.getByName(name, dontTry.getStartDate());
     	if (dontTry.getCount() > maxCount) {

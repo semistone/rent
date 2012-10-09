@@ -16,7 +16,7 @@
            	http://www.springframework.org/schema/context/spring-context.xsd
 			http://www.springframework.org/schema/util
            	http://www.springframework.org/schema/util/spring-util.xsd">
-    <context:component-scan base-package="org.siraya.rent.mobile;org.siraya.rent.utils" />
+    <context:component-scan base-package="org.siraya.rent.mobile;org.siraya.rent.utils;org.siraya.rent.mobile;org.siraya.rent.donttry" />
     <bean id="connectionManager" class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
         <property name="params">
             <bean class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">

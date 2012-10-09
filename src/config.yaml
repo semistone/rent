@@ -21,6 +21,7 @@ sently:
     password: semistone
     debug: true
     callback_pass: 123456789
+    max_msgs_per_day : 100
 keydb:
     cookie: thebestsecretkey
     general: thebestsecretkey

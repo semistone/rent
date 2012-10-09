@@ -8,10 +8,10 @@ import java.io.InputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
 import org.yaml.snakeyaml.Yaml;
 import java.util.Map;
-@Repository("applicationConfig")
+import org.springframework.stereotype.Service;
+@Service("applicationConfig")
 public class ApplicationConfig implements IApplicationConfig{
     private static Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
     private static Map<String, Object>  data;

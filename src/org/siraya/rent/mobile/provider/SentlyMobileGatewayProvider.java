@@ -1,5 +1,5 @@
 package org.siraya.rent.mobile.provider;
-
+import org.siraya.rent.donttry.service.IDontTryService;
 import org.siraya.rent.mobile.service.IMobileGatewayService;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.utils.RentException;
@@ -14,6 +14,8 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService{
     @Autowired
     protected IApplicationConfig applicationConfig;
     private RestOperations restTemplate;
+    @Autowired
+    private IDontTryService dontTryService;
 	static String REQUEST_URI = "http://sent.ly/command/sendsms?username={username}&password={password}&text={text}&to={to}";
 
     public SentlyMobileGatewayProvider(RestOperations restTemplate){
@@ -27,6 +29,9 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService{
      */
 	public void sendSMS(String to,String message) throws Exception{
 		Map<String,Object> setting=applicationConfig.get("sently");
+
+		int maxCount = (int)setting.get("max_msgs_per_day");
+		dontTryService.doTry("sently gateway", IDontTryService.DontTryType.Today, maxCount);
 		logger.info("send sms to "+to+"\nmeesage:"+message+"\n");
 
 		if (setting.get("debug").equals(true) ) {
