@@ -15,16 +15,17 @@ import org.siraya.rent.user.service.UserService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.siraya.rent.pojo.Device;
+import org.siraya.rent.pojo.VerifyEvent;
 import org.siraya.rent.user.dao.IUserDAO;
 import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.utils.EncodeUtility;
 import org.siraya.rent.utils.IApplicationConfig;
-
+import org.siraya.rent.user.dao.IVerifyEventDao;
 import java.util.HashMap;
 import java.util.Map;
 
 @ContextConfiguration(locations = { "classpath*:/applicationContext*.xml" })
-public class TestUserService extends AbstractJUnit4SpringContextTests {
+public class TestUserService {
 	User user = new User();
 	Device device = new Device();
 	private UserService userService;
@@ -39,6 +40,8 @@ public class TestUserService extends AbstractJUnit4SpringContextTests {
 	private IApplicationConfig config;
 	private IMobileAuthRequestDao mobileAuthRequestDao;
 	private Map<String, Object> setting;
+	private EncodeUtility encodeUtility;
+	private IVerifyEventDao verifyEventDao;
 
 	@Before
 	public void setUp() {
@@ -56,11 +59,14 @@ public class TestUserService extends AbstractJUnit4SpringContextTests {
 			userDao = context.mock(IUserDAO.class);
 			deviceDao = context.mock(IDeviceDao.class);
 			mobileAuthRequestDao = context.mock(IMobileAuthRequestDao.class);
+			verifyEventDao = context.mock(IVerifyEventDao.class);
+
 			config = context.mock(IApplicationConfig.class);
 			userService.setUserDao(userDao);
 			userService.setDeviceDao(deviceDao);
 			userService.setApplicationConfig(config);
 			userService.setMobileAuthRequestDao(mobileAuthRequestDao);
+			userService.setVerifyEventDao(verifyEventDao);
 			request = new MobileAuthRequest();
 			request.setRequestId("r" + time / 1000);
 			request.setForceReauth(false);
@@ -71,7 +77,19 @@ public class TestUserService extends AbstractJUnit4SpringContextTests {
 			request.setDone("http://www.yahoo.com");
 			request.setSign("96EDD356D2C863B5483CA811061BD639CB9FF29C");
 			setting = new HashMap<String, Object>();
+			Map<String, Object> setting2;
+			setting2 = new HashMap<String, Object>();
 			setting.put("debug", Boolean.TRUE);
+			setting.put("max_device_count", 3);
+			setting.put("max_user_per_device", 4);
+			setting.put("886", setting2);
+			setting.put("general", "thebestsecretkey");
+			setting2.put("country", "TW");
+			setting2.put("lang", "zh");
+
+			encodeUtility = new EncodeUtility();
+			userService.setEncodeUtility(encodeUtility);
+			this.encodeUtility.setApplicationConfig(config);
 		}
 	}
 
@@ -81,6 +99,10 @@ public class TestUserService extends AbstractJUnit4SpringContextTests {
 			context.checking(new Expectations() {
 				{
 					one(userDao).newUser(with(any(User.class)));
+					one(config).get("mobile_country_code");
+					will(returnValue(setting));
+					one(config).get("keydb");
+					will(returnValue(setting));
 				}
 			});
 		}
@@ -102,6 +124,9 @@ public class TestUserService extends AbstractJUnit4SpringContextTests {
 					will(returnValue(1));
 					one(deviceDao).getDeviceCountByDeviceId(deviceId);
 					will(returnValue(1));
+					one(config).get("general");
+					will(returnValue(setting));
+
 				}
 			});
 		}
@@ -115,15 +140,21 @@ public class TestUserService extends AbstractJUnit4SpringContextTests {
 
 	@Test
 	public void testSetupEmail() throws Exception {
+
 		if (isMock) {
 			context.checking(new Expectations() {
 				{
+					String email = "new@email.com";
 					one(userDao).getUserByUserId(user.getId());
 					User user2 = new User();
-					user2.setEmail("new@email.com");
+					user2.setEmail(email);
 					will(returnValue(user2));
 
 					one(userDao).updateUserEmail(user2);
+					one(verifyEventDao).getEventByVerifyDetailAndType(0, email);
+					one(verifyEventDao).newVerifyEvent(
+							with(any(VerifyEvent.class)));
+
 				}
 			});
 		}

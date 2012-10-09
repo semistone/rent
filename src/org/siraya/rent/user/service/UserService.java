@@ -26,7 +26,8 @@ import org.siraya.rent.user.dao.IDeviceDao;
 import java.util.List;
 @Service("userService")
 public class UserService implements IUserService {
-    @Autowired
+
+	@Autowired
     private IUserDAO userDao;
     @Autowired
     private IApplicationConfig applicationConfig;
@@ -39,7 +40,8 @@ public class UserService implements IUserService {
     private IVerifyEventDao verifyEventDao;
 	@Autowired
     private EncodeUtility encodeUtility;    
-    private static Logger logger = LoggerFactory.getLogger(UserService.class);
+
+	private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
@@ -97,16 +99,17 @@ public class UserService implements IUserService {
 		//
 		// verify format
 		//
+    	String ccString = Integer.toString(cc);
 		logger.debug("check cc code");
 		mobilePhone = mobilePhone.trim();
 		Map<String, Object> mobileCountryCode = applicationConfig.get("mobile_country_code");
 
-		if (!mobileCountryCode.containsKey(cc)) {
+		if (!mobileCountryCode.containsKey(ccString)) {
     		throw new RentException(RentErrorCode.ErrorCountryNotSupport, "cc not exist in mobile country code " + cc);
 
 		}
 		
-		if (!mobilePhone.startsWith(Integer.toString(cc))) {
+		if (!mobilePhone.startsWith(ccString)) {
     		throw new RentException(RentErrorCode.ErrorInvalidParameter,"cc code not start with "+cc);			
 		}
 
@@ -115,7 +118,7 @@ public class UserService implements IUserService {
 		// setup user object
 		//
 		Map<String, Object> map = (Map<String, Object>) mobileCountryCode
-				.get(cc);
+				.get(ccString);
 		User user = new User();
 		String id = java.util.UUID.randomUUID().toString();
 		user.setId(id);
@@ -151,11 +154,12 @@ public class UserService implements IUserService {
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
 	public Device newDevice(Device device) throws Exception {
     	User user = device.getUser();
+    	Map<String,Object> generalSetting = applicationConfig.get("general");
     	//
 		// check device count.
 		//
 		int count=deviceDao.getDeviceCountByUserId(device.getUserId());
-		int maxDevice = ((Integer)applicationConfig.get("general").get("max_device_count")).intValue();
+		int maxDevice = ((Integer)generalSetting.get("max_device_count")).intValue();
 		logger.debug("user id is "+device.getUserId()+" device count is "+count+" max device is "+maxDevice);
 		if (count > maxDevice) {
     		throw new RentException(RentErrorCode.ErrorExceedLimit, "current user have too many device");
@@ -164,7 +168,7 @@ public class UserService implements IUserService {
 		// check how many user in this device
 		//
 		count = deviceDao.getDeviceCountByDeviceId(device.getId());
-		maxDevice = ((Integer)applicationConfig.get("general").get("max_user_per_device")).intValue();
+		maxDevice = ((Integer)generalSetting.get("max_user_per_device")).intValue();
 		logger.debug("device id is "+device.getId()+" user count is "+count+" max user is "+maxDevice);
 		if (count > maxDevice) {
     		throw new RentException(RentErrorCode.ErrorExceedLimit, "current device have too many users");
@@ -330,24 +334,28 @@ public class UserService implements IUserService {
 			throw new RentException(RentErrorCode.ErrorPermissionDeny,"request user not for apikey only");			
 		}
 		String requestString = request.toString(requestFrom.getToken());
-		logger.debug("verify request sign "+requestString);		
 		Boolean isDebugMode = (Boolean)applicationConfig.get("general").get("debug");
 		if (!isDebugMode) {
+			logger.debug("verify request sign "+requestString);		
 			String sign = EncodeUtility.sha1(requestString);
 			if (!sign.equals(request.getSign())) {
 				throw new RentException(RentErrorCode.ErrorPermissionDeny,"sign verify failed");			
-			}			
+			}	
+			
+			logger.debug("verify expired");
+			long expire = 300;
+			long now = Calendar.getInstance().getTimeInMillis()/1000;
+			if (request.getRequestTime() > now ) {
+				throw new RentException(RentErrorCode.ErrorAuthExpired, "request time is too after now "+request.getRequestTime()+ " compare to "+now);			
+			}
+			if (request.getRequestTime() < now - expire) {
+				throw new RentException(RentErrorCode.ErrorAuthExpired, "request time is expired time is "+request.getRequestTime()+ " compare to "+now);							
+			}
 		} else {
-			logger.debug("debug mode skip sign verify");
+			logger.debug("debug mode skip sign and requre time verify");
 		}
 		
-		logger.debug("verify expired");
-		long expire = 300;
-		long now = Calendar.getInstance().getTimeInMillis()/1000;
-		if (request.getRequestTime() > now + expire) {
-			throw new RentException(RentErrorCode.ErrorAuthExpired, "request has expired time is "+request.getRequestTime()+ " compare to "+now);			
-		}
-		
+
 		//
 		// get autu user from friend
 		//
@@ -364,7 +372,6 @@ public class UserService implements IUserService {
 				// get device from deviceDao
 				//
 				currentDevice = this.getDevice(currentDevice);
-
 			}
 		}
 		
@@ -415,6 +422,20 @@ public class UserService implements IUserService {
 
 	public void setApplicationConfig(IApplicationConfig applicationConfig) {
 		this.applicationConfig = applicationConfig;
+	}
+    public IVerifyEventDao getVerifyEventDao() {
+		return verifyEventDao;
+	}
+
+	public void setVerifyEventDao(IVerifyEventDao verifyEventDao) {
+		this.verifyEventDao = verifyEventDao;
+	}
+    public EncodeUtility getEncodeUtility() {
+		return encodeUtility;
+	}
+
+	public void setEncodeUtility(EncodeUtility encodeUtility) {
+		this.encodeUtility = encodeUtility;
 	}
 
 }
