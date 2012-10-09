@@ -2,7 +2,6 @@ package org.siraya.rent.filter;
 
 
 import org.siraya.rent.rest.CookieUtils;
-import org.siraya.rent.user.service.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,7 @@ import javax.ws.rs.core.Cookie;
 @Component
 public class CookieExtractFilter implements ContainerRequestFilter {
     private static Logger logger = LoggerFactory.getLogger(CookieExtractFilter.class);
-	@Autowired
-	private IUserService userService;
+
 	@Autowired
 	private UserAuthorizeData userAuthorizeData;
 	@Autowired

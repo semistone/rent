@@ -73,7 +73,4 @@ public interface IUserService {
 	
 	public void nameDevice(Device device);
 	
-	public void setUserDao(IUserDAO dao);
-
-	public void setDeviceDao(IDeviceDao dao);
 }

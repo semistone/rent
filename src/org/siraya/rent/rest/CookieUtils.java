@@ -13,7 +13,7 @@ import org.siraya.rent.utils.RentException;
 public class CookieUtils {
 	@Autowired
     private EncodeUtility encodeUtility;
-    private boolean isInit = false;
+
     private static Logger logger = LoggerFactory.getLogger(CookieUtils.class);
     private final static String keyName="cookie";
 
