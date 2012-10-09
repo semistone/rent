@@ -23,9 +23,33 @@
 				<div class="menuItemDesc">No sms message will be sent in debug mode</div>
 				<div class="bazingaClear"></div>
 			</article>
+			<article class="menuItem">
+				<h3 id="list_users_link">Show users in current device</h3>
+				<div class="menuItemDesc">Show how many user have used this device</div>
+				<div class="bazingaClear"></div>
+			</article>
 		</section>
 
 
 	</div>
+</div>
+</script>
+<script id="tmpl_show_uses" type="x-tmpl-mustache">
+<div id="bazingaContent">
+        <div id="bazingaContentInner">
+                <div>
+                <h1 id="i18n_devices">Users</h1>
+                <div class="bazingaDivider"></div>
+                <br />                
+                </div>
+  				<section class="menuSection">
+{{#users}}
+	  				<article class="menuItem">  				
+                        <h3>{{#email}}<span class="i18n_email">email:</span>:{{email}}{{/email}}{{^email}}<span class="i18n_id">ID</span>:{{id}}{{/email}}</h3>
+	    				<div class="bazingaClear"></div>
+	    			</article>
+{{/users}}
+				</section>
+        </div>
 </div>
 </script>

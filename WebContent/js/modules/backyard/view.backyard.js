@@ -19,7 +19,8 @@ RENT.backyard.view.MainView = Backbone.View.extend({
 	},
 	events : {
 		'click #show_token_link' : 'show_token',
-		'change #set_sms_gateway_debug_mode' : 'set_sms_gateway_debug_mode'
+		'change #set_sms_gateway_debug_mode' : 'set_sms_gateway_debug_mode',
+		'click #list_users_link': 'list_users_link'
 	},
 	show_token:function(){
 		logger.debug('click show token');
@@ -46,9 +47,32 @@ RENT.backyard.view.MainView = Backbone.View.extend({
 			}
 		});		
 	},
+	list_users_link:function(){
+		logger.debug('click list users link');
+		var collection = new RENT.backyard.collection.UserCollection();
+		new RENT.backyard.view.ShowUsersView({
+			el : this.el,
+			collection : collection
+		});
+		collection.fetch();
+	},
 	render:function(){
 		this.tmpl = $('div').append(template).find('#tmpl_backyard_menu').html();
 		this.$el.html(this.tmpl);
+	}
+});
+
+RENT.backyard.view.ShowUsersView= Backbone.View.extend({
+	initialize : function() {
+		logger.debug('initialize show users view');
+		this.tmpl = $('#tmpl_show_uses').html();
+		_.bindAll(this, 'render');
+		this.collection.on('reset',this.render);
+	},
+	render:function(){
+		logger.debug("render users");
+		var obj = {users:this.collection.toJSON() };
+		this.$el.html(Mustache.to_html(this.tmpl,obj ));
 	}
 });
 return RENT.backyard.view.MainView;
