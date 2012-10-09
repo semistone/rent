@@ -8,9 +8,9 @@ package org.siraya.rent.pojo;
  */
 public class MobileAuthRequest {
 	private String sign;
-	private String dotDone;
+	private String done;
 	private String mobilePhone;
-	private String authUser;
+	private String authUserId;
 	private boolean forceReauth;
 	private String callback;
 
@@ -30,11 +30,11 @@ public class MobileAuthRequest {
 	public void setSign(String sign) {
 		this.sign = sign;
 	}
-	public String getDotDone() {
-		return dotDone;
+	public String getDone() {
+		return done;
 	}
-	public void setDotDone(String dotDone) {
-		this.dotDone = dotDone;
+	public void setDone(String dotDone) {
+		this.done = dotDone;
 	}
 	public String getMobilePhone() {
 		return mobilePhone;
@@ -42,11 +42,11 @@ public class MobileAuthRequest {
 	public void setMobilePhone(String mobilePhone) {
 		this.mobilePhone = mobilePhone;
 	}
-	public String getAuthUser() {
-		return authUser;
+	public String getAuthUserId() {
+		return authUserId;
 	}
-	public void setAuthUser(String authUser) {
-		this.authUser = authUser;
+	public void setAuthUserId(String authUser) {
+		this.authUserId = authUser;
 	}
 	public boolean isForceReauth() {
 		return forceReauth;
@@ -74,6 +74,6 @@ public class MobileAuthRequest {
 	}
 
 	public String toString(String token){
-		return this.authUser+":"+token;
+		return this.authUserId+":"+token;
 	}
 }

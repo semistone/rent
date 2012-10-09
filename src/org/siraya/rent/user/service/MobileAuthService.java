@@ -223,6 +223,10 @@ public class MobileAuthService implements IMobileAuthService {
 		if (device == null) {
 			throw new RentException(RentErrorCode.ErrorNotFound,"device not found");			
 		}
+		if (device.getStatus() == DeviceStatus.Authed.getStatus()) {
+			logger.info("device has been authed, dont need to re-auth.");
+			return;
+		}
 		device.setUser(user);
 		_verifyAuthCode(device,authCode);
 	}

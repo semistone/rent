@@ -14,7 +14,7 @@ import org.siraya.rent.pojo.Device;
 public class TestCookieUtils  extends AbstractJUnit4SpringContextTests{
 	@Autowired
 	CookieUtils cookieUtils;
-	private String deviceId ="486cc1d0-90fc-4f58-a0db-5739745785d5";
+	private String deviceId ="test new device";
 	@Test 
 	public void testNewCookie(){
 		NewCookie cookie = cookieUtils.newDeviceCookie("test");
@@ -23,7 +23,7 @@ public class TestCookieUtils  extends AbstractJUnit4SpringContextTests{
 	@Test 	
 	public void testNewCookie2()throws Exception{
 		Device device = new Device();
-		device.setId("test new device");
+		device.setId(deviceId);
 		device.setUserId("test list devices");
 		NewCookie cookie = cookieUtils.createDeviceCookie(device);
 		String deviceCookie = cookie.getValue();

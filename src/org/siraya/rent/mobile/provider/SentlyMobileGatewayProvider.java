@@ -15,7 +15,7 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService{
     protected IApplicationConfig applicationConfig;
     private RestOperations restTemplate;
     @Autowired
-    private IDontTryService dontTryService;
+    protected IDontTryService dontTryService;
 	static String REQUEST_URI = "http://sent.ly/command/sendsms?username={username}&password={password}&text={text}&to={to}";
 
     public SentlyMobileGatewayProvider(RestOperations restTemplate){

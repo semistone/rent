@@ -9,7 +9,7 @@ import org.siraya.rent.mobile.service.IMobileGatewayService;
 import org.siraya.rent.mobile.provider.SentlyMobileGatewayProvider;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.utils.IApplicationConfig;
-
+import org.siraya.rent.donttry.service.IDontTryService;
 import org.springframework.web.client.RestOperations;
 import java.util.HashMap;
 
@@ -18,12 +18,16 @@ public class TestSentlyMobileGatewayProvider {
 	private Mockery context;
 	private boolean isMock = true;
     private IApplicationConfig applicationConfig;
+    private IDontTryService dontTryService;
     private RestOperations restTemplate;
+    private HashMap<String,Object> setting;
     // for test 
     class SentlyMobileGatewayProviderForTest extends SentlyMobileGatewayProvider{
     	public SentlyMobileGatewayProviderForTest(IApplicationConfig iApplicationConfig,
+    			IDontTryService dontTryService,
     			RestOperations restTemplate){
     		super(restTemplate);
+    		this.dontTryService = dontTryService;
     		this.applicationConfig = iApplicationConfig;
     	}
     }
@@ -33,8 +37,13 @@ public class TestSentlyMobileGatewayProvider {
 		if (isMock){
 			context = new JUnit4Mockery();
 			applicationConfig = context.mock(IApplicationConfig.class);	
+			dontTryService = context.mock(IDontTryService.class);	
 			restTemplate = context.mock(RestOperations.class);	
-			mobileGatewayService = new SentlyMobileGatewayProviderForTest(applicationConfig,restTemplate);
+			mobileGatewayService = new SentlyMobileGatewayProviderForTest(applicationConfig,dontTryService,
+					restTemplate);
+			setting = new HashMap<String,Object>();
+			setting.put("debug", false);
+			setting.put("max_msgs_per_day", 99);
 		}
 	}
     @Test   
@@ -43,12 +52,11 @@ public class TestSentlyMobileGatewayProvider {
 			context.checking(new Expectations() {
 				{
 					one(applicationConfig).get("sently");
-					HashMap<String,Object> setting = new HashMap<String,Object>();
-					setting.put("debug", false);
 					will(returnValue(setting));
 					one(restTemplate).getForObject(with(any(String.class)),
 							with(any(Class.class)), with(any(HashMap.class)));
 					will(returnValue("OK"));
+					one(dontTryService).doTry("sently gateway", IDontTryService.DontTryType.Today, 99);
 				}
 			});
 		}
@@ -62,12 +70,12 @@ public class TestSentlyMobileGatewayProvider {
 			context.checking(new Expectations() {
 				{
 					one(applicationConfig).get("sently");
-					HashMap<String,Object> setting = new HashMap<String,Object>();
-					setting.put("debug", false);
 					will(returnValue(setting));
 					one(restTemplate).getForObject(with(any(String.class)),
 							with(any(Class.class)), with(any(HashMap.class)));
 					will(returnValue("Error:1"));
+					one(dontTryService).doTry("sently gateway", IDontTryService.DontTryType.Today, 99);
+
 				}
 			});
 		}

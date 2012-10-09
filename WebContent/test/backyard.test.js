@@ -29,6 +29,14 @@ asyncTest('test list users', function(assert) {
 	collection.fetch(options);
 });
 
+asyncTest('test sently callback', function(assert) {
+	var data = {from:'+886911826844',text:'R:123456'};
+	$.get('../rest/sently_callback/123456789', data,function(data) {
+		ok(true, 'expect execute success');
+		start();
+	});
+});
+
 
 
 });

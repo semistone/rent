@@ -1,5 +1,6 @@
 package org.siraya.rent.user.dao;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -11,7 +12,7 @@ import org.siraya.rent.pojo.User;
 public class TestIUserDAO extends AbstractJUnit4SpringContextTests{
     @Autowired
     private IUserDAO userDao;
-    
+	@Before
     public void setUp(){
     	
     }

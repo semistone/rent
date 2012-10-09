@@ -57,7 +57,7 @@ public interface IDeviceDao {
     @Update("update DEVICE set STATUS = '3', MODIFIED=#{modified} where ID = #{id} and USER_ID=#{userId}")    
     public int updateRemovedDeviceStatus(@Param("id")String id,@Param("userId")String userId,@Param("modified")Long modified);
 
-    @Select("select * from DEVICE where USER_ID=#{userId} and STATUS='1' order by MODIFIED desc") 
+    @Select("select * from DEVICE where USER_ID=#{userId} and STATUS in ('1','2') order by MODIFIED desc") 
     @ResultMap("rent.mapper.DeviceResultMap")
     public Device getDeviceByUserIdAndStatusAuthing(String userId);
     
@@ -71,4 +71,5 @@ public interface IDeviceDao {
     @Select("select u.* from DEVICE d,USER u where d.ID=#{deviceId} and d.STATUS !='3' and d.USER_ID = u.ID order by d.MODIFIED desc limit #{limit} offset #{offset}")     
     @ResultMap("rent.mapper.UserResultMap")
     public List<User> getDeviceUsers(@Param("deviceId")String deviceId, @Param("limit")int limit, @Param("offset")int offset);
+
 }
