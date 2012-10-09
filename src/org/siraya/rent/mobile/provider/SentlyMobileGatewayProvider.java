@@ -30,7 +30,7 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService{
 	public void sendSMS(String to,String message) throws Exception{
 		Map<String,Object> setting=applicationConfig.get("sently");
 
-		int maxCount = (int)setting.get("max_msgs_per_day");
+		int maxCount = (Integer)setting.get("max_msgs_per_day");
 		dontTryService.doTry("sently gateway", IDontTryService.DontTryType.Today, maxCount);
 		logger.info("send sms to "+to+"\nmeesage:"+message+"\n");
 

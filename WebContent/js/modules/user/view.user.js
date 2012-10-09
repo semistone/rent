@@ -134,6 +134,7 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 			logger.debug('step1 success');
 			_this.model.set({from_step1:true},{slient:true});
 			logger.debug('render register view step2');
+			this.undelegateEvents();
 			_this.model.unbind(); // before change view must unbind all event
 			new RENT.user.view.RegisterStep2View({
 				el : _this.el,
@@ -215,6 +216,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		success = function(data, textStatus, jqXHR) {
 			logger.debug("verify success " + textStatus);
 			_this.model.unbind();
+			this.undelegateEvents();
 			new RENT.user.view.RegisterStep3View({
 				el : _this.el,
 				model: _this.model
@@ -308,6 +310,8 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	},
 	show_my_device:function(){
 		logger.debug('click show my devies');
+		this.undelegateEvents();
+		this.model.unbind(); 
 		var collection = new RENT.user.collection.UserCollection();
 		new RENT.user.view.ShowDevicesView({
 			el : this.el,
