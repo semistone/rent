@@ -36,7 +36,26 @@ asyncTest('test sently callback', function(assert) {
 		start();
 	});
 });
-
+//
+// insert into DEVICE values ('SSO','test sso','','token','5','1','','0','0');
+// insert into USER values ('test sso','234242424','','','','','','','','','1','1349743961','1349743961');
+//
+asyncTest('test mobile auth request', function(assert) {
+	var data = "{\"mobilePhone\":\"+886911826844\",\"requestFrom\":\"test sso\",\"requestId\":\"test request id\",\"done\":\"http://done\"}";
+	var setting = {
+	    url:'../rest/user/mobile_auth_request',
+	    data: data,
+	    dataType:'json',
+	    type:'POST',
+	    contentType: "application/json; charset=utf-8",
+	    success:success
+	};
+	$.ajax(setting);
+	var success = function(){
+		ok(true, 'expect execute success');
+		start();		
+	}
+});
 
 
 });

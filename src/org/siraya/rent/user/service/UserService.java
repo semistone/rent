@@ -76,6 +76,9 @@ public class UserService implements IUserService {
     		//
     		logger.debug("get user from database");
         	User user = userDao.getUserByUserId(userId);
+        	if (user == null ) {
+        		throw new RentException(RentException.RentErrorCode.ErrorNotFound, "user "+userId+" not found");
+        	}
         	logger.debug("mobile phone is "+user.getMobilePhone());
         	device.setUser(user);    		
     	}
@@ -321,7 +324,7 @@ public class UserService implements IUserService {
 		logger.debug("get request from "+userId);
 		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(SSO_DEVICE_ID,userId);
 		if (requestFrom == null) {
-			throw new RentException(RentErrorCode.ErrorUserExist,"request user not exist");
+			throw new RentException(RentErrorCode.ErrorUserExist,"request sso device not exist");
 		}
 		if (requestFrom.getStatus() != DeviceStatus.ApiKeyOnly.getStatus()) {
 			throw new RentException(RentErrorCode.ErrorPermissionDeny,"request user not for apikey only");			
@@ -368,7 +371,12 @@ public class UserService implements IUserService {
 		//
 		// save into database.
 		//
-		mobileAuthRequestDao.newRequest(request);
+		try {
+			mobileAuthRequestDao.newRequest(request);
+		}catch(Exception e){
+			logger.error("insert request into dao error",e);
+			throw new RentException(RentException.RentErrorCode.ErrorGeneral,"insert request into dao error");
+		}
 		return currentDevice;
 	}
 	
