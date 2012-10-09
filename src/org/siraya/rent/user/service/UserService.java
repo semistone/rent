@@ -7,6 +7,7 @@ import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.VerifyEvent;
 import org.siraya.rent.user.dao.IUserDAO;
 import org.siraya.rent.user.dao.IVerifyEventDao;
+import org.siraya.rent.user.dao.IMobileAuthRequestDao;
 import org.siraya.rent.utils.EncodeUtility;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.utils.RentException;
@@ -29,13 +30,15 @@ public class UserService implements IUserService {
     private IUserDAO userDao;
     @Autowired
     private IApplicationConfig applicationConfig;
-    @Autowired
+
+	@Autowired
     private IDeviceDao deviceDao;	
+    @Autowired
+    private IMobileAuthRequestDao mobileAuthRequestDao;	
     @Autowired
     private IVerifyEventDao verifyEventDao;
 	@Autowired
     private EncodeUtility encodeUtility;    
-    
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     
@@ -313,28 +316,33 @@ public class UserService implements IUserService {
      * step4: authUser and mobilePhone can't have together.
      * step5: save request into database.
      */
-	public Device mobileAuthRequest(MobileAuthRequest request){
-		String deviceId = "SSO";
+	public Device mobileAuthRequest(Device currentDevice, MobileAuthRequest request){
 		String userId = request.getRequestFrom();
 		logger.debug("get request from "+userId);
-		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(deviceId,userId);
+		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(SSO_DEVICE_ID,userId);
 		if (requestFrom == null) {
 			throw new RentException(RentErrorCode.ErrorUserExist,"request user not exist");
 		}
 		if (requestFrom.getStatus() != DeviceStatus.ApiKeyOnly.getStatus()) {
-			throw new RentException(RentErrorCode.ErrorPermissionDeny,"request user not authed");			
+			throw new RentException(RentErrorCode.ErrorPermissionDeny,"request user not for apikey only");			
 		}
-
-		logger.debug("verify request sign");		
-		String sign = EncodeUtility.sha1(request.toString(requestFrom.getToken()));
-		if (!sign.equals(request.getSign())) {
-			throw new RentException(RentErrorCode.ErrorPermissionDeny,"sign verify failed");			
+		String requestString = request.toString(requestFrom.getToken());
+		logger.debug("verify request sign "+requestString);		
+		Boolean isDebugMode = (Boolean)applicationConfig.get("general").get("debug");
+		if (!isDebugMode) {
+			String sign = EncodeUtility.sha1(requestString);
+			if (!sign.equals(request.getSign())) {
+				throw new RentException(RentErrorCode.ErrorPermissionDeny,"sign verify failed");			
+			}			
+		} else {
+			logger.debug("debug mode skip sign verify");
 		}
 		
 		logger.debug("verify expired");
 		long expire = 300;
-		if (request.getRequestTime() < Calendar.getInstance().getTime().getTime()/1000 + expire) {
-			throw new RentException(RentErrorCode.ErrorAuthExpired, "request has expired");			
+		long now = Calendar.getInstance().getTimeInMillis()/1000;
+		if (request.getRequestTime() > now + expire) {
+			throw new RentException(RentErrorCode.ErrorAuthExpired, "request has expired time is "+request.getRequestTime()+ " compare to "+now);			
 		}
 		
 		//
@@ -344,20 +352,35 @@ public class UserService implements IUserService {
 		//
 		// get auth user from mobile phone
 		//
-		Device device = new Device();
 		String mobilePhone = request.getMobilePhone();
 		if (mobilePhone != null) {
 			User user = this.userDao.getUserByMobilePhone(mobilePhone);
-			device.setUserId(user.getId());
+			if (user != null) {
+				currentDevice.setUserId(user.getId());
+				//
+				// get device from deviceDao
+				//
+				currentDevice = this.getDevice(currentDevice);
+
+			}
 		}
 		
 		//
 		// save into database.
 		//
-		return device;
+		mobileAuthRequestDao.newRequest(request);
+		return currentDevice;
 	}
 	
 	
+	public IMobileAuthRequestDao getMobileAuthRequestDao() {
+		return mobileAuthRequestDao;
+	}
+
+	public void setMobileAuthRequestDao(IMobileAuthRequestDao mobileAuthRequestDao) {
+		this.mobileAuthRequestDao = mobileAuthRequestDao;
+	}
+
 	@Override
 	public void verifyEmail(String userId, String authCode) {
 		// TODO Auto-generated method stub
@@ -377,4 +400,13 @@ public class UserService implements IUserService {
 	public void setDeviceDao(IDeviceDao deviceDao){
 		this.deviceDao = deviceDao;
 	}
+	
+    public IApplicationConfig getApplicationConfig() {
+		return applicationConfig;
+	}
+
+	public void setApplicationConfig(IApplicationConfig applicationConfig) {
+		this.applicationConfig = applicationConfig;
+	}
+
 }

@@ -12,7 +12,8 @@ import org.siraya.rent.user.dao.IUserDAO;
 import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.pojo.MobileAuthRequest;
 public interface IUserService {
-	
+    public final static String SSO_DEVICE_ID = "SSO";
+
 	/**
 	 * remove device
 	 * @param device
@@ -43,7 +44,7 @@ public interface IUserService {
 	
 	public List<User> getDeviceUsers(String deviceId, int limit, int offset);
 	 
-	public Device mobileAuthRequest(MobileAuthRequest request);
+	public Device mobileAuthRequest(Device currentDevice, MobileAuthRequest request);
 	/**
 	 * update user email
 	 * @param userId

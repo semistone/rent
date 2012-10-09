@@ -17,7 +17,7 @@ public class TestSentlyCallback {
 	private IMobileAuthService mobileAuthService;
 	private IApplicationConfig applicationConfig;
 	private Mockery context;
-
+	private HashMap<String,String> setting;
 	@Before
 	public void setUp(){
 		test = new SentlyCallback();
@@ -28,6 +28,9 @@ public class TestSentlyCallback {
 			applicationConfig = context.mock(IApplicationConfig.class);
 			test.setApplicationConfig(applicationConfig);
 			test.setMobileAuthService(mobileAuthService);
+			setting = new HashMap<String,String>();
+			setting.put("callback_pass", "123456789");
+
 		}
 	}
 	
@@ -41,8 +44,6 @@ public class TestSentlyCallback {
 				{
 					one(mobileAuthService).verifyAuthCodeByMobilePhone("3123123131", "2332");
 					one(applicationConfig).get("sently");
-					HashMap<String,String> setting = new HashMap<String,String>();
-					setting.put("callback_pass", "123456789");
 					will(returnValue(setting));
 				}
 			});

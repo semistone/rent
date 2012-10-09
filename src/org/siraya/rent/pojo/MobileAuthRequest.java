@@ -1,4 +1,7 @@
 package org.siraya.rent.pojo;
+
+import java.text.MessageFormat;
+
 /**
  *  Design mobile auth request form.
  * 
@@ -74,6 +77,9 @@ public class MobileAuthRequest {
 	}
 
 	public String toString(String token){
-		return this.authUserId+":"+token;
+		return String.format("%s:%s:%b:%d:%b:%b:%b:%b:%b", 
+				this.requestId, this.requestFrom,
+				this.done, this.requestTime,this.mobilePhone,this.forceReauth,this.callback,
+				this.authUserId,token);
 	}
 }

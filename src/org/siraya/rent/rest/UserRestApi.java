@@ -196,7 +196,10 @@ public class UserRestApi {
 	@Path("/mobile_auth_request")
 	public Response mobileAuthRequest(MobileAuthRequest request){
 		try {
-			Device device = userService.mobileAuthRequest(request);
+			Device currentDevice = new Device();
+			currentDevice.setId(this.userAuthorizeData.getDeviceId());
+			currentDevice.setUserId(this.userAuthorizeData.getUserId());
+			Device device = userService.mobileAuthRequest(currentDevice,request);
 			device.setId(this.userAuthorizeData.getDeviceId());
 			device = userService.getDevice(device);
 			return Response.status(HttpURLConnection.HTTP_OK).entity(device).build();
