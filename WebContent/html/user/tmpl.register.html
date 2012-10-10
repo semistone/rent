@@ -66,30 +66,29 @@
 <script id="tmpl_register_step3" type="x-tmpl-mustache">
 <header id="overview" class="jumbotron subhead">
 <div class="row">
-	<div class="span6">
+	<div class="span3">
     	<h1 id="i18n_step3">Done</h1>
 	</div>
-</div>
-</header>
-<div id="auth_success_block" class="row">
 	<div class="span4">
-		<div class="alert alert-success">
-			<span  id="i18n_auth_success"></span>
+		<div id="auth_success_block">
+			<div class="alert alert-success">
+				<span  id="i18n_auth_success"></span>
+			</div>
 		</div>
 	</div>
 </div>
+</header>
+
 <div class="row">
-<div class="span7 offset1">
+<div class="span3">
+	<div class="well">
  	<h2 id="i18n_register_manage_tool"></h2>
-	<ul class="breadcrumb"> 				
-    	<a id="named_my_devices_link"><h4 id="i18n_named_my_devices"></h4></a>
-	</ul>
-    <ul class="breadcrumb"> 				
-    	<a id="show_my_devices_link"><h4 id="i18n_show_my_devices"></h4></a>
-	</ul>
-    <ul class="breadcrumb">
-		<a id="delete_device_link"><h4 id="i18n_delete_device"></h4></a>
-	</ul>  
+    	<ul class="nav nav-pills nav-stacked">
+			<li id="named_my_devices_link"><a id="i18n_named_my_devices"></a></li>
+			<li id="show_my_devices_link"><a id="i18n_show_my_devices"></a></li>
+			<li id="delete_device_link"><a id="i18n_delete_device"></a></li>
+	    </ul>
+	</div> 
 </div> 
 </div>
 </script>
@@ -116,21 +115,31 @@
 </div>
 </script>
 <script id="tmpl_show_devices" type="x-tmpl-mustache">
-<div id="bazingaContent">
-        <div id="bazingaContentInner">
-                <div>
-                <h1 id="i18n_devices">Devices</h1>
-                <div class="bazingaDivider"></div>
-                <br />                
-                </div>
-  				<section class="menuSection">
+<header id="overview" class="jumbotron subhead">
+<div class="row">
+	<div class="span6">
+    	<h1 id="i18n_devices">Done</h1>
+	</div>
+</div>
+</header>
+<div class="row">
+	<div class="span6">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<td><span class="i18n_id"></span></td>
+					<td><span class="i18n_name"></span></td>
+				</tr>
+			</thead>
+			<tbody>
 {{#devices}}
-	  				<article class="menuItem">  				
-                        <h3>{{#name}}<span class="i18n_name">Name:</span>:{{name}}{{/name}}{{^name}}<span class="i18n_id">ID</span>:{{id}}{{/name}}</h3>
-	    				<div class="bazingaClear"></div>
-	    			</article>
+				<tr>
+					<td>{{id}}</td>
+					<td>{{name}}</td>
+				</tr>
 {{/devices}}
-				</section>
-        </div>
+			</tbody>
+		</table>
+	</div>
 </div>
 </script>
