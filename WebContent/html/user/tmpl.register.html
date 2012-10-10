@@ -1,39 +1,66 @@
 <script id="tmpl_register_form" type="x-tmpl-mustache">
-<div id="bazingaContent">
-        <div id="bazingaContentInner">
-                <form id="register_form">
-                <div>
-                <h1 id="i18n_step1">Step1</h1>
-                <div class="bazingaDivider"></div>
-                <br />
-                <p><span id="i18n_country_code">Country Code </span><span><select name="country_code" id="country_code" class="required">
-                      <option  value="886">Taiwan +886</option>
-                      <option  value="86">China +86</option>
-                      <option  value="81">Japen +81</option>
-                      <option  value="1">Unit State +1</option>
-                </select></span> </p>
-                <p><span id="i18n_mobile_phone">Mobile Phone Number </span><span><input type="text" name="mobile_phone" class="required" maxlength="15"  id="mobile_phone" value="{{mobilePhone}}"/></span> </p>
-                <p><span><strong><input type="button" id="register_button" value="Register"/></strong></span></p>
-                </div><!--bazingaThinColumn-->    
-                </form>
-        </div><!--bazingaContentInner-->
+<header id="overview" class="jumbotron subhead">
+<div class="row">
+	<div class="span6">
+		<h1 id="i18n_step1"></h1>
+	</div>
+</div>
+</header>
+<div class="row">
+<div class="span7 offset1">
+    <form id="register_form" class="form-horizontal well">
+    <fieldset>
+		<div class="control-group">
+        	<label  id="i18n_country_code" class="control-label" for="country_code"></label>
+        	<div class="controls">
+				<select name="country_code" id="country_code" class="required">
+        			<option  value="886">Taiwan +886</option>
+            		<option  value="86">China +86</option>
+            		<option  value="81">Japen +81</option>
+            		<option  value="1">Unit State +1</option>
+				</select>
+        	</div>
+		</div>
+		<div class="control-group">
+			<label id="i18n_mobile_phone" class="control-label" for="mobile_phone"></label>
+        	<div class="controls">			
+				<input type="text" name="mobile_phone" class="input-xlarge focused required" maxlength="15"  id="mobile_phone" value="{{mobilePhone}}"/>
+			</div>
+		</div>
+		<div class="form-actions">
+			<button class="btn btn-primary" type="button" id="register_button">Register</button>
+		</div>
+    </fieldset>
+    </form>
+</div> 
 </div>
 </script>
 <script id="tmpl_register_step2" type="x-tmpl-mustache">
-<div id="bazingaContent">
-        <div id="bazingaContentInner">
-                <form id="register_form_step2">
-                <div>
-                <h1 id="i18n_step2">Step2</h1>
-                <div class="bazingaDivider"></div>
-                <br />
-                <p><span id="i18n_enter_auth_code">Please enter auth code </span><span><input type="text" class="required" id="auth_code"/></span> </p>
-                <p>{{#from_step1}}<span><strong><input type="button" id="before_button" /></strong></span> {{/from_step1}}
-                   <span><strong><input type="button" id="verify_button" /></strong></span> 
-                   <span><strong><input type="button" id="send_mobile_auth_message"/></strong></span></p>
-                </div>
-                </form>
-        </div>
+<header id="overview" class="jumbotron subhead">
+<div class="row">
+	<div class="span6">
+		<h1 id="i18n_step2"></h1>
+	</div>
+</div>
+</header>
+<div class="row">
+<div class="span7 offset1">
+    <form id="register_form_step2" class="form-horizontal well">
+    <fieldset>
+		<div class="control-group">
+        	<label  id="i18n_enter_auth_code" class="control-label" for="auth_code"></label>
+        	<div class="controls">
+				<input type="text" class="input-xlarge required" id="auth_code"/>
+        	</div>
+		</div>
+		<div class="form-actions">
+			<button class="btn btn-inverse" type="button" id="before_button"></button>
+			<button class="btn btn-primary" type="button" id="verify_button"></button>
+			<button class="btn btn-success" type="button" id="send_mobile_auth_message"></button>
+		</div>
+    </fieldset>
+    </form>
+</div> 
 </div>
 </script>
 <script id="tmpl_register_step3" type="x-tmpl-mustache">
@@ -44,38 +71,37 @@
 	</div>
 </div>
 </header>
+<div id="auth_success_block" class="row">
+	<div class="span4">
+		<div class="alert alert-success">
+			<span  id="i18n_auth_success"></span>
+		</div>
+	</div>
+</div>
 <div class="row">
 <div class="span7 offset1">
-	<h2 class="success" id="i18n_auth_success"></h2>
  	<h2 id="i18n_register_manage_tool"></h2>
 	<ul class="breadcrumb"> 				
-    	<h4 id="i18n_named_my_devices"></h4>
+    	<a id="named_my_devices_link"><h4 id="i18n_named_my_devices"></h4></a>
 	</ul>
     <ul class="breadcrumb"> 				
     	<a id="show_my_devices_link"><h4 id="i18n_show_my_devices"></h4></a>
-		<div class="bazingaClear"></div>
 	</ul>
     <ul class="breadcrumb">
 		<a id="delete_device_link"><h4 id="i18n_delete_device"></h4></a>
-		<div class="bazingaClear"></div>
 	</ul>  
 </div> 
 </div>
-
-  
-
 </script>
 
 <script id="tmpl_register_error" type="x-tmpl-mustache">
-<div id="bazingaContent">
-        <div id="bazingaContentInner">
-                <div>
-                <h1 id="i18n_error">Error</h1>
-                <div class="bazingaDivider"></div>
-                <br />
-                <p><span><strong id="i18n_error_msg"></strong></span> </p>
-                </div>
-        </div>
+<div class="row">
+	<div class="span12">
+		<div class="alert alert-block">
+			<h1 id="i18n_error">Done</h1>
+ 			<p><span><strong id="i18n_error_msg"></strong></span>
+		</div>
+	</div>
 </div>
 </script>
 

@@ -184,12 +184,12 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 				$.i18n.prop('user.register.step2'));
 		this.$el.find('#i18n_enter_auth_code').text(
 				$.i18n.prop('user.register.enter_auth_code'));
-		this.$el.find('#verify_button').val(
+		this.$el.find('#verify_button').text(
 				$.i18n.prop('user.register.verify'));
-		this.$el.find('#before_button').val(
+		this.$el.find('#before_button').text(
 				$.i18n.prop('general.before'));
 		
-		this.$el.find('#send_mobile_auth_message').val(
+		this.$el.find('#send_mobile_auth_message').text(
 				$.i18n.prop('user.register.send_mobile_auth_message'));
 	},
 	send_mobile_auth_message :function(){
@@ -255,7 +255,7 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		}		
 	},
 	events : {
-		"click #name_device_button" : 'name_device_popup',
+		"click #named_my_devices_link" : 'name_device_popup',
 		'click #delete_device_link' : 'delete_device',
 		'click #show_my_devices_link' : 'show_my_device'
 	},
@@ -287,7 +287,7 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		//
 		// animation affect.
 		//
-		this.$el.find('#i18n_auth_success').fadeOut(3000);
+		this.$el.find('#auth_success_block').fadeOut(3000);
 	},
 	name_device_popup:function(){
 		logger.debug('click name device popup');
