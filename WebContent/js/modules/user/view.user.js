@@ -9,7 +9,6 @@ define([
   'RentCommon',
   'logger',
   'text!../../../html/user/tmpl.register.html',
-  'Validator',
   './namespace.user'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
@@ -78,16 +77,17 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 RENT.user.view.RegisterStep1View = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'new_device_event');
-		$.validator.addMethod("regex", function(value, element, re) {
-			return re.test(value);
-		}, $.i18n.prop('rent.error.validate_format'));
+
 		this.tmpl = $template.find('#tmpl_register_step1').html();
 	},
 	render: function(){
 		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
-		this.$el.find("#register_form").validate();
-		this.$el.find('#mobile_phone').rules('add', {
-			regex : /^\+?\d{10,15}$/
+		var _this = this;
+		RENT.initValidator(function(){
+			_this.$el.find("#register_form").validate();			
+			_this.$el.find('#mobile_phone').rules('add', {
+				regex : /^\+?\d{10,15}$/
+			});
 		});
 		//
 		// l10n translate
@@ -168,9 +168,12 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
 
 		// validate setting
-		this.$el.find("#register_form_step2").validate();
-		this.$el.find('#auth_code').rules('add', {
-			regex : /^\d{6}$/
+		var _this = this;
+		RENT.initValidator(function(){
+			_this.$el.find("#register_form_step2").validate();
+			_this.$el.find('#auth_code').rules('add', {
+				regex : /^\d{6}$/
+			});
 		});
 		//
 		// i18n
@@ -337,7 +340,7 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 	},
 	save_name:function(){
 		logger.debug('click name device popup save');
-        var formvalidate = this.$el.find('#dialog_form').valid();
+        var formvalidate = this.$el.find('#name_device_form').valid();
         if (!formvalidate) {
         	logger.error('form validate fail');
         	return;
@@ -356,10 +359,13 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 	},
 	render:function(){
 		this.$el.html(this.tmpl);
-		this.$el.find("#name_device_form").validate();
-		this.$el.find('#device_name').rules('add', {
-			regex : /^[^\<\(\)]*$/
-		});
+		var _this = this;
+		RENT.initValidator(function(){
+			_this.$el.find("#name_device_form").validate();
+			_this.$el.find('#device_name').rules('add', {
+				regex : /^[^\<\(\)]*$/
+			});
+		});				
 		//
 		// i18n
 		//
