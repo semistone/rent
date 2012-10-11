@@ -9,14 +9,14 @@ define([
   'RentCommon',
   'logger',
   'text!../../../html/user/tmpl.register.html',
+  'Validator',
   './namespace.user'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
-$('body').append(template);	
+var $template = $('<div>').append(template);	
 RENT.user.view.RegisterView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'error');
-		this.$el = $(this.el);
 		this.model.bind('change',this.render);
 		this.model.bind('error',this.error);
 		this.model.fetch();
@@ -33,6 +33,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		}
 	},
 	render : function() {
+		this.$el.html($template.find('#tmpl_register_form').html());
 		var status =this.model.get('status');
 		logger.debug("render user status:"+status);
 		switch (status) {
@@ -41,7 +42,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			logger.debug('render register view step1');
 			this.model.unbind(); // before change view must unbind all event
 			new RENT.user.view.RegisterStep1View({
-				el : this.el,
+				el : '#register_content',
 				model : this.model
 			}).render();
 			break;
@@ -50,7 +51,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			logger.debug('render register view step2');
 			this.model.unbind(); // before change view must unbind all event
 			new RENT.user.view.RegisterStep2View({
-				el : this.el,
+				el : '#register_content',
 				model : this.model
 			}).render();
 			break;
@@ -58,7 +59,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			logger.debug('render register view step3');
 			this.model.unbind();
 			new RENT.user.view.RegisterStep3View({
-				el : this.el,
+				el : '#register_content',
 				model: this.model
 			}).render();
 			break;
@@ -77,13 +78,12 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 RENT.user.view.RegisterStep1View = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'new_device_event');
-		this.$el = $(this.el);
 		$.validator.addMethod("regex", function(value, element, re) {
 			return re.test(value);
 		}, $.i18n.prop('rent.error.validate_format'));
+		this.tmpl = $template.find('#tmpl_register_step1').html();
 	},
 	render: function(){
-		this.tmpl = $('#tmpl_register_form').html();
 		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
 		this.$el.find("#register_form").validate();
 		this.$el.find('#mobile_phone').rules('add', {
@@ -97,8 +97,8 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 				$.i18n.prop('user.register.mobile_phone'));
 		this.$el.find('#i18n_country_code').text(
 				$.i18n.prop('user.register.country_code'));	
-		this.$el.find('#i18n_step1').text(
-				$.i18n.prop('user.register.step1'));
+		$('#register_title').text($.i18n.prop('user.register.step1'));
+
 	},
 
 	events : {
@@ -129,7 +129,7 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 			logger.debug('step1 success');
 			_this.model.set({from_step1:true},{slient:true});
 			logger.debug('render register view step2');
-			this.undelegateEvents();
+			_this.undelegateEvents();
 			_this.model.unbind(); // before change view must unbind all event
 			new RENT.user.view.RegisterStep2View({
 				el : _this.el,
@@ -159,8 +159,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		'click #before_button' : 'go_back_step1'
 	},
 	initialize : function() {
-		this.tmpl = $('#tmpl_register_step2').html();
-		this.$el = $(this.el);
+		this.tmpl = $template.find('#tmpl_register_step2').html();
 		_.bindAll(this, 'render','do_verify','go_back_step1');
 		this.model.bind('error',this.error);
 	},
@@ -176,8 +175,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		//
 		// i18n
 		//
-		this.$el.find('#i18n_step2').text(
-				$.i18n.prop('user.register.step2'));
+		$('#register_title').text($.i18n.prop('user.register.step2'));
 		
 		this.$el.find('#i18n_enter_auth_code').text(
 				$.i18n.prop('user.register.enter_auth_code'));
@@ -212,7 +210,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		success = function(data, textStatus, jqXHR) {
 			logger.debug("verify success " + textStatus);
 			_this.model.unbind();
-			this.undelegateEvents();
+			_this.undelegateEvents();
 			new RENT.user.view.RegisterStep3View({
 				el : _this.el,
 				model: _this.model
@@ -240,6 +238,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render','delete_device','show_my_device');
+		this.tmpl = $template.find('#tmpl_register_step3').html();
 	},
 	dotDone:function(){
 		//
@@ -259,13 +258,11 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	},
 	render:function(){
 		this.dotDone();
-		var step3_template = $('#tmpl_register_step3').html();
-		this.$el.html(step3_template);
+		this.$el.html(this.tmpl);
 		//
 		// i18n
 		//
-		this.$el.find('#i18n_step3').text(
-				$.i18n.prop('user.register.step3'));
+		$('#register_title').text($.i18n.prop('user.register.step3'));
 		this.$el.find('#i18n_auth_success').text(
 				$.i18n.prop('user.register.auth_success'));
 		this.$el.find('#i18n_show_my_devices').text(
@@ -290,7 +287,7 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	name_device_popup:function(){
 		logger.debug('click name device popup');
 		new RENT.user.view.NameDeviceView({
-			el : this.el,
+			el : '#register_right',
 			model : this.model}).render();
 	},
 	delete_device:function(){
@@ -305,12 +302,10 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		});	
 	},
 	show_my_device:function(){
-		logger.debug('click show my devies');
-		this.undelegateEvents();
-		this.model.unbind(); 
+		logger.debug('click show my devies'); 
 		var collection = new RENT.user.collection.UserCollection();
 		new RENT.user.view.ShowDevicesView({
-			el : this.el,
+			el : '#register_right',
 			collection : collection
 		});
 		collection.fetch();
@@ -334,7 +329,7 @@ RENT.user.view.ErrorView = Backbone.View.extend({
 //
 RENT.user.view.NameDeviceView = Backbone.View.extend({
 	initialize : function() {
-		this.tmpl = $('#tmpl_dialog_form').html();
+		this.tmpl = $template.find('#tmpl_dialog_form').html();
 		_.bindAll(this, 'render','save');
 	},
 	save:function(_this){
@@ -396,7 +391,7 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 RENT.user.view.ShowDevicesView = Backbone.View.extend({
 	initialize : function() {
 		logger.debug('initialize show devices view');
-		this.tmpl = $('#tmpl_show_devices').html();
+		this.tmpl = $template.find('#tmpl_show_devices').html();
 		_.bindAll(this, 'render');
 		this.collection.on('reset',this.render);
 	},
