@@ -12,10 +12,11 @@ define([
   './namespace.backyard'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
-var template = $('<div>').html(template);
+var $template = $('<div>').html(template);
 RENT.backyard.view.MainView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render');
+		this.tmpl = $template.find('#tmpl_backyard_menu').html();
 	},
 	events : {
 		'click #show_token_link' : 'show_token',
@@ -51,13 +52,12 @@ RENT.backyard.view.MainView = Backbone.View.extend({
 		logger.debug('click list users link');
 		var collection = new RENT.backyard.collection.UserCollection();
 		new RENT.backyard.view.ShowUsersView({
-			el : this.el,
+			el : '#backyard_right',
 			collection : collection
 		});
 		collection.fetch();
 	},
 	render:function(){
-		this.tmpl = template.find('#tmpl_backyard_menu').html();
 		this.$el.html(this.tmpl);
 	}
 });
@@ -65,7 +65,7 @@ RENT.backyard.view.MainView = Backbone.View.extend({
 RENT.backyard.view.ShowUsersView= Backbone.View.extend({
 	initialize : function() {
 		logger.debug('initialize show users view');
-		this.tmpl = $('#tmpl_show_uses').html();
+		this.tmpl = $template.find('#tmpl_show_uses').html();
 		_.bindAll(this, 'render');
 		this.collection.on('reset',this.render);
 	},
