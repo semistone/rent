@@ -1,10 +1,11 @@
 define([
   'jQuery',
   'logger',
+  'Mustache',
   'jQueryUI',
   'i18N',
   'Validator'
-], function($, logger) {
+], function($, logger,Mustache) {
 
 var RENT = {
     CONSTANTS:{
@@ -48,19 +49,10 @@ var RENT = {
     },
 
 	simpleDialog : function(title, msg) {
-		var dialog = $('#error_dialog');
-		dialog.text(msg);
-		$('#error_dialog').dialog({
-			title : title,
-			buttons : [ {
-				text : $.i18n.prop('general.OK'),
-				click : function() {
-					$(this).dialog("close");
-				}
-			} ],
-			resize : false,
-			modal : true
-		});
+		var dialog= Mustache.to_html($('#tmpl_simple_dialog').html(), {
+					title:title,msg:msg});
+		$('#dialog').html(dialog);
+		$('#error_dialog').modal('show');
 	},
     simpleErrorDialog:function(resp,msg){
 		var resp = $.parseJSON(resp.responseText);

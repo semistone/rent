@@ -22,6 +22,9 @@ require.config({
 		Underscore : {
 			exports : "_"
 		},
+		Mustache :{
+			exports : "Mustache"
+		},
 		Backbone : {
 			deps : [ "Underscore", "jQuery" ],
 			exports : "Backbone"
