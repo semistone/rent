@@ -16,20 +16,39 @@
   <!-- CSS concatenated and minified via ant build script-->
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/bootstrap-responsive.min.css" rel="stylesheet"> 
+  <link href="css/docs.css" rel="stylesheet">
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css"/>
   
 </head>
 
-<body>
+<body  data-target=".bs-docs-sidebar" data-spy="scroll" data-twttr-rendered="true">
   <div id="supersized-loader" style="display: none;"></div>
-  <div id="container">
+<header id="overview" class="jumbotron subhead">
+<div class="container">
+		<h1>Backyard</h1>
+
+</div>
+</header>  
+  <div class="container">
+
+<div class="row">
+<div class="span4 bs-docs-sidebar">
     <div id="main" role="main">
     </div>
-        
-  </div> <!--! end of #container -->
+</div>
+<div class="span8">
+test span8
+</div>        
+</div> <!--! end of #container -->
 
-  <div id="dialog"></div>
-  <script data-main="js/main2" src="js/libs/require/require.js"></script> 
-
+<div id="dialog"></div>
+<footer>
+	<div class="row">
+    	<div class="span4 offset4">
+       	Copyright (C) Siraya.org	
+    	</div>
+	</div>
+</footer>
+<script data-main="js/main2" src="js/libs/require/require.js"></script> 
 </body>
 </html>
