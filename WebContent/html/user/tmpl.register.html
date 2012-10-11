@@ -2,11 +2,14 @@
 <header id="overview" class="jumbotron subhead">
 <div class="row">
 	<div class="span6">
-		<h1 id="i18n_step1"></h1>
+		<h1 id="register_title"></h1>
 	</div>
 </div>
 </header>
-<div class="row">
+<div id="register_content" class="row">
+</div>
+</script>
+<script id="tmpl_register_step1" type="x-tmpl-mustache">
 <div class="span7 offset1">
     <form id="register_form" class="form-horizontal well">
     <fieldset>
@@ -33,17 +36,8 @@
     </fieldset>
     </form>
 </div> 
-</div>
 </script>
 <script id="tmpl_register_step2" type="x-tmpl-mustache">
-<header id="overview" class="jumbotron subhead">
-<div class="row">
-	<div class="span6">
-		<h1 id="i18n_step2"></h1>
-	</div>
-</div>
-</header>
-<div class="row">
 <div class="span7 offset1">
     <form id="register_form_step2" class="form-horizontal well">
     <fieldset>
@@ -59,16 +53,11 @@
 			<button class="btn btn-success" type="button" id="send_mobile_auth_message"><span id="i18n_send_mobile_auth_message"></span><i class="icon-envelope"></i></button>
 		</div>
     </fieldset>
-    </form>
-</div> 
+    </form> 
 </div>
 </script>
 <script id="tmpl_register_step3" type="x-tmpl-mustache">
-<header id="overview" class="jumbotron subhead">
 <div class="row">
-	<div class="span3">
-    	<h1 id="i18n_step3">Done</h1>
-	</div>
 	<div class="span4">
 		<div id="auth_success_block">
 			<div class="alert alert-success">
@@ -77,8 +66,6 @@
 		</div>
 	</div>
 </div>
-</header>
-
 <div class="row">
 <div class="span3">
 	<div class="well">
@@ -90,6 +77,8 @@
 	    </ul>
 	</div> 
 </div> 
+<div id="register_right" class="span9">
+</div>
 </div>
 </script>
 
@@ -97,31 +86,39 @@
 <div class="row">
 	<div class="span12">
 		<div class="alert alert-block">
-			<h1 id="i18n_error">Done</h1>
+			<h1 id="i18n_error"></h1>
  			<p><span><strong id="i18n_error_msg"></strong></span>
 		</div>
 	</div>
 </div>
 </script>
 
-<script id="tmpl_dialog_form" type="x-tmpl-mustache">
-<div id="dialog_form_block">
-<form id="dialog_form">
-<fieldset>
-	<label id="i18n_name" for="name"></label>
-	<input type="text" name="name" id="device_name" class="required text ui-widget-content" /><p>
-</fieldset>
-</form>
-</div>
-</script>
-<script id="tmpl_show_devices" type="x-tmpl-mustache">
-<header id="overview" class="jumbotron subhead">
+<script id="tmpl_name_device_form" type="x-tmpl-mustache">
 <div class="row">
 	<div class="span6">
-    	<h1 id="i18n_devices">Done</h1>
+    <form  id="name_device_form" class="form-horizontal well">
+<fieldset>
+		<div class="control-group">
+        	<label  id="i18n_name" class="control-label" for="name"></label>
+        	<div class="controls">
+				<input type="text" name="name" id="device_name" class="required text ui-widget-content" />
+        	</div>
+		</div>
+		<div class="form-actions">
+			<button class="btn btn-success" type="button" id="save_name_link">Save</button>
+		</div>
+</fieldset>
+	</form>
 	</div>
 </div>
-</header>
+</script>
+</script>
+<script id="tmpl_show_devices" type="x-tmpl-mustache">
+<div class="row">
+	<div class="span6">
+    	<h4 id="i18n_devices"></h4>
+	</div>
+</div>
 <div class="row">
 	<div class="span6">
 		<table class="table table-striped">

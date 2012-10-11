@@ -3,9 +3,7 @@ define([
   'logger',
   'Mustache',
   'text!../html/general/tmpl.general.html',
-  'jQueryUI',
-  'i18N',
-  'Validator'
+  'i18N'
 ], function($, logger,Mustache, Template) {
 var template = $('<div>').html(Template);
 var RENT = {
@@ -88,17 +86,19 @@ var RENT = {
         }
         return form;
     },
-    initValidator:function(){
-    	$.validator.defaults.errorClass="alert";
-    	$.validator.addMethod("regex", function(value, element, re) {
-    		return re.test(value);
-    	}, $.i18n.prop('rent.error.validate_format'));
+    initValidator:function(callback){
+    	require([ 'Validator'],function(){    		
+        	$.validator.defaults.errorClass="alert";
+        	$.validator.addMethod("regex", function(value, element, re) {
+        		return re.test(value);
+        	}, $.i18n.prop('rent.error.validate_format'));
+    		callback();
+    	});
     }
     
 }
 $(function(){
 	RENT.bindLoadingPage("#supersized-loader");
-	RENT.initValidator();
 });
 return RENT;
 });

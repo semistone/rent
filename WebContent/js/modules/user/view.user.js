@@ -12,11 +12,10 @@ define([
   './namespace.user'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
-$('body').append(template);	
+var $template = $('<div>').append(template);	
 RENT.user.view.RegisterView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'error');
-		this.$el = $(this.el);
 		this.model.bind('change',this.render);
 		this.model.bind('error',this.error);
 		this.model.fetch();
@@ -33,6 +32,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		}
 	},
 	render : function() {
+		this.$el.html($template.find('#tmpl_register_form').html());
 		var status =this.model.get('status');
 		logger.debug("render user status:"+status);
 		switch (status) {
@@ -41,7 +41,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			logger.debug('render register view step1');
 			this.model.unbind(); // before change view must unbind all event
 			new RENT.user.view.RegisterStep1View({
-				el : this.el,
+				el : '#register_content',
 				model : this.model
 			}).render();
 			break;
@@ -50,7 +50,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			logger.debug('render register view step2');
 			this.model.unbind(); // before change view must unbind all event
 			new RENT.user.view.RegisterStep2View({
-				el : this.el,
+				el : '#register_content',
 				model : this.model
 			}).render();
 			break;
@@ -58,7 +58,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			logger.debug('render register view step3');
 			this.model.unbind();
 			new RENT.user.view.RegisterStep3View({
-				el : this.el,
+				el : '#register_content',
 				model: this.model
 			}).render();
 			break;
@@ -77,17 +77,17 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 RENT.user.view.RegisterStep1View = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'new_device_event');
-		this.$el = $(this.el);
-		$.validator.addMethod("regex", function(value, element, re) {
-			return re.test(value);
-		}, $.i18n.prop('rent.error.validate_format'));
+
+		this.tmpl = $template.find('#tmpl_register_step1').html();
 	},
 	render: function(){
-		this.tmpl = $('#tmpl_register_form').html();
 		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
-		this.$el.find("#register_form").validate();
-		this.$el.find('#mobile_phone').rules('add', {
-			regex : /^\+?\d{10,15}$/
+		var _this = this;
+		RENT.initValidator(function(){
+			_this.$el.find("#register_form").validate();			
+			_this.$el.find('#mobile_phone').rules('add', {
+				regex : /^\+?\d{10,15}$/
+			});
 		});
 		//
 		// l10n translate
@@ -97,8 +97,8 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 				$.i18n.prop('user.register.mobile_phone'));
 		this.$el.find('#i18n_country_code').text(
 				$.i18n.prop('user.register.country_code'));	
-		this.$el.find('#i18n_step1').text(
-				$.i18n.prop('user.register.step1'));
+		$('#register_title').text($.i18n.prop('user.register.step1'));
+
 	},
 
 	events : {
@@ -159,8 +159,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		'click #before_button' : 'go_back_step1'
 	},
 	initialize : function() {
-		this.tmpl = $('#tmpl_register_step2').html();
-		this.$el = $(this.el);
+		this.tmpl = $template.find('#tmpl_register_step2').html();
 		_.bindAll(this, 'render','do_verify','go_back_step1');
 		this.model.bind('error',this.error);
 	},
@@ -169,15 +168,17 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
 
 		// validate setting
-		this.$el.find("#register_form_step2").validate();
-		this.$el.find('#auth_code').rules('add', {
-			regex : /^\d{6}$/
+		var _this = this;
+		RENT.initValidator(function(){
+			_this.$el.find("#register_form_step2").validate();
+			_this.$el.find('#auth_code').rules('add', {
+				regex : /^\d{6}$/
+			});
 		});
 		//
 		// i18n
 		//
-		this.$el.find('#i18n_step2').text(
-				$.i18n.prop('user.register.step2'));
+		$('#register_title').text($.i18n.prop('user.register.step2'));
 		
 		this.$el.find('#i18n_enter_auth_code').text(
 				$.i18n.prop('user.register.enter_auth_code'));
@@ -240,6 +241,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render','delete_device','show_my_device');
+		this.tmpl = $template.find('#tmpl_register_step3').html();
 	},
 	dotDone:function(){
 		//
@@ -259,13 +261,11 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	},
 	render:function(){
 		this.dotDone();
-		var step3_template = $('#tmpl_register_step3').html();
-		this.$el.html(step3_template);
+		this.$el.html(this.tmpl);
 		//
 		// i18n
 		//
-		this.$el.find('#i18n_step3').text(
-				$.i18n.prop('user.register.step3'));
+		$('#register_title').text($.i18n.prop('user.register.step3'));
 		this.$el.find('#i18n_auth_success').text(
 				$.i18n.prop('user.register.auth_success'));
 		this.$el.find('#i18n_show_my_devices').text(
@@ -290,7 +290,7 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	name_device_popup:function(){
 		logger.debug('click name device popup');
 		new RENT.user.view.NameDeviceView({
-			el : this.el,
+			el : '#register_right',
 			model : this.model}).render();
 	},
 	delete_device:function(){
@@ -305,12 +305,10 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		});	
 	},
 	show_my_device:function(){
-		logger.debug('click show my devies');
-		this.undelegateEvents();
-		this.model.unbind(); 
+		logger.debug('click show my devies'); 
 		var collection = new RENT.user.collection.UserCollection();
 		new RENT.user.view.ShowDevicesView({
-			el : this.el,
+			el : '#register_right',
 			collection : collection
 		});
 		collection.fetch();
@@ -333,17 +331,16 @@ RENT.user.view.ErrorView = Backbone.View.extend({
 // name device form
 //
 RENT.user.view.NameDeviceView = Backbone.View.extend({
-	initialize : function() {
-		this.tmpl = $('#tmpl_dialog_form').html();
-		_.bindAll(this, 'render','save');
+	events : {
+		"click #save_name_link" : 'save_name'
 	},
-	save:function(_this){
+	initialize : function() {
+		this.tmpl = $template.find('#tmpl_name_device_form').html();
+		_.bindAll(this, 'render','save_name');
+	},
+	save_name:function(){
 		logger.debug('click name device popup save');
-		_this.find("#dialog_form").validate();
-		_this.find('#device_name').rules('add', {
-			regex : /^[^\<\(\)]*$/
-		});
-        var formvalidate = _this.find('#dialog_form').valid();
+        var formvalidate = this.$el.find('#name_device_form').valid();
         if (!formvalidate) {
         	logger.error('form validate fail');
         	return;
@@ -353,17 +350,22 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 		this.model.name_device(name, {
 			success : function() {
 				logger.debug('click name device popup save success');
-				_this.dialog("close");
 			},
 			error : function() {
 				logger.debug('click name device popup save error');
 				alert('error');
 			}
-		});
-		
+		})	
 	},
 	render:function(){
-		this.$el.append(this.tmpl);
+		this.$el.html(this.tmpl);
+		var _this = this;
+		RENT.initValidator(function(){
+			_this.$el.find("#name_device_form").validate();
+			_this.$el.find('#device_name').rules('add', {
+				regex : /^[^\<\(\)]*$/
+			});
+		});				
 		//
 		// i18n
 		//
@@ -371,24 +373,6 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 				$.i18n.prop('general.name'));
 		this.$el.find('#dialog_form_block').attr('title',
 				$.i18n.prop('user.register.name_device_title'));
-
-		
-		var _this = this;
-		var myButtons = {};
-		myButtons[$.i18n.prop('general.save')] = function(){
-			_this.save($(this));
-		};
-		myButtons[$.i18n.prop('general.cancel')] = function(){
-			$(this).dialog( "close" );
-		};
-		
-		this.$el.find('#dialog_form_block').dialog({
-			height: 300,
-			width: 350,
-			modal: true,
-			buttons: myButtons
-		});
-
 	}
 	
 });
@@ -396,7 +380,7 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 RENT.user.view.ShowDevicesView = Backbone.View.extend({
 	initialize : function() {
 		logger.debug('initialize show devices view');
-		this.tmpl = $('#tmpl_show_devices').html();
+		this.tmpl = $template.find('#tmpl_show_devices').html();
 		_.bindAll(this, 'render');
 		this.collection.on('reset',this.render);
 	},
