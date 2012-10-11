@@ -2,11 +2,12 @@ define([
   'jQuery',
   'logger',
   'Mustache',
+  'text!../html/general/tmpl.general.html',
   'jQueryUI',
   'i18N',
   'Validator'
-], function($, logger,Mustache) {
-
+], function($, logger,Mustache, Template) {
+var template = $('<div>').html(Template);
 var RENT = {
     CONSTANTS:{
     	APIs_BASE_DIR: './'
@@ -49,7 +50,7 @@ var RENT = {
     },
 
 	simpleDialog : function(title, msg) {
-		var dialog= Mustache.to_html($('#tmpl_simple_dialog').html(), {
+		var dialog= Mustache.to_html(template.find('#tmpl_simple_dialog').html(), {
 					title:title,msg:msg});
 		$('#dialog').html(dialog);
 		$('#error_dialog').modal('show');
