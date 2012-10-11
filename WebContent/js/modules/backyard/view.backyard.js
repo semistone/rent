@@ -12,7 +12,7 @@ define([
   './namespace.backyard'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
-
+var template = $('<div>').html(template);
 RENT.backyard.view.MainView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render');
@@ -57,7 +57,7 @@ RENT.backyard.view.MainView = Backbone.View.extend({
 		collection.fetch();
 	},
 	render:function(){
-		this.tmpl = $('div').append(template).find('#tmpl_backyard_menu').html();
+		this.tmpl = template.find('#tmpl_backyard_menu').html();
 		this.$el.html(this.tmpl);
 	}
 });

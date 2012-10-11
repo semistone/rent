@@ -1,55 +1,39 @@
 <script id="tmpl_backyard_menu" type="x-tmpl-mustache">
-<div id="bazingaContent">
-	<div id="bazingaContentInner">
 
-		<div class="bazingaThinColumnWider">
-			<h1>Backyard</h1>
-			<div class="bazingaDivider"></div>
-		</div>
+ 	<h2 id="i18n_register_manage_tool"></h2>
+    	<ul class="nav nav-list bs-docs-sidenav affix-top">
+			<li><h4 id="show_token_link">Show token</h4><p>only work on debug mode</p></li>
+			<li><h4>Set mobile gateway debug mode
+                <select id="set_sms_gateway_debug_mode" class="span1"><option value=""></option><option value="true">true</option><option value="false">false</option></select>
+                </h4>
+			<p>No sms message will be sent in debug mode</p>
+            </li>
+            <li>
+				<h4 id="list_users_link">Show users in current device</h4>
+				<p>Show how many user have used this device</p>
+            </li>
+	    </ul>
 
-		<br />
-
-		<section class="menuSection">
-			<h2>Debug tools</h2>
-			<article class="menuItem">
-				<h3 id="show_token_link">Show token</h3>
-				<div class="menuItemDesc">only work on debug mode</div>
-				<div class="bazingaClear"></div>
-			</article>
-			<article class="menuItem">
-				<h3>Set mobile gateway debug mode
-                <select id="set_sms_gateway_debug_mode"><option value=""></option><option value="true">true</option><option value="false">false</option></select>
-                </h3>
-				<div class="menuItemDesc">No sms message will be sent in debug mode</div>
-				<div class="bazingaClear"></div>
-			</article>
-			<article class="menuItem">
-				<h3 id="list_users_link">Show users in current device</h3>
-				<div class="menuItemDesc">Show how many user have used this device</div>
-				<div class="bazingaClear"></div>
-			</article>
-		</section>
-
-
-	</div>
-</div>
 </script>
 <script id="tmpl_show_uses" type="x-tmpl-mustache">
-<div id="bazingaContent">
-        <div id="bazingaContentInner">
-                <div>
-                <h1 id="i18n_devices">Users</h1>
-                <div class="bazingaDivider"></div>
-                <br />                
-                </div>
-  				<section class="menuSection">
+<div class="row">
+	<div class="span6">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<td><span>ID</span></td>
+					<td><span>Email</span></td>
+				</tr>
+			</thead>
+			<tbody>
 {{#users}}
-	  				<article class="menuItem">  				
-                        <h3>{{#email}}<span class="i18n_email">email:</span>:{{email}}{{/email}}{{^email}}<span class="i18n_id">ID</span>:{{id}}{{/email}}</h3>
-	    				<div class="bazingaClear"></div>
-	    			</article>
+				<tr>
+					<td>{{id}}</td>
+					<td>{{email}}</td>
+				</tr>
 {{/users}}
-				</section>
-        </div>
+			</tbody>
+		</table>
+	</div>
 </div>
 </script>
