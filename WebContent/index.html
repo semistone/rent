@@ -14,49 +14,47 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <!-- CSS concatenated and minified via ant build script-->
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/supersized.css" media="screen" />  
-  <link rel="stylesheet" href="css/jquery.jscrollpane.css" media="screen" />
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+  <link href="css/docs.css" rel="stylesheet">
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css"/>
   <!-- end CSS-->
 </head>
 
-<body>
-  <div id="supersized-loader" style="display: none;"></div>
-  <div id="container">
-    <div id="main" role="main">
-    </div>
-        
-  </div> <!--! end of #container -->
+<body class="preview" data-offset="80" data-target=".subnav" data-spy="scroll">
+ <!-- Navbar
+    ================================================== -->
+<div class="navbar navbar-fixed-top">
+ 	<div class="navbar-inner">
+ 		<div class="container">
+       		<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+         		<span class="icon-bar"></span>
+         		<span class="icon-bar"></span>
+         		<span class="icon-bar"></span>
+       		</a>
+       		<a class="brand" href="../">Mobile Single Sign On</a>
+       		<div class="nav-collapse" id="main-menu">
 
-    <nav id="bazingaMenuContainer">    	
-    	<div class="bazingaMake990">
-    		<div id="bazingaLogoContainer">
-	    	<div id="bazingaLogo"><a href="http://www.bazingadesigns.com/en" title="Template by Bazinga Designs - www.bazingadesigns.com">www.bazingadesigns.com/en</a></div>
-	    	</div>
-	    	
-	    	<ul id="bazingaMenu">
-	    		<li class="first active"><a href="index.html" title="Cafe">kawiarnia</a></li>
-	    		<li class="second"><a href="menu.html" title="Menu">menu</a></li>
-	    		<li class="third"><a href="gallery.html" title="Galeria">galeria</a></li>
-	    		<li class="fourth"><a href="contact.html" title="Kontakt">kontakt</a></li>
-	    	</ul>
-	    	
-			<div class="bazingaClear"></div>
-			<footer>
-				Copyright (C) Your Company Name | 
-				Template design: <a href="http://www.bazingadesigns.com/en" title="Bazinga Designs - Web Design London">www.bazingadesigns.com</a> + YOU				
-			</footer>
+       		</div>
 		</div>
-    </nav>
-    <div id="error_dialog"></div>
+	</div>
+</div>
+<div id="supersized-loader" style="display: none;"></div>
+<div class="container">
+	<div id="main">
+	</div>        
+</div> <!--! end of #container -->
 
-  <script data-main="js/main" src="js/libs/require/require.js"></script>
 
-  <!--[if lt IE 7 ]>
-    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
-    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
-  <![endif]-->
-  
+<div id="dialog"></div>
+
+<footer>
+<div class="row">
+    <div class="span4 offset4">
+       Copyright (C) Siraya.org	
+    </div>
+</div>
+</footer>
+<script data-main="js/main" src="js/libs/require/require.js"></script>  
 </body>
 </html>

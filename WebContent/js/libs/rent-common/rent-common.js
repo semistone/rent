@@ -1,10 +1,13 @@
 define([
   'jQuery',
   'logger',
+  'Mustache',
+  'text!../html/general/tmpl.general.html',
   'jQueryUI',
-  'i18N'
-], function($, logger) {
-
+  'i18N',
+  'Validator'
+], function($, logger,Mustache, Template) {
+var template = $('<div>').html(Template);
 var RENT = {
     CONSTANTS:{
     	APIs_BASE_DIR: './'
@@ -47,19 +50,10 @@ var RENT = {
     },
 
 	simpleDialog : function(title, msg) {
-		var dialog = $('#error_dialog');
-		dialog.text(msg);
-		$('#error_dialog').dialog({
-			title : title,
-			buttons : [ {
-				text : $.i18n.prop('general.OK'),
-				click : function() {
-					$(this).dialog("close");
-				}
-			} ],
-			resize : false,
-			modal : true
-		});
+		var dialog= Mustache.to_html(template.find('#tmpl_simple_dialog').html(), {
+					title:title,msg:msg});
+		$('#dialog').html(dialog);
+		$('#error_dialog').modal('show');
 	},
     simpleErrorDialog:function(resp,msg){
 		var resp = $.parseJSON(resp.responseText);
@@ -93,11 +87,18 @@ var RENT = {
             form[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
         }
         return form;
+    },
+    initValidator:function(){
+    	$.validator.defaults.errorClass="alert";
+    	$.validator.addMethod("regex", function(value, element, re) {
+    		return re.test(value);
+    	}, $.i18n.prop('rent.error.validate_format'));
     }
     
 }
 $(function(){
 	RENT.bindLoadingPage("#supersized-loader");
+	RENT.initValidator();
 });
 return RENT;
 });
