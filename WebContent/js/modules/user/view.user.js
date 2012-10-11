@@ -13,7 +13,6 @@ define([
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
 $('body').append(template);	
-
 RENT.user.view.RegisterView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'error');
@@ -21,10 +20,6 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		this.model.bind('change',this.render);
 		this.model.bind('error',this.error);
 		this.model.fetch();
-		$.validator.addMethod("regex", function(value, element, re) {
-			return re.test(value);
-		}, $.i18n.prop('rent.error.validate_format'));
-
 	},
 	error :function(model,resp){
 		var status = resp.status;
@@ -97,7 +92,7 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 		//
 		// l10n translate
 		//
-		this.$el.find('#register_button').val($.i18n.prop('user.register'));
+		this.$el.find('#i18n_register_button').text($.i18n.prop('user.register'));
 		this.$el.find('#i18n_mobile_phone').text(
 				$.i18n.prop('user.register.mobile_phone'));
 		this.$el.find('#i18n_country_code').text(
@@ -182,14 +177,15 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		//
 		this.$el.find('#i18n_step2').text(
 				$.i18n.prop('user.register.step2'));
+		
 		this.$el.find('#i18n_enter_auth_code').text(
 				$.i18n.prop('user.register.enter_auth_code'));
-		this.$el.find('#verify_button').text(
+		this.$el.find('#i18n_verify_button').text(
 				$.i18n.prop('user.register.verify'));
-		this.$el.find('#before_button').text(
+		this.$el.find('#i18n_before_button').text(
 				$.i18n.prop('general.before'));
 		
-		this.$el.find('#send_mobile_auth_message').text(
+		this.$el.find('#i18n_send_mobile_auth_message').text(
 				$.i18n.prop('user.register.send_mobile_auth_message'));
 	},
 	send_mobile_auth_message :function(){

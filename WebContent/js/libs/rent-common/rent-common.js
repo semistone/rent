@@ -2,7 +2,8 @@ define([
   'jQuery',
   'logger',
   'jQueryUI',
-  'i18N'
+  'i18N',
+  'Validator'
 ], function($, logger) {
 
 var RENT = {
@@ -93,11 +94,18 @@ var RENT = {
             form[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
         }
         return form;
+    },
+    initValidator:function(){
+    	$.validator.defaults.errorClass="alert";
+    	$.validator.addMethod("regex", function(value, element, re) {
+    		return re.test(value);
+    	}, $.i18n.prop('rent.error.validate_format'));
     }
     
 }
 $(function(){
 	RENT.bindLoadingPage("#supersized-loader");
+	RENT.initValidator();
 });
 return RENT;
 });

@@ -11,7 +11,7 @@ require.config({
     Mustache: 'libs/mustache/mustache',
     logger:   'libs/log4javascript/log4javascript',
     RentCommon:  'libs/rent-common/rent-common',
-    Validate: 'libs/jquery-validate/jquery-validate',
+    Validator: 'libs/jquery-validate/jquery-validate',
     i18N:'libs/jquery-i18n/jquery-i18n'
   }
 
@@ -24,7 +24,7 @@ require([
   'order!jQueryUI',
   'order!Underscore',
   'order!Backbone',
-  'order!Validate',
+  'order!Validator',
   'order!i18N'
 ], function(User){
   // The "app" dependency is passed in as "App"
