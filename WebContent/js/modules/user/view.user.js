@@ -328,17 +328,16 @@ RENT.user.view.ErrorView = Backbone.View.extend({
 // name device form
 //
 RENT.user.view.NameDeviceView = Backbone.View.extend({
-	initialize : function() {
-		this.tmpl = $template.find('#tmpl_dialog_form').html();
-		_.bindAll(this, 'render','save');
+	events : {
+		"click #save_name_link" : 'save_name'
 	},
-	save:function(_this){
+	initialize : function() {
+		this.tmpl = $template.find('#tmpl_name_device_form').html();
+		_.bindAll(this, 'render','save_name');
+	},
+	save_name:function(){
 		logger.debug('click name device popup save');
-		_this.find("#dialog_form").validate();
-		_this.find('#device_name').rules('add', {
-			regex : /^[^\<\(\)]*$/
-		});
-        var formvalidate = _this.find('#dialog_form').valid();
+        var formvalidate = this.$el.find('#dialog_form').valid();
         if (!formvalidate) {
         	logger.error('form validate fail');
         	return;
@@ -348,17 +347,19 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 		this.model.name_device(name, {
 			success : function() {
 				logger.debug('click name device popup save success');
-				_this.dialog("close");
 			},
 			error : function() {
 				logger.debug('click name device popup save error');
 				alert('error');
 			}
-		});
-		
+		})	
 	},
 	render:function(){
-		this.$el.append(this.tmpl);
+		this.$el.html(this.tmpl);
+		this.$el.find("#name_device_form").validate();
+		this.$el.find('#device_name').rules('add', {
+			regex : /^[^\<\(\)]*$/
+		});
 		//
 		// i18n
 		//
@@ -366,24 +367,6 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 				$.i18n.prop('general.name'));
 		this.$el.find('#dialog_form_block').attr('title',
 				$.i18n.prop('user.register.name_device_title'));
-
-		
-		var _this = this;
-		var myButtons = {};
-		myButtons[$.i18n.prop('general.save')] = function(){
-			_this.save($(this));
-		};
-		myButtons[$.i18n.prop('general.cancel')] = function(){
-			$(this).dialog( "close" );
-		};
-		
-		this.$el.find('#dialog_form_block').dialog({
-			height: 300,
-			width: 350,
-			modal: true,
-			buttons: myButtons
-		});
-
 	}
 	
 });

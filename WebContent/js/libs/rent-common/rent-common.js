@@ -3,7 +3,6 @@ define([
   'logger',
   'Mustache',
   'text!../html/general/tmpl.general.html',
-  'jQueryUI',
   'i18N',
   'Validator'
 ], function($, logger,Mustache, Template) {
