@@ -318,9 +318,11 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	},
 	delete_device:function(){
 		logger.debug('click delete device');
+		var _this = this;
 		this.model.delete_device({
 			success:function(model,resp){
-				RENT.simpleDialog('',$.i18n.prop('user.register.device_delete_success'));			
+				_this.undelegateEvents();
+				new RENT.user.view.RegisterStep1View({el:_this.el,model:_this.model}).render();
 			},
 			error:function(model,resp){
 				RENT.simpleErrorDialog(resp,'');
