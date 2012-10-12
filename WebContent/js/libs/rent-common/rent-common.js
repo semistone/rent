@@ -8,7 +8,8 @@ define([
 var template = $('<div>').html(Template);
 var RENT = {
     CONSTANTS:{
-    	APIs_BASE_DIR: './'
+    	APIs_BASE_DIR: './',
+    	AJAX_TIMEOUT : 3000
     },
     loadTemplate: function(templ_file_path, callback){
 	    $.get(templ_file_path, function(data) {
@@ -45,6 +46,7 @@ var RENT = {
     	    $(this).hide();
     	});  
     	
+    	$.ajaxSetup({timeout: RENT.CONSTANTS.AJAX_TIMEOUT});
     },
 
 	simpleDialog : function(title, msg) {
