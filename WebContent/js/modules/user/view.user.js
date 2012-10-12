@@ -237,6 +237,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 				el : _this.el,
 				model: _this.model
 			}).render();
+			_this.model.trigger('verify_status_event');
 		};
 		var auth_code = this.$el.find('#auth_code').val();
 		logger.debug('click do verify button auth code is '+auth_code);
@@ -259,8 +260,9 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 //
 RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render','delete_device','show_my_device');
+		_.bindAll(this, 'render','delete_device','show_my_device','verify_status_event');
 		this.tmpl = $template.find('#tmpl_register_step3').html();
+		this.model.on('verify_status_event',this.verify_status_event);
 	},
 	dotDone:function(){
 		//
@@ -277,6 +279,14 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		"click #named_my_devices_link" : 'name_device_popup',
 		'click #delete_device_link' : 'delete_device',
 		'click #show_my_devices_link' : 'show_my_device'
+	},
+	verify_status_event:function(){
+		logger.debug('verify_status_event');
+		//
+		// animation affect.
+		//
+		this.$el.find('#auth_success_block').show().fadeOut(3000);
+		this.model.off('verify_status_event');
 	},
 	render:function(){
 		this.model.trigger('change_view','step3');
@@ -299,10 +309,7 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		},function(){
 			$(this).removeClass('focus');
 		});
-		//
-		// animation affect.
-		//
-		this.$el.find('#auth_success_block').fadeOut(3000);
+
 	},
 	name_device_popup:function(){
 		logger.debug('click name device popup');
