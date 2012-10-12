@@ -331,11 +331,9 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	},
 	show_my_device:function(){
 		logger.debug('click show my devies'); 
-		var collection = new RENT.user.collection.UserCollection();
 		new RENT.user.view.ShowDevicesView({
 			el : this.$el.find('#register_right'),
-			model : this.model,
-			collection : collection
+			model : this.model
 		});
 		collection.fetch();
 	}
@@ -375,9 +373,15 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
         }
 		var name = $('#device_name').val();
 		logger.debug('name is '+name);
+		var _this = this;
 		this.model.name_device(name, {
 			success : function() {
 				logger.debug('click name device popup save success');
+				_this.undelegateEvents();
+				new RENT.user.view.ShowDevicesView({
+					el:_this.el,
+					model:_this.model
+				}).render();
 			},
 			error : function() {
 				logger.debug('click name device popup save error');
@@ -411,6 +415,10 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 		logger.debug('initialize show devices view');
 		this.tmpl = $template.find('#tmpl_show_devices').html();
 		_.bindAll(this, 'render');
+		if (this.collection == null) {
+			this.collection =new RENT.user.collection.UserCollection();
+			this.collection.fetch();
+		}
 		this.collection.on('reset',this.render);
 	},
 	render:function(){
