@@ -146,8 +146,6 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 
 		logger.debug('do save');
 		var success = function(model, response) {
-			logger.debug('step1 success');
-			_this.model.set({from_step1:true},{slient:true});
 			logger.debug('render register view step2');
 			_this.undelegateEvents();
 			new RENT.user.view.RegisterStep2View({
@@ -159,7 +157,7 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 			logger.error('step1 error response:' + resp.status);
 			RENT.simpleErrorDialog(resp);
 		};
-		this.model.save({
+		this.model.new_device({
 			countryCode : country_code,
 			mobilePhone : mobile_phone
 		}, {
@@ -248,7 +246,8 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		RENT.simpleErrorDialog(resp, '');
 	},
 	go_back_step1 : function() {
-		new RENT.user.view.RegisterView({
+		this.undelegateEvents();
+		new RENT.user.view.RegisterStep1View({
 			el : this.el,
 			model : this.model
 		}).render();
