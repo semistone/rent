@@ -153,7 +153,7 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 				model : _this.model
 			}).render();
 		};
-		var error = function(model,resp) {
+		var error = function(resp) {
 			logger.error('step1 error response:' + resp.status);
 			RENT.simpleErrorDialog(resp);
 		};

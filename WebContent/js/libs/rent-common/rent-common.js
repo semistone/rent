@@ -2,7 +2,6 @@ define([
   'jQuery',
   'logger',
   'Mustache',
-  'text!../html/general/tmpl.general.html',
   'i18N'
 ], function($, logger,Mustache, Template) {
 var template = $('<div>').html(Template);
@@ -50,10 +49,13 @@ var RENT = {
     },
 
 	simpleDialog : function(title, msg) {
-		var dialog= Mustache.to_html(template.find('#tmpl_simple_dialog').html(), {
-					title:title,msg:msg});
-		$('#dialog').html(dialog);
-		$('#error_dialog').modal('show');
+		require(['Mustache','text!../html/general/tmpl.general.html','Bootstrap'],function(Mustache, template){
+			var $template = $('<div>').html(template);
+			var dialog= Mustache.to_html($template.find('#tmpl_simple_dialog').html(), {
+				title:title,msg:msg});
+			$('#dialog').html(dialog);
+			$('#error_dialog').modal('show');			
+		});
 	},
     simpleErrorDialog:function(resp,msg){
 		var resp = $.parseJSON(resp.responseText);
