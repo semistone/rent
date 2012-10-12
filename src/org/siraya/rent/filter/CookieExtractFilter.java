@@ -48,8 +48,18 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		// test security context
 		//
 		userAuthorizeData.request = request;
-		
 		logger.debug("pass filter");
+		this.extraceDeviceCookie(request);
+		if (userAuthorizeData.getDeviceId() == null) {
+			throw new RentException(RentErrorCode.ErrorNullDeviceId, "no device cookie");			
+		}
+		logger.debug("set security context");
+		request.setSecurityContext(new Authorizer(userAuthorizeData));
+	    
+	    return request;
+	}
+
+	private void extraceDeviceCookie(ContainerRequest request){
 		Map<String,Cookie>cookies = request.getCookies();
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
 		if (cookies.containsKey("D")){
@@ -67,17 +77,8 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 				userAuthorizeData.setUserId(headers.getFirst("USER_ID"));				
 			}
 		}
-		
-		if (userAuthorizeData.getDeviceId() == null) {
-			throw new RentException(RentErrorCode.ErrorNullDeviceId, "no device cookie");			
-		}
-		logger.debug("set security context");
-		request.setSecurityContext(new Authorizer(userAuthorizeData));
-	    
-		request.setHeaders((InBoundHeaders)headers);		
-	    return request;
+		request.setHeaders((InBoundHeaders)headers);
 	}
-
 	private boolean isExclude(String path){
 		logger.debug("path is "+path);
 		List<Pattern> exclude = (List<Pattern>)applicationConfig.get("filter").get("_exclude_pattern_cache");			
