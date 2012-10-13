@@ -9,11 +9,13 @@ define([
   'RentCommon',
   'logger',
   'text!../../../html/user/tmpl.register.html',
-  './namespace.user'
+  './namespace.user',
+  './model.user'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
 var $template = $('<div>').append(template);	
 RENT.user.view.RegisterView = Backbone.View.extend({
+	model : RENT.user.model.UserModel,
 	initialize : function() {
 		_.bindAll(this, 'render', 'error','change_view');
 		this.model.bind('change',this.render);
