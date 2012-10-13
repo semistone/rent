@@ -1,8 +1,8 @@
 define([
-  'jQuery',
-  'logger',
-  'Mustache',
-  'i18N'
+  'order!jQuery',
+  'order!logger',
+  'order!Mustache',
+  'order!i18N'
 ], function($, logger,Mustache) {
 var RENT = {
     CONSTANTS:{

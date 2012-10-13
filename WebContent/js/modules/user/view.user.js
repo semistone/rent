@@ -15,12 +15,14 @@ define([
 
 var $template = $('<div>').append(template);	
 RENT.user.view.RegisterView = Backbone.View.extend({
-	model : RENT.user.model.UserModel,
+
 	initialize : function() {
 		_.bindAll(this, 'render', 'error','change_view');
+		if (this.model == null) {
+			this.model = new RENT.user.model.UserModel();
+		}
 		this.model.bind('change',this.render);
 		this.model.bind('change_view',this.change_view);
-
 		this.model.fetch({error:this.error});
 	},
 	error :function(model,resp){
@@ -321,7 +323,7 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	delete_device:function(){
 		logger.debug('click delete device');
 		var _this = this;
-		this.model.delete_device({
+		this.model.delete_device(null,{
 			success:function(model,resp){
 				_this.undelegateEvents();
 				new RENT.user.view.RegisterStep1View({el:_this.el,model:_this.model}).render();
@@ -337,7 +339,6 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 			el : this.$el.find('#register_right'),
 			model : this.model
 		});
-		collection.fetch();
 	}
 });
 		
@@ -413,15 +414,19 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 });
 
 RENT.user.view.ShowDevicesView = Backbone.View.extend({
+	events:{
+		'click .delete_device_link': 'delete_device'
+	},
 	initialize : function() {
 		logger.debug('initialize show devices view');
 		this.tmpl = $template.find('#tmpl_show_devices').html();
-		_.bindAll(this, 'render');
+		_.bindAll(this, 'render','delete_device');
 		if (this.collection == null) {
 			this.collection =new RENT.user.collection.UserCollection();
 			this.collection.fetch();
 		}
 		this.collection.on('reset',this.render);
+		this.collection.on('remove',this.render);
 	},
 	render:function(){
 		this.model.trigger('change_view','show_devices');
@@ -438,6 +443,24 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 		this.$el.find('.i18n_id').text(
 				$.i18n.prop('general.id'));
 		
+	},
+	delete_device:function(ev){
+		var id = $(ev.target).attr('id');
+		logger.debug("delete device id "+id);
+		var _this = this;
+		var success =function(model){
+			logger.debug("delete success");
+			var model = _this.collection.get(id);
+			_this.collection.remove(model);
+			
+		};
+		var error = function(model){
+			logger.debug("delete fail");			
+		};
+		this.model.delete_device(id,{
+			success:success,
+			error:error
+		});
 	}
 });
 

@@ -19,7 +19,8 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 		options = $.extend(options, {
 			url : this.url + 'verify_mobile_auth_code'
 		});
-		this.save('authCode', auth_code, options);
+		this.set('authCode', auth_code, {silent:true});
+		Backbone.sync("update",this, options);
 	},
 
 	send_mobile_auth_message : function(options) {
@@ -36,10 +37,13 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 		Backbone.sync("update",this, options);	
 	},
 	
-	delete_device : function(options){
+	delete_device : function(id, options){
+		var url = this.url;
+		if (id != null) {
+			url = url+'?deviceId='+id;
+		}
 		options = $.extend(options, {
-			url : this.url
-		});
+			url : url});
 		Backbone.sync("delete",this, options);	
 	},
 	
