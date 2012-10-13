@@ -1,12 +1,17 @@
 <script id="tmpl_register_form" type="x-tmpl-mustache">
-<header id="overview" class="jumbotron subhead">
 <div class="row">
-	<div class="span6">
-		<h1 id="register_title"></h1>
+	<div class="span3">
+		<ul class="breadcrumb">
+			<li>
+				<a href="#">Home</a>
+				<span class="divider">/</span>
+			</li>
+			<li class="active" id="register_title"></li>
+		</ul>
 	</div>
 </div>
 </header>
-<div id="register_content" class="row">
+<div id="register_content">
 </div>
 </script>
 <script id="tmpl_register_step1" type="x-tmpl-mustache">
@@ -59,7 +64,7 @@
 <script id="tmpl_register_step3" type="x-tmpl-mustache">
 <div class="row">
 	<div class="span4">
-		<div id="auth_success_block">
+		<div id="auth_success_block" style="display:none">
 			<div class="alert alert-success">
 				<span  id="i18n_auth_success"></span>
 			</div>
@@ -69,7 +74,6 @@
 <div class="row">
 <div class="span3">
 	<div class="well">
- 	<h2 id="i18n_register_manage_tool"></h2>
     	<ul class="nav nav-pills nav-stacked">
 			<li id="named_my_devices_link"><a id="i18n_named_my_devices"></a></li>
 			<li id="show_my_devices_link"><a id="i18n_show_my_devices"></a></li>
@@ -85,7 +89,7 @@
 <script id="tmpl_register_error" type="x-tmpl-mustache">
 <div class="row">
 	<div class="span12">
-		<div class="alert alert-block">
+		<div class="alert alert-error">
 			<h1 id="i18n_error"></h1>
  			<p><span><strong id="i18n_error_msg"></strong></span>
 		</div>

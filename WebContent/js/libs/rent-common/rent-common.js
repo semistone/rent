@@ -2,13 +2,13 @@ define([
   'jQuery',
   'logger',
   'Mustache',
-  'text!../html/general/tmpl.general.html',
   'i18N'
 ], function($, logger,Mustache, Template) {
 var template = $('<div>').html(Template);
 var RENT = {
     CONSTANTS:{
-    	APIs_BASE_DIR: './'
+    	APIs_BASE_DIR: './',
+    	AJAX_TIMEOUT : 3000
     },
     loadTemplate: function(templ_file_path, callback){
 	    $.get(templ_file_path, function(data) {
@@ -45,13 +45,17 @@ var RENT = {
     	    $(this).hide();
     	});  
     	
+    	$.ajaxSetup({timeout: RENT.CONSTANTS.AJAX_TIMEOUT});
     },
 
 	simpleDialog : function(title, msg) {
-		var dialog= Mustache.to_html(template.find('#tmpl_simple_dialog').html(), {
-					title:title,msg:msg});
-		$('#dialog').html(dialog);
-		$('#error_dialog').modal('show');
+		require(['Mustache','text!../html/general/tmpl.general.html','Bootstrap'],function(Mustache, template){
+			var $template = $('<div>').html(template);
+			var dialog= Mustache.to_html($template.find('#tmpl_simple_dialog').html(), {
+				title:title,msg:msg});
+			$('#dialog').html(dialog);
+			$('#error_dialog').modal('show');			
+		});
 	},
     simpleErrorDialog:function(resp,msg){
 		var resp = $.parseJSON(resp.responseText);

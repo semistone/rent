@@ -15,12 +15,14 @@ define([
 var $template = $('<div>').append(template);	
 RENT.user.view.RegisterView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render', 'error');
+		_.bindAll(this, 'render', 'error','change_view');
 		this.model.bind('change',this.render);
-		this.model.bind('error',this.error);
-		this.model.fetch();
+		this.model.bind('change_view',this.change_view);
+
+		this.model.fetch({error:this.error});
 	},
 	error :function(model,resp){
+		logger.debug("fetch error");
 		var status = resp.status;
 		if (status == 404) { // no such user, goto step1
 			this.render();			
@@ -38,8 +40,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		switch (status) {
 		case undefined:
 			logger.debug('render register view step1');
-			logger.debug('render register view step1');
-			this.model.unbind(); // before change view must unbind all event
+			this.model.unbind('change'); // before change view must unbind all event
 			new RENT.user.view.RegisterStep1View({
 				el : '#register_content',
 				model : this.model
@@ -48,7 +49,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		case 0:
 		case 1:
 			logger.debug('render register view step2');
-			this.model.unbind(); // before change view must unbind all event
+			this.model.unbind('change'); 
 			new RENT.user.view.RegisterStep2View({
 				el : '#register_content',
 				model : this.model
@@ -56,7 +57,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			break;
 		case 2:
 			logger.debug('render register view step3');
-			this.model.unbind();
+			this.model.unbind('change'); 
 			new RENT.user.view.RegisterStep3View({
 				el : '#register_content',
 				model: this.model
@@ -68,6 +69,25 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 				el : this.el
 			}).render();
 		}
+	},
+	change_view:function(view_name){
+		logger.debug("change view event "+view_name);
+		switch (view_name) {
+		case 'step1':
+			this.$el.find('#register_title').text($.i18n.prop('user.register.step1'));
+			break;
+		case 'step2':
+			this.$el.find('#register_title').text($.i18n.prop('user.register.step2'));
+			break;
+		case 'step3':
+			if (this.model.get('status') == 2) {
+				this.$el.find('#register_title').text($.i18n.prop('user.register.register_manage_tool'));				
+			} else{
+				this.$el.find('#register_title').text($.i18n.prop('user.register.step3'));				
+			}
+			break;
+
+		}
 	}
 
 });
@@ -77,10 +97,10 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 RENT.user.view.RegisterStep1View = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'new_device_event');
-
 		this.tmpl = $template.find('#tmpl_register_step1').html();
 	},
 	render: function(){
+		this.model.trigger('change_view','step1');
 		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
 		var _this = this;
 		RENT.initValidator(function(){
@@ -97,7 +117,7 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 				$.i18n.prop('user.register.mobile_phone'));
 		this.$el.find('#i18n_country_code').text(
 				$.i18n.prop('user.register.country_code'));	
-		$('#register_title').text($.i18n.prop('user.register.step1'));
+
 
 	},
 
@@ -126,21 +146,18 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 
 		logger.debug('do save');
 		var success = function(model, response) {
-			logger.debug('step1 success');
-			_this.model.set({from_step1:true},{slient:true});
 			logger.debug('render register view step2');
 			_this.undelegateEvents();
-			_this.model.unbind(); // before change view must unbind all event
 			new RENT.user.view.RegisterStep2View({
 				el : _this.el,
 				model : _this.model
 			}).render();
 		};
-		var error = function(model,resp) {
+		var error = function(resp) {
 			logger.error('step1 error response:' + resp.status);
 			RENT.simpleErrorDialog(resp);
 		};
-		this.model.save({
+		this.model.new_device({
 			countryCode : country_code,
 			mobilePhone : mobile_phone
 		}, {
@@ -164,6 +181,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		this.model.bind('error',this.error);
 	},
 	render : function() {
+		this.model.trigger('change_view','step2');
 		logger.debug('render register step2');
 		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
 
@@ -212,12 +230,12 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
         }
 		success = function(data, textStatus, jqXHR) {
 			logger.debug("verify success " + textStatus);
-			_this.model.unbind();
 			_this.undelegateEvents();
 			new RENT.user.view.RegisterStep3View({
 				el : _this.el,
 				model: _this.model
 			}).render();
+			_this.model.trigger('verify_status_event');
 		};
 		var auth_code = this.$el.find('#auth_code').val();
 		logger.debug('click do verify button auth code is '+auth_code);
@@ -228,7 +246,8 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		RENT.simpleErrorDialog(resp, '');
 	},
 	go_back_step1 : function() {
-		new RENT.user.view.RegisterView({
+		this.undelegateEvents();
+		new RENT.user.view.RegisterStep1View({
 			el : this.el,
 			model : this.model
 		}).render();
@@ -240,8 +259,9 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 //
 RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render','delete_device','show_my_device');
+		_.bindAll(this, 'render','delete_device','show_my_device','verify_status_event');
 		this.tmpl = $template.find('#tmpl_register_step3').html();
+		this.model.on('verify_status_event',this.verify_status_event);
 	},
 	dotDone:function(){
 		//
@@ -259,19 +279,25 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		'click #delete_device_link' : 'delete_device',
 		'click #show_my_devices_link' : 'show_my_device'
 	},
+	verify_status_event:function(){
+		logger.debug('verify_status_event');
+		//
+		// animation affect.
+		//
+		this.$el.find('#auth_success_block').show().fadeOut(3000);
+		this.model.off('verify_status_event');
+	},
 	render:function(){
+		this.model.trigger('change_view','step3');
 		this.dotDone();
 		this.$el.html(this.tmpl);
 		//
 		// i18n
 		//
-		$('#register_title').text($.i18n.prop('user.register.step3'));
 		this.$el.find('#i18n_auth_success').text(
 				$.i18n.prop('user.register.auth_success'));
 		this.$el.find('#i18n_show_my_devices').text(
 				$.i18n.prop('user.register.show_my_devices'));		
-		this.$el.find('#i18n_register_manage_tool').text(
-				$.i18n.prop('user.register.register_manage_tool'));	
 		this.$el.find('#i18n_named_my_devices').text(
 				$.i18n.prop('user.register.named_my_devices'));	
 		this.$el.find('#i18n_delete_device').text(
@@ -282,22 +308,21 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		},function(){
 			$(this).removeClass('focus');
 		});
-		//
-		// animation affect.
-		//
-		this.$el.find('#auth_success_block').fadeOut(3000);
+
 	},
 	name_device_popup:function(){
 		logger.debug('click name device popup');
 		new RENT.user.view.NameDeviceView({
-			el : '#register_right',
+			el : this.$el.find('#register_right'),
 			model : this.model}).render();
 	},
 	delete_device:function(){
 		logger.debug('click delete device');
+		var _this = this;
 		this.model.delete_device({
 			success:function(model,resp){
-				RENT.simpleDialog('',$.i18n.prop('user.register.device_delete_success'));			
+				_this.undelegateEvents();
+				new RENT.user.view.RegisterStep1View({el:_this.el,model:_this.model}).render();
 			},
 			error:function(model,resp){
 				RENT.simpleErrorDialog(resp,'');
@@ -306,10 +331,9 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	},
 	show_my_device:function(){
 		logger.debug('click show my devies'); 
-		var collection = new RENT.user.collection.UserCollection();
 		new RENT.user.view.ShowDevicesView({
-			el : '#register_right',
-			collection : collection
+			el : this.$el.find('#register_right'),
+			model : this.model
 		});
 		collection.fetch();
 	}
@@ -317,9 +341,11 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		
 
 RENT.user.view.ErrorView = Backbone.View.extend({
+	initialize : function() {
+		this.tmpl = $template.find('#tmpl_register_error').html();
+	},
 	render:function(){
-		var error_template = $('#tmpl_register_error').html();
-		this.$el.html(error_template);
+		this.$el.html(this.tmpl);
 		//
 		// i18n
 		//
@@ -347,9 +373,15 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
         }
 		var name = $('#device_name').val();
 		logger.debug('name is '+name);
+		var _this = this;
 		this.model.name_device(name, {
 			success : function() {
 				logger.debug('click name device popup save success');
+				_this.undelegateEvents();
+				new RENT.user.view.ShowDevicesView({
+					el:_this.el,
+					model:_this.model
+				}).render();
 			},
 			error : function() {
 				logger.debug('click name device popup save error');
@@ -358,6 +390,7 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 		})	
 	},
 	render:function(){
+		this.model.trigger('change_view','name_device');
 		this.$el.html(this.tmpl);
 		var _this = this;
 		RENT.initValidator(function(){
@@ -382,9 +415,14 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 		logger.debug('initialize show devices view');
 		this.tmpl = $template.find('#tmpl_show_devices').html();
 		_.bindAll(this, 'render');
+		if (this.collection == null) {
+			this.collection =new RENT.user.collection.UserCollection();
+			this.collection.fetch();
+		}
 		this.collection.on('reset',this.render);
 	},
 	render:function(){
+		this.model.trigger('change_view','show_devices');
 		logger.debug("render devices");
 		var obj = {devices:this.collection.toJSON() };
 		this.$el.html(Mustache.to_html(this.tmpl,obj ));

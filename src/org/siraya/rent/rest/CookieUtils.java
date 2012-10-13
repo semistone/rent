@@ -15,12 +15,12 @@ public class CookieUtils {
     private EncodeUtility encodeUtility;
 
     private static Logger logger = LoggerFactory.getLogger(CookieUtils.class);
-    private final static String keyName="cookie";
+    private final static String KEY_NAME ="cookie";
 
     public NewCookie createDeviceCookie(Device device){
 
 		String value= device.getId()+":"+device.getUserId();
-		value = encodeUtility.encrypt(value, keyName);
+		value = encodeUtility.encrypt(value, KEY_NAME);
 		logger.debug("cookie value is "+value);
 		NewCookie deviceCookie = new NewCookie("D", value, "/",
 				null, 1, "no comment", 1073741823, // maxAge max int value/2
@@ -30,14 +30,24 @@ public class CookieUtils {
 	
     public  NewCookie newDeviceCookie(String Id){    	
     	String value= Id+":";
-		value = encodeUtility.encrypt(value,keyName);
+		value = encodeUtility.encrypt(value,KEY_NAME);
 		logger.debug("cookie value is "+value);
 		NewCookie deviceCookie = new NewCookie("D", value, "/",
-				null, 1, "no comment", 1073741823, // maxAge max int value/2
+				null, 1, "no comment", NewCookie.DEFAULT_MAX_AGE , // maxAge max int value/2
 				false);
 		return deviceCookie;	
 	}
-	
+    
+    public  NewCookie newSessionCookie(){ 
+    	String id =  java.util.UUID.randomUUID().toString();
+    	String value= id+":";
+		value = encodeUtility.encrypt(value,KEY_NAME);
+		logger.debug("cookie value is "+value);
+		NewCookie sessionCookie = new NewCookie("S", value);
+		return sessionCookie;	
+	}
+    
+    
     public  NewCookie removeDeviceCookie(){    	
 		NewCookie deviceCookie = new NewCookie("D", "", "/",
 				null, 1, "remove this cookie", -1, 
@@ -47,7 +57,7 @@ public class CookieUtils {
     
     public void extractDeviceCookie(String deviceCookie,UserAuthorizeData userAuthorizeData){
     	try{
-    		deviceCookie = encodeUtility.decrypt(deviceCookie,keyName);
+    		deviceCookie = encodeUtility.decrypt(deviceCookie,KEY_NAME);
     	}catch (RentException e){
     		throw new RentException(RentException.RentErrorCode.ErrorCookieFormat,
     				"unknown cookie format");
