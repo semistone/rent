@@ -1,5 +1,8 @@
 package org.siraya.rent.user.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import junit.framework.Assert;
 
 import org.jmock.Expectations;
@@ -15,25 +18,32 @@ import org.siraya.rent.pojo.Device;
 import org.junit.Before;
 import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.user.dao.IUserDAO;
-@ContextConfiguration(locations = {"classpath*:/applicationContext*.xml"})
+import org.siraya.rent.utils.EncodeUtility;
+//@ContextConfiguration(locations = {"classpath*:/applicationContext*.xml"})
+import org.siraya.rent.utils.IApplicationConfig;
+import org.siraya.rent.mobile.service.IMobileGatewayService;
+public class TestMobileAuthService {
 
-public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
-	@Autowired
-	private IMobileAuthService mobileAuthService;
+	private MobileAuthService mobileAuthService;
 	private Mockery context;
 	String deviceId= "123";
 	String userId= "456";
 	String mobilePhone="87E45511C317F40D40509943AD6AF951";
 	Device device =null;
+	private IApplicationConfig config;
 	User user = new User();
 	private String authCode = "809FFECF2869157CA16B50F1A3E6B75C";	
 	private IDeviceDao deviceDao;
+	private EncodeUtility encodeUtility;
 	private IUserDAO userDao;
+	private Map<String, Object> setting;
+	private IMobileGatewayService mobileGatewayService;
 	private boolean isMock = true;
 	@Before
 	public void setUp(){
 		if (isMock){
 			context = new JUnit4Mockery();
+			mobileAuthService = new MobileAuthService();
 		}
 		user.setId(userId);
 		user.setCc("TW");
@@ -47,9 +57,21 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		device.setToken(authCode);
 		if (isMock){
 			deviceDao = context.mock(IDeviceDao.class);	
+			this.mobileGatewayService = context.mock(IMobileGatewayService.class);	
 			userDao = context.mock(IUserDAO.class);	
 			mobileAuthService.setDeviceDao(deviceDao);
 			mobileAuthService.setUserDao(userDao);
+			config = context.mock(IApplicationConfig.class);
+			mobileAuthService.setApplicationConfig(config);
+			setting = new HashMap<String, Object>();
+			setting.put("auth_retry_limit", 3);
+			setting.put("general", "thebestsecretkey");
+			setting.put("auth_verify_timeout", 1800);
+			
+			encodeUtility = new EncodeUtility();
+			encodeUtility.setApplicationConfig(config);
+			mobileAuthService.setEncodeUtility(encodeUtility);
+			mobileAuthService.setMobileGatewayService(mobileGatewayService);
 		}
 	}
 	
@@ -59,6 +81,10 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		if (isMock) {
 			context.checking(new Expectations() {
 				{
+					one(config).get("general");
+					will(returnValue(setting));
+					one(config).get("keydb");
+					will(returnValue(setting));
 					one(deviceDao).getDeviceByDeviceIdAndUserId(deviceId,userId);								
 					will(returnValue(device));
 
@@ -76,7 +102,7 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 					one(deviceDao).getDeviceByDeviceIdAndUserId(device.getId(),device.getUserId());
 					will(returnValue(device));
 					
-
+					one(mobileGatewayService).sendSMS(with(any(String.class)),with(any(String.class)));
 				}
 			});	
 		}
@@ -92,6 +118,10 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 			device.setStatus(1);
 			context.checking(new Expectations() {
 				{
+					one(config).get("general");
+					will(returnValue(setting));
+					one(config).get("keydb");
+					will(returnValue(setting));
 					one(deviceDao).getDeviceByDeviceIdAndUserId(deviceId,userId);								
 					will(returnValue(device));
 
@@ -133,6 +163,10 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 			device.setStatus(1);
 			context.checking(new Expectations() {
 				{
+					one(config).get("general");
+					will(returnValue(setting));
+					one(config).get("keydb");
+					will(returnValue(setting));
 					one(userDao).getUserByMobilePhone(mobilePhone);
 					will(returnValue(user));	
 				
@@ -176,6 +210,8 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 			if (isMock) {
 				context.checking(new Expectations() {
 					{
+						one(config).get("general");
+						will(returnValue(setting));
 						one(deviceDao).getDeviceByDeviceIdAndUserId(deviceId,userId);								
 						device.setAuthRetry(5);
 						will(returnValue(device));
@@ -203,6 +239,8 @@ public class TestMobileAuthService  extends AbstractJUnit4SpringContextTests{
 		if (isMock) {
 			context.checking(new Expectations() {
 				{
+					one(config).get("general");
+					will(returnValue(setting));
 					one(deviceDao).getDeviceByDeviceIdAndUserId(device.getId(),device.getUserId());
 					will(returnValue(device));
 					one(userDao).getUserByUserId(device.getUserId());

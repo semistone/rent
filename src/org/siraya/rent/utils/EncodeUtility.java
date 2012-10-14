@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import org.siraya.rent.utils.RentException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +21,10 @@ import org.springframework.stereotype.Service;
 @Service("encodeUtility")
 public class EncodeUtility {
 	private static final String ALGO = "AES";
-
+    private static Logger logger = LoggerFactory.getLogger(EncodeUtility.class);
     @Autowired
     private IApplicationConfig applicationConfig;
-    
+    private Map<String,Key> keyCache = new java.util.HashMap<String,Key>();
 
 
 	public EncodeUtility() {
@@ -84,6 +86,7 @@ public class EncodeUtility {
 			String encryptedValue = byte2hex(encVal);
 			return encryptedValue;
 		}catch(Exception e){
+			logger.error("encrypt",e);
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral,e.getMessage());
 		}
 	}
@@ -104,6 +107,7 @@ public class EncodeUtility {
 			String decryptedValue = new String(decValue);
 			return decryptedValue;
 		}catch(Exception e){
+			logger.error("error decrypt",e);
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
 					"decrypt data:"+encryptedData+" error:"+e.getMessage());
 
@@ -111,9 +115,19 @@ public class EncodeUtility {
 	}
 
 	private  Key generateKey(String keyName) throws Exception {
+		if (keyCache.containsKey(keyName)){
+			return keyCache.get(keyName);
+		}
     	Map<String,Object> setting = applicationConfig.get("keydb");
-    	byte[] keyValue =((String)setting.get(keyName)).getBytes();
+    	Object keyString = setting.get(keyName);
+    	if (keyString == null) {
+    		throw new RentException(RentException.RentErrorCode.ErrorEncrypt,
+    				"key "+keyName+" not found");
+    	}
+
+    	byte[] keyValue =((String)keyString).getBytes();
 		Key key = new SecretKeySpec(keyValue, ALGO);
+		keyCache.put(keyName, key);
 		return key;
 	}
 	

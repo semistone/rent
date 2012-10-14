@@ -1,6 +1,6 @@
 package org.siraya.rent.filter;
 
-
+import org.siraya.rent.pojo.Session;
 import org.siraya.rent.rest.CookieUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,29 +19,31 @@ import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 import com.sun.jersey.core.header.InBoundHeaders;
 import javax.ws.rs.core.Cookie;
+
 @Component
 public class CookieExtractFilter implements ContainerRequestFilter {
-    private static Logger logger = LoggerFactory.getLogger(CookieExtractFilter.class);
+	private static Logger logger = LoggerFactory
+			.getLogger(CookieExtractFilter.class);
 
 	@Autowired
 	private UserAuthorizeData userAuthorizeData;
 	@Autowired
 	private CookieUtils cookieUtils;
-    @Autowired
-    protected IApplicationConfig applicationConfig;
-	
+	@Autowired
+	protected IApplicationConfig applicationConfig;
+
 	public UserAuthorizeData getUserAuthorizeData() {
 		return userAuthorizeData;
 	}
-	
+
 	public void setUserAuthorizeData(UserAuthorizeData userAuthorizeData) {
 		this.userAuthorizeData = userAuthorizeData;
 	}
-	
+
 	@Override
 	public ContainerRequest filter(ContainerRequest request) {
 		String path = request.getPath();
-		if (this.isExclude(path)){
+		if (this.isExclude(path)) {
 			return request;
 		}
 		//
@@ -50,55 +52,76 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		userAuthorizeData.request = request;
 		logger.debug("pass filter");
 		this.extraceDeviceCookie(request);
+		this.extractSessionCookie(request);
 		if (userAuthorizeData.getDeviceId() == null) {
-			throw new RentException(RentErrorCode.ErrorNullDeviceId, "no device cookie");			
+			throw new RentException(RentErrorCode.ErrorNullDeviceId,
+					"no device cookie");
 		}
 		logger.debug("set security context");
 		request.setSecurityContext(new Authorizer(userAuthorizeData));
-	    
-	    return request;
+
+		return request;
 	}
 
-	private void extraceDeviceCookie(ContainerRequest request){
-		Map<String,Cookie>cookies = request.getCookies();
+	private void extractSessionCookie(ContainerRequest request){
+		Map<String, Cookie> cookies = request.getCookies();
+		if (cookies.containsKey("S")) {
+			String value = cookies.get("S").getValue();
+			Session session = cookieUtils.extractSessionCookie(value,userAuthorizeData);			
+			if (session != null) {
+				MultivaluedMap<String, String> headers = request.getRequestHeaders();
+				String ip = headers.getFirst("X-Real-IP");
+				if(!session.getLastLoginIp().equals(ip)){
+					logger.debug("ip not match remove session cookie");
+					cookies.remove("S");
+				}
+			}
+		}
+	}
+	private void extraceDeviceCookie(ContainerRequest request) {
+		Map<String, Cookie> cookies = request.getCookies();
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
-		if (cookies.containsKey("D")){
+		if (cookies.containsKey("D")) {
 			String value = cookies.get("D").getValue();
-			cookieUtils.extractDeviceCookie(value,userAuthorizeData);
+			cookieUtils.extractDeviceCookie(value, userAuthorizeData);
 			if (userAuthorizeData.getDeviceId() != null)
 				headers.add("DEVICE_ID", userAuthorizeData.getDeviceId());
 			if (userAuthorizeData.getUserId() != null)
-				headers.add("USER_ID", userAuthorizeData.getUserId());    
+				headers.add("USER_ID", userAuthorizeData.getUserId());
 		} else {
 			if (headers.containsKey("DEVICE_ID")) {
-				userAuthorizeData.setDeviceId(headers.getFirst("DEVICE_ID"));				
+				userAuthorizeData.setDeviceId(headers.getFirst("DEVICE_ID"));
 			}
 			if (headers.containsKey("USER_ID")) {
-				userAuthorizeData.setUserId(headers.getFirst("USER_ID"));				
+				userAuthorizeData.setUserId(headers.getFirst("USER_ID"));
 			}
 		}
-		request.setHeaders((InBoundHeaders)headers);
+		request.setHeaders((InBoundHeaders) headers);
 	}
-	private boolean isExclude(String path){
-		logger.debug("path is "+path);
-		List<Pattern> exclude = (List<Pattern>)applicationConfig.get("filter").get("_exclude_pattern_cache");			
+
+	private boolean isExclude(String path) {
+		logger.debug("path is " + path);
+		List<Pattern> exclude = (List<Pattern>) applicationConfig.get("filter")
+				.get("_exclude_pattern_cache");
 		if (exclude == null) {
 			logger.debug("pattern cache not exist");
 			exclude = new java.util.ArrayList<Pattern>();
-			List<String> excludeString = (List<String>)applicationConfig.get("filter").get("exclude");			
+			List<String> excludeString = (List<String>) applicationConfig.get(
+					"filter").get("exclude");
 			int size = excludeString.size();
-			for (int i = 0 ; i < size ; i++) {
+			for (int i = 0; i < size; i++) {
 				Pattern pattern = Pattern.compile(excludeString.get(i));
-				exclude.add(pattern);	
+				exclude.add(pattern);
 			}
-			applicationConfig.get("filter").put("_exclude_pattern_cache", exclude);
+			applicationConfig.get("filter").put("_exclude_pattern_cache",
+					exclude);
 		}
 		int size = exclude.size();
-		for (int i = 0 ; i < size ; i++) {
+		for (int i = 0; i < size; i++) {
 			Pattern pattern = exclude.get(i);
-			//logger.debug("try match "+pattern.pattern());
+			// logger.debug("try match "+pattern.pattern());
 			if (pattern.matcher(path).find()) {
-				logger.debug("match pattern rule "+exclude.get(i).pattern());
+				logger.debug("match pattern rule " + exclude.get(i).pattern());
 				return true;
 			}
 		}

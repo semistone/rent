@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
-
+import java.util.Map;
 
 import junit.framework.Assert;
 import org.siraya.rent.user.dao.IUserDAO;
@@ -21,17 +21,21 @@ import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
 @Service("mobileAuthService")
 public class MobileAuthService implements IMobileAuthService {
-    @Autowired
+
+	@Autowired
     private IMobileGatewayService mobileGatewayService;
     @Autowired
     private IApplicationConfig applicationConfig;
-    @Autowired
+
+
+	@Autowired
     private IDeviceDao deviceDao;    
     @Autowired
     private IUserDAO userDao;
 	@Autowired
     private EncodeUtility encodeUtility; 
-    private static Logger logger = LoggerFactory.getLogger(MobileAuthService.class);
+
+	private static Logger logger = LoggerFactory.getLogger(MobileAuthService.class);
 	
     
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
@@ -151,8 +155,9 @@ public class MobileAuthService implements IMobileAuthService {
 		// if device modified + timeout  > current time then throw timeout exception.
 		// check verify timeout
 		//
+		Map<String,Object> setting = applicationConfig.get("general");
     	long time=java.util.Calendar.getInstance().getTimeInMillis()/1000;
-		int timeout = (Integer)applicationConfig.get("general").get("auth_verify_timeout");
+		int timeout = (Integer)setting.get("auth_verify_timeout");
     	if (time > device.getModified() + timeout ) {	
 			throw new RentException(RentErrorCode.ErrorAuthExpired,
 					"verify mobile auth code has been timeout");
@@ -161,7 +166,7 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		// check retry count
 		//
-		int retryLimit = (Integer)applicationConfig.get("general").get("auth_retry_limit");
+		int retryLimit = (Integer)setting.get("auth_retry_limit");
 		if(logger.isDebugEnabled()) {
 			logger.debug("retry limit is "+retryLimit+" current auth retry is "+device.getAuthRetry());
 		}
@@ -229,5 +234,14 @@ public class MobileAuthService implements IMobileAuthService {
 		}
 		device.setUser(user);
 		_verifyAuthCode(device,authCode);
+	}
+    public void setApplicationConfig(IApplicationConfig applicationConfig) {
+		this.applicationConfig = applicationConfig;
+	}
+    public void setEncodeUtility(EncodeUtility encodeUtility) {
+		this.encodeUtility = encodeUtility;
+	}
+    public void setMobileGatewayService(IMobileGatewayService mobileGatewayService) {
+		this.mobileGatewayService = mobileGatewayService;
 	}
 }
