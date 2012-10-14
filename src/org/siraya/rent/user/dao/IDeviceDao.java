@@ -72,6 +72,6 @@ public interface IDeviceDao {
     @ResultMap("rent.mapper.UserResultMap")
     public List<User> getDeviceUsers(@Param("deviceId")String deviceId, @Param("limit")int limit, @Param("offset")int offset);
 
-    @Update("update DEVICE set LAST_LOGIN_IP = #{lastLoginIp}, MODIFIED=#{created} where ID = #{deviceId} and USER_ID=#{userId}")    
+    @Update("update DEVICE set LAST_LOGIN_TIME=#{created},LAST_LOGIN_IP = #{lastLoginIp}, MODIFIED=#{created} where ID = #{deviceId} and USER_ID=#{userId}")    
     public int updateLastLoginIp(Session session);
 }

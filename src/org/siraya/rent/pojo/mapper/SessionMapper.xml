@@ -5,7 +5,7 @@
     <id column="ID" jdbcType="VARCHAR" property="id" />
     <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
     <result column="DEVICE_ID" jdbcType="VARCHAR" property="deviceId" />
-    <result column="LAST_LOGIN_IP" jdbcType="INTEGER" property="lastLoginIp" />
+    <result column="LAST_LOGIN_IP" jdbcType="VARCHAR" property="lastLoginIp" />
     <result column="CREATED" jdbcType="DECIMAL" property="created" />
   </resultMap>
 </mapper>
