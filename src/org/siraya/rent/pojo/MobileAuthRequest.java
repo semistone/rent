@@ -1,6 +1,5 @@
 package org.siraya.rent.pojo;
 
-import java.text.MessageFormat;
 
 /**
  *  Design mobile auth request form.
