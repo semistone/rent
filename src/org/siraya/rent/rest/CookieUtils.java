@@ -19,17 +19,14 @@ public class CookieUtils {
     private static Logger logger = LoggerFactory.getLogger(CookieUtils.class);
     private final static String KEY_NAME ="cookie";
 
-    public String genId(){
-    	return java.util.UUID.randomUUID().toString();
-    }
-    
+
     public NewCookie createDeviceCookie(Device device){
 
 		String value= device.getId()+":"+device.getUserId();
 		value = encodeUtility.encrypt(value, KEY_NAME);
 		logger.debug("cookie value is "+value);
 		NewCookie deviceCookie = new NewCookie("D", value, "/",
-				null, 1, "no comment", NewCookie.DEFAULT_MAX_AGE, // maxAge max int value/2
+				null, 1, "no comment", 1073741823, // maxAge max int value/2
 				false);
 		return deviceCookie;
 	}
@@ -39,7 +36,7 @@ public class CookieUtils {
 		value = encodeUtility.encrypt(value,KEY_NAME);
 		logger.debug("cookie value is "+value);
 		NewCookie deviceCookie = new NewCookie("D", value, "/",
-				null, 1, "no comment", NewCookie.DEFAULT_MAX_AGE , // maxAge max int value/2
+				null, 1, "no comment", 1073741823 , // maxAge max int value/2
 				false);
 		return deviceCookie;	
 	}
@@ -58,7 +55,7 @@ public class CookieUtils {
     	String deviceId = session.getDeviceId();
     	String sign = EncodeUtility.sha1(deviceId+userId);
     	if (id == null) {
-    		id = this.genId();
+    		session.genId();
     		session.setSession(id);
     	}
 
@@ -72,7 +69,7 @@ public class CookieUtils {
 		value = encodeUtility.encrypt(value, KEY_NAME);
 		logger.debug("cookie value is " + value);
 		NewCookie sessionCookie = new NewCookie("S", value, "/", null, 1,
-				"session", 60 * 60 * 24, false);
+				"session",NewCookie.DEFAULT_MAX_AGE , false);
 		return sessionCookie;
 	}
     

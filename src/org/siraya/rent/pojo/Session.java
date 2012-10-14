@@ -8,6 +8,11 @@ public class Session {
 	private String lastLoginIp;
 
 	private long created;
+	
+    public void genId(){
+    	this.id=java.util.UUID.randomUUID().toString();
+    }
+    
 	public String getId() {
 		return id;
 	}

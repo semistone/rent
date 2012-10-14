@@ -71,7 +71,7 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 			if (session != null) {
 				MultivaluedMap<String, String> headers = request.getRequestHeaders();
 				String ip = headers.getFirst("X-Real-IP");
-				if(!session.getLastLoginIp().equals(ip)){
+				if(ip != null && !session.getLastLoginIp().equals(ip)){
 					logger.debug("ip not match remove session cookie");
 					cookies.remove("S");
 				}
