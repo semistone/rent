@@ -1,23 +1,14 @@
 define([
-  'jQuery',
-  'logger',
-  'Mustache',
-  'i18N'
-], function($, logger,Mustache, Template) {
-var template = $('<div>').html(Template);
+  'order!jQuery',
+  'order!logger',
+  'order!Mustache',
+  'order!i18N'
+], function($, logger,Mustache) {
 var RENT = {
     CONSTANTS:{
     	APIs_BASE_DIR: './',
     	AJAX_TIMEOUT : 3000
     },
-    loadTemplate: function(templ_file_path, callback){
-	    $.get(templ_file_path, function(data) {
-	        $('body').append(data);
-	            if(callback){
-	                callback(); 
-	            }
-	    });
-	},
 
     // set language and resource file and css for locale
     setLangRes: function (lang, resFiles, extraPath,callback) { // extraPath maybe '../'
@@ -45,7 +36,7 @@ var RENT = {
     	    $(this).hide();
     	});  
     	
-    	$.ajaxSetup({timeout: RENT.CONSTANTS.AJAX_TIMEOUT});
+    	$.ajaxSetup({timeout: RENT.CONSTANTS.AJAX_TIMEOUT, cache:false});
     },
 
 	simpleDialog : function(title, msg) {
@@ -101,8 +92,5 @@ var RENT = {
     }
     
 }
-$(function(){
-	RENT.bindLoadingPage("#supersized-loader");
-});
 return RENT;
 });
