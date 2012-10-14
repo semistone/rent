@@ -443,8 +443,10 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 		this.$el.find('.i18n_id').text(
 				$.i18n.prop('general.id'));
 		this.$el.find('#i18n_last_login_ip').text(
-				$.i18n.prop('general.last_login_ip'));
-
+				$.i18n.prop('user.register.last_login_ip'));
+		this.$el.find('#i18n_last_login_time').text(
+				$.i18n.prop('user.register.last_login_time'));
+		
 		
 	},
 	delete_device:function(ev){
