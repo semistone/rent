@@ -2,7 +2,7 @@ package org.siraya.rent.user.dao;
 
 import junit.framework.Assert;
 import java.util.List;
-
+import org.siraya.rent.pojo.Session;
 import org.junit.Before;
 import org.junit.Test;
 import org.siraya.rent.pojo.Device;
@@ -19,6 +19,7 @@ public class TestIDeviceDao  extends AbstractJUnit4SpringContextTests{
     @Autowired
     private IUserDAO userDao;  
     Device device;
+    Session session;
     User user;
     long time;
     
@@ -43,6 +44,10 @@ public class TestIDeviceDao  extends AbstractJUnit4SpringContextTests{
     	user.setCc("233");
     	user.setStatus(0);
     	this.userDao.newUser(user);
+    	session = new Session();
+    	session.setDeviceId(id);
+    	session.setUserId(userId);
+    	session.setLastLoginIp("127.0.0.1");
     }
     
     @Test   
@@ -74,6 +79,9 @@ public class TestIDeviceDao  extends AbstractJUnit4SpringContextTests{
 
         List<User> list2  = this.deviceDao.getDeviceUsers(device.getId(),10,0);
         Assert.assertEquals(1, list2.size());
+
+        ret = this.deviceDao.updateLastLoginIp(session);
+        Assert.assertEquals(1, ret);
 
     }
 }

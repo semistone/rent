@@ -29,26 +29,28 @@ public class CookieResponseFilter implements ContainerResponseFilter {
 		String ip = headers.getFirst("X-Real-IP");
 		logger.debug("real ip is "+ip);
 		Map<String,Cookie>cookies = request.getCookies();
-		if (!cookies.containsKey("S")) {
-			logger.debug("create new session cookie");
+		String userId= headers.getFirst("USER_ID");
+		String deviceId = headers.getFirst("DEVICE_ID");
+		if (!cookies.containsKey("S") && userId != null && deviceId != null) {
+			logger.debug("cookie session not exist, create new session cookie");
 
-			String userId= headers.getFirst("USER_ID");
-			String deviceId = headers.getFirst("DEVICE_ID");
 			Session session = new Session();
 			session.setDeviceId(deviceId);
 			session.setUserId(userId);
-
+    		session.genId();
 			session.setLastLoginIp(ip);
 			NewCookie sessionCookie = cookieUtils.newSessionCookie(session);
 			if (sessionCookie == null) {
 				return response;
 			}
+		
+			logger.info("new session");
+			sessionService.newSession(session);				
+		
+			
+			logger.debug("build new response with session cookie");
 			Response cookieResponse = Response.fromResponse(response.getResponse()).cookie(sessionCookie).build();			  
 			response.setResponse(cookieResponse);
-			if (userId != null && deviceId != null) {
-				logger.info("new session");
-				sessionService.newSession(session);				
-			}
 		}
 		return response;
 	}

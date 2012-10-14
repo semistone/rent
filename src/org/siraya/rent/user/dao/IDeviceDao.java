@@ -1,5 +1,5 @@
 package org.siraya.rent.user.dao;
-
+import org.siraya.rent.pojo.Session;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.ResultMap;
@@ -72,4 +72,6 @@ public interface IDeviceDao {
     @ResultMap("rent.mapper.UserResultMap")
     public List<User> getDeviceUsers(@Param("deviceId")String deviceId, @Param("limit")int limit, @Param("offset")int offset);
 
+    @Update("update DEVICE set LAST_LOGIN_IP = #{lastLoginIp}, MODIFIED=#{created} where ID = #{deviceId} and USER_ID=#{userId}")    
+    public int updateLastLoginIp(Session session);
 }
