@@ -79,7 +79,7 @@ var RENT = {
         var form = {};
         for (var i = 0; i < vars.length; i++) {
             var pair = vars[i].split('=');
-            form[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+            form[decodeURIComponent(pair[0])] = decodeURIComponent((pair[1]+'').replace(/\+/g, '%20'));
         }
         return form;
     },

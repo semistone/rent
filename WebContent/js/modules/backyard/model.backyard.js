@@ -26,6 +26,14 @@ RENT.backyard.model.MainModel = Backbone.Model.extend({
 			url : this.url + 'list_sso_devices'
 		});
 		Backbone.sync("fetch",this, options);	
+	},
+	get_signature_of_mobile_auth_request:function(formObj,options){
+		delete formObj['debug'];
+		this.set(formObj,{silent:true});
+		options = $.extend(options, {
+			url : this.url + 'get_signature_of_mobile_auth_request'
+		});
+		Backbone.sync("create",this, options);		
 	}
 });
 RENT.backyard.collection.UserCollection = Backbone.Collection.extend({

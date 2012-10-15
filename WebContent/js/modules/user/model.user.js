@@ -2,8 +2,9 @@ define([
   'jQuery',
   'Backbone',
   'RentCommon',
+  'logger',
   './namespace.user'
-], function($, Backbone, RENT) {
+], function($, Backbone, RENT,logger) {
 RENT.user.model.UserModel = Backbone.Model.extend({
 	initialize:function(){
 		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/';
@@ -45,6 +46,21 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 		options = $.extend(options, {
 			url : url});
 		Backbone.sync("delete",this, options);	
+	},
+	mobile_auth_request:function(data,options){
+		var field = ['requestId','mobilePhone','sign','forceReauth','authUserId',
+		             'requestFrom','requsetTime','callback','requestTime','done'];
+		$.each(data,function(key,value){
+			if ($.inArray(key,field) <0 ){
+				logger.debug('delete key '+key);
+				delete data[key];
+			}
+		});
+		this.set(data,{silent:true});
+		options = $.extend(options, {
+			url : this.url + 'mobile_auth_request'
+		});
+		Backbone.sync("create",this, options);	
 	}
 	
 });
