@@ -20,6 +20,12 @@ RENT.backyard.model.MainModel = Backbone.Model.extend({
 			url : this.url + 'sms_gateway_debug_mode/'+mode
 		});
 		Backbone.sync("update",this, options);
+	},
+	list_sso_devices:function(options){
+		options = $.extend(options, {
+			url : this.url + 'list_sso_devices'
+		});
+		Backbone.sync("fetch",this, options);	
 	}
 });
 RENT.backyard.collection.UserCollection = Backbone.Collection.extend({

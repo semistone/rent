@@ -92,4 +92,11 @@ public class AdminRestApi {
 		return this.userService.getDeviceUsers(this.userAuthorizeData.getDeviceId(), limit, offset);
 	}
 	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/list_sso_devices")
+	public List<Device> getSsoDevices(){
+		return this.userService.getSsoDevices();
+	}
+	
 }

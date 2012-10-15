@@ -387,6 +387,9 @@ public class UserService implements IUserService {
 		return currentDevice;
 	}
 	
+	public List<Device> getSsoDevices(){
+		return this.deviceDao.getSsoDevices();
+	}
 	
 	public IMobileAuthRequestDao getMobileAuthRequestDao() {
 		return mobileAuthRequestDao;

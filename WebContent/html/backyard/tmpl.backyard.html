@@ -13,6 +13,9 @@
 				<h4 id="list_users_link">Show users in current device</h4>
 				<p>Show how many user have used this device</p>
             </li>
+			<li>
+				<h4  id="sso_request_form_link">Test Single sign on request</h4>
+			</li>
 	    </ul>
 	</div>
 </script>
@@ -37,4 +40,71 @@
 		</table>
 	</div>
 </div>
+</script>
+<script id="tmpl_mobile_auth_request_form" type="x-tmpl-mustache">
+    <form id="mobile_auth_request_form" class="form-horizontal well">
+    <fieldset>
+		<div class="control-group">
+			<label  class="control-label" for="requestId">Request Id:</label>
+			<div class="controls">
+				<input type="text" name="requestId" class="input-xlarge focused required" id="requestId" value="{{requestId}}"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label  class="control-label" for="mobilePhone">Mobile Phone</label>
+			<div class="controls">
+				<input type="text" name="mobilePhone" class="input-xlarge focused" maxlength="15"  id="mobilePhone" value="{{mobilePhone}}"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label  class="control-label" for="authUserId">User login ID</label>
+			<div class="controls">
+				<input type="text" name="authUserId" class="input-xlarge focused" maxlength="15"  id="authUserId" value="{{authUserId}}"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label  class="control-label" for="forceReauth">Force reauth even device authed:</label>
+			<div class="controls">
+				<select class="required" name="forceReauth" id="forceReauth">
+					<option>true</option>
+					<option>false</option>
+				</select>
+			</div>
+		</div>
+		<div class="control-group">
+			<label  class="control-label" for="done">done url:</label>
+			<div class="controls">
+				<input type="text" name="done" class="input-xlarge focused required"  id="done" value="{{done}}"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label  class="control-label" for="requestFrom">Request SSO user:</label>
+			<div class="controls">
+				<select name="requestFrom"  class="required" id="requestFrom">
+				</select>
+			</div>
+		</div>
+		<div class="control-group">
+			<label  class="control-label" for="requestTime">Request time:</label>
+			<div class="controls">
+				<input type="text" name="requestTime" class="input-xlarge focused required" maxlength="15"  id="requestTime" value="{{requestTime}}"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label  class="control-label" for="callback">Callback URL:</label>
+			<div class="controls">
+				<input type="text" name="callback" class="input-xlarge focused" id="callback" value="{{callback}}"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label  class="control-label" for="sign">Signature of this form:</label>
+			<div class="controls">
+				<input type="text" name=""sign" class="input-xlarge focused" maxlength="15"  id=""sign" value="{{"sign}}"/>
+			</div>
+		</div>
+		<div class="form-actions">
+			<button class="btn btn-primary" type="button" id="action_button">Sign<i class="icon-play"></i></button>
+		</div>
+	</fieldset>
+	</form>
 </script>

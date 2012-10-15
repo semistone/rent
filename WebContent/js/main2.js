@@ -32,7 +32,7 @@ require.config({
 		i18N : {
 			deps : [ 'jQuery' ],
 			exports : "i18n"
-		},
+		}
 	}
 });
 

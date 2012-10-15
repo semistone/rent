@@ -5,16 +5,16 @@ define([
   'order!i18N'
 ], function($, logger,Mustache) {
 var RENT = {
-    CONSTANTS:{
-    	APIs_BASE_DIR: './',
-    	AJAX_TIMEOUT : 3000
-    },
+	CONSTANTS:{
+		APIs_BASE_DIR: './',
+		AJAX_TIMEOUT : 3000
+	},
 
     // set language and resource file and css for locale
-    setLangRes: function (lang, resFiles, extraPath,callback) { // extraPath maybe '../'
-    	var extra_path = (extraPath ? extraPath : '');
+	setLangRes: function (lang, resFiles, extraPath,callback) { // extraPath maybe '../'
+		var extra_path = (extraPath ? extraPath : '');
     	if (callback == undefined) callback=function(){};
-        $.i18n.properties({
+    	$.i18n.properties({
             name: resFiles, //['xxx','yy']
             path: extra_path + 'i18n/',
             mode:'map', // "map" option is mandatory if your bundle keys contain Javascript Reserved Words, such as ' in string resource
@@ -39,7 +39,7 @@ var RENT = {
     	$.ajaxSetup({timeout: RENT.CONSTANTS.AJAX_TIMEOUT, cache:false});
     },
 
-	simpleDialog : function(title, msg) {
+    simpleDialog : function(title, msg) {
 		require(['Mustache','text!../html/general/tmpl.general.html','Bootstrap'],function(Mustache, template){
 			var $template = $('<div>').html(template);
 			var dialog= Mustache.to_html($template.find('#tmpl_simple_dialog').html(), {
@@ -48,12 +48,12 @@ var RENT = {
 			$('#error_dialog').modal('show');			
 		});
 	},
-    simpleErrorDialog:function(resp,msg){
+	simpleErrorDialog:function(resp,msg){
 		var resp = $.parseJSON(resp.responseText);
 		var title = $.i18n.prop('rent.error_msg.' + resp.errorCode);
 		logger.error('ajax response error message:' + resp.errorMsg);
 		this.simpleDialog(title, msg);
-    },
+	},
     getLang:function(){
     	//
     	// from url, cookie, user preference,browser default.
@@ -62,13 +62,15 @@ var RENT = {
 		var match=pattern.exec(window.location.href);
 		if (match) {
 			var language = match[1];
-	    	logger.debug('get lang from href, lang is '+language);
+			logger.debug('get lang from href, lang is '+language);
 			return language;
 		}
 		
-    	var language = window.navigator.userLanguage || window.navigator.language;
-    	logger.debug('get lang from browser default setting, lang is '+language);
-    	return language;
+		var language = window.navigator.userLanguage || window.navigator.language;
+		var i = language.indexOf('-');
+		language=language.substring(0,i)+'-'+language.substring(i+1).toUpperCase();
+		logger.debug('get lang from browser default setting, lang is '+language);
+		return language;
     },
     
     getQueryVariables:function(){

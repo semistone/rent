@@ -45,7 +45,7 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 		options = $.extend(options, {
 			url : url});
 		Backbone.sync("delete",this, options);	
-	},
+	}
 	
 });
 
