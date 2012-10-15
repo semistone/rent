@@ -85,7 +85,8 @@ RENT.backyard.view.ShowUsersView= Backbone.View.extend({
 });
 RENT.backyard.view.MobileAuthRequestView= Backbone.View.extend({
 	events:{
-		'click #action_button':'fill_form'
+		'click #sign_button':'fill_form',
+		'click #go_button':'do_mobile_auth_request'
 	},
 	initialize : function() {
 		logger.debug('initialize mobile auth request view');
@@ -106,10 +107,7 @@ RENT.backyard.view.MobileAuthRequestView= Backbone.View.extend({
 	    };
 	    return (
 	            S4() + S4() + "-" +
-	            S4() + "-" +
-	            S4() + "-" +
-	            S4() + "-" +
-	            S4() + S4() + S4()
+	            S4() 
 	        );
 	},
 	render:function(){
@@ -137,11 +135,31 @@ RENT.backyard.view.MobileAuthRequestView= Backbone.View.extend({
 	},
 	fill_form:function(){
 		logger.debug('click do sign');
-        var formvalidate = this.$el.find("#mobile_auth_request_form").valid();
-        if (!formvalidate) {
-        	logger.error('form validate fail');
-        	return;
-        }
+		var formvalidate = this.$el.find("#mobile_auth_request_form").valid();
+		if (!formvalidate) {
+			logger.error('form validate fail');
+			return;
+		}
+		var formArray=this.$el.find("#mobile_auth_request_form").serializeArray();
+		var formObj = {};
+		$.each(formArray,function(i, item){
+			formObj[item.name] = item.value;
+		});
+		var _this = this;
+		this.model.get_signature_of_mobile_auth_request(formObj,{
+			success:function(model, resp){
+				logger.debug('success');
+				_this.$el.find('#sign').val(model.sign);
+			},
+			error:function(model,resp){
+				logger.debug('error');
+				
+			}
+		});
+	},
+	do_mobile_auth_request:function(){
+		logger.debug("do submit");
+		this.$el.find("#mobile_auth_request_form").submit();
 	}
 });
 

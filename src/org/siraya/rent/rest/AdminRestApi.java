@@ -3,17 +3,17 @@ import java.util.List;
 import java.util.Map;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.PathParam;
 import org.siraya.rent.pojo.Device;
+import org.siraya.rent.pojo.MobileAuthRequest;
 import org.siraya.rent.filter.UserAuthorizeData;
 import org.siraya.rent.user.service.IUserService;
 import org.siraya.rent.utils.EncodeUtility;
@@ -97,6 +97,16 @@ public class AdminRestApi {
 	@Path("/list_sso_devices")
 	public List<Device> getSsoDevices(){
 		return this.userService.getSsoDevices();
+	}
+	
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/get_signature_of_mobile_auth_request")
+	public Response getSignatureOfMobileAuthRequest(MobileAuthRequest request){
+		String sign = this.userService.getSignatureOfMobileAuthRequest(request);
+    	HashMap<String,String> response = new HashMap<String,String>();
+		response.put("sign", sign);
+		return Response.status(HttpURLConnection.HTTP_OK).entity(response).build();
 	}
 	
 }

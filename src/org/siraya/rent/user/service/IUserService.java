@@ -31,7 +31,7 @@ public interface IUserService {
 	 * @param phoneNumber
 	 * @return String userId
 	 */
-	public User newUserByMobileNumber(int cc,String phoneNumber) throws Exception;
+	public User newUserByMobileNumber(int cc,String phoneNumber);
 
 	/**
 	 * add new user device.
@@ -45,6 +45,8 @@ public interface IUserService {
 	public List<User> getDeviceUsers(String deviceId, int limit, int offset);
 	 
 	public List<Device> getSsoDevices();
+
+	public String getSignatureOfMobileAuthRequest(MobileAuthRequest request);
 	
 	public Device mobileAuthRequest(Device currentDevice, MobileAuthRequest request);
 	/**

@@ -42,7 +42,7 @@
 </div>
 </script>
 <script id="tmpl_mobile_auth_request_form" type="x-tmpl-mustache">
-    <form id="mobile_auth_request_form" class="form-horizontal well">
+    <form id="mobile_auth_request_form" action="index.html" method="GET" class="form-horizontal well">
     <fieldset>
 		<div class="control-group">
 			<label  class="control-label" for="requestId">Request Id:</label>
@@ -99,11 +99,21 @@
 		<div class="control-group">
 			<label  class="control-label" for="sign">Signature of this form:</label>
 			<div class="controls">
-				<input type="text" name=""sign" class="input-xlarge focused" maxlength="15"  id=""sign" value="{{"sign}}"/>
+				<input type="text" name="sign" class="input-xlarge focused"  id="sign" value="{{sign}}"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label  class="control-label" for="sign">debug flag:</label>
+			<div class="controls">
+				<select name="debug">
+					<option value="1">true</option>
+					<option value="0">false</option>
+				</select>
 			</div>
 		</div>
 		<div class="form-actions">
-			<button class="btn btn-primary" type="button" id="action_button">Sign<i class="icon-play"></i></button>
+			<button class="btn btn-primary" type="button" id="sign_button">Sign<i class="icon-play"></i></button>
+			<button class="btn btn-primary" type="button" id="go_button">Go<i class="icon-play"></i></button>
 		</div>
 	</fieldset>
 	</form>

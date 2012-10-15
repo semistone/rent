@@ -23,7 +23,29 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		}
 		this.model.bind('change',this.render);
 		this.model.bind('change_view',this.change_view);
-		this.model.fetch({error:this.error});
+		if (!this.handleMobileAuthRequestForm()){
+			//only no mobile auth request need to do fetch.
+			this.model.fetch({error:this.error});			
+		}
+	},
+	handleMobileAuthRequestForm:function(){
+		var form = RENT.getQueryVariables();
+		var _this = this;
+		if (form['requestId'] != null) {
+			logger.debug('deal with request');
+			this.model.mobile_auth_request(form,{
+				success:function(model,response){
+					logger.debug('success');					
+					_this.model.set(model);
+				},
+				error:function(resp){
+					_this.error(_this.model,resp);
+				}
+			});
+			return true;
+		} else {
+			return false;			
+		}
 	},
 	error :function(model,resp){
 		logger.debug("fetch error");

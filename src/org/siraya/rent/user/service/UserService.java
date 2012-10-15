@@ -95,7 +95,7 @@ public class UserService implements IUserService {
 	 * @exception DuplicateKeyException duplicate mobile number
 	 */    
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
-	public User newUserByMobileNumber(int cc,String mobilePhone) throws Exception {
+	public User newUserByMobileNumber(int cc,String mobilePhone) {
 		//
 		// verify format
 		//
@@ -313,7 +313,21 @@ public class UserService implements IUserService {
     	return ret;
     }
 
-    
+	public String getSignatureOfMobileAuthRequest(MobileAuthRequest request) {
+		String userId = request.getRequestFrom();
+		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(
+				SSO_DEVICE_ID, userId);
+		if (requestFrom == null) {
+			throw new RentException(RentErrorCode.ErrorUserExist,"request sso device user id:"+userId+" not exist");
+		}
+		if (requestFrom.getStatus() != DeviceStatus.ApiKeyOnly.getStatus()) {
+			throw new RentException(RentErrorCode.ErrorPermissionDeny,"request user not for apikey only");			
+		}		
+		String requestString = request.toString(requestFrom.getToken());
+		logger.debug("verify request sign "+requestString);	
+		return EncodeUtility.sha1(requestString);
+	}
+	
     /**
      * step1: check requestFrom 
      * step2: check sign
@@ -324,38 +338,28 @@ public class UserService implements IUserService {
      * step5: save request into database.
      */
 	public Device mobileAuthRequest(Device currentDevice, MobileAuthRequest request){
-		String userId = request.getRequestFrom();
-		logger.debug("get request from "+userId);
-		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(SSO_DEVICE_ID,userId);
-		if (requestFrom == null) {
-			throw new RentException(RentErrorCode.ErrorUserExist,"request sso device not exist");
-		}
-		if (requestFrom.getStatus() != DeviceStatus.ApiKeyOnly.getStatus()) {
-			throw new RentException(RentErrorCode.ErrorPermissionDeny,"request user not for apikey only");			
-		}
-		String requestString = request.toString(requestFrom.getToken());
 		Boolean isDebugMode = (Boolean)applicationConfig.get("general").get("debug");
-		if (!isDebugMode) {
-			logger.debug("verify request sign "+requestString);		
-			String sign = EncodeUtility.sha1(requestString);
-			if (!sign.equals(request.getSign())) {
-				throw new RentException(RentErrorCode.ErrorPermissionDeny,"sign verify failed");			
-			}	
-			
-			logger.debug("verify expired");
-			long expire = 300;
-			long now = Calendar.getInstance().getTimeInMillis()/1000;
-			if (request.getRequestTime() > now ) {
-				throw new RentException(RentErrorCode.ErrorAuthExpired, "request time is too after now "+request.getRequestTime()+ " compare to "+now);			
-			}
-			if (request.getRequestTime() < now - expire) {
-				throw new RentException(RentErrorCode.ErrorAuthExpired, "request time is expired time is "+request.getRequestTime()+ " compare to "+now);							
-			}
-		} else {
-			logger.debug("debug mode skip sign and requre time verify");
+	
+		String sign = this.getSignatureOfMobileAuthRequest(request);
+		if (!sign.equals(request.getSign())) {
+			throw new RentException(RentErrorCode.ErrorPermissionDeny,
+					"sign verify failed");
+		}
+
+		logger.debug("do verify expired");
+		long expire = 300;
+		long now = Calendar.getInstance().getTimeInMillis() / 1000;
+		if (request.getRequestTime() > now) {
+			throw new RentException(RentErrorCode.ErrorAuthExpired,
+					"request time is too after now " + request.getRequestTime()
+							+ " compare to " + now);
+		}
+		if (request.getRequestTime() < now - expire) {
+			throw new RentException(RentErrorCode.ErrorAuthExpired,
+					"request time is expired time is "
+							+ request.getRequestTime() + " compare to " + now);
 		}
 		
-
 		//
 		// get autu user from friend
 		//
@@ -365,20 +369,27 @@ public class UserService implements IUserService {
 		//
 		String mobilePhone = request.getMobilePhone();
 		if (mobilePhone != null) {
-			User user = this.userDao.getUserByMobilePhone(mobilePhone);
+			User user = this.userDao.getUserByMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY));
 			if (user != null) {
-				currentDevice.setUserId(user.getId());
-				//
-				// get device from deviceDao
-				//
-				currentDevice = this.getDevice(currentDevice);
+				logger.debug("current user exist");
+
+			} else {
+				logger.debug("this mobile not exist yet");
+				int cc = 886; // todo: fix country code
+				user = this.newUserByMobileNumber(cc, mobilePhone);
 			}
+			currentDevice.setUserId(user.getId());
+			//
+			// get device from deviceDao
+			//
+			currentDevice = this.getDevice(currentDevice);
 		}
 		
 		//
 		// save into database.
 		//
 		try {
+			logger.debug("save request into database");
 			mobileAuthRequestDao.newRequest(request);
 		}catch(Exception e){
 			logger.error("insert request into dao error",e);
