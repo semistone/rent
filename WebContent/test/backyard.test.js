@@ -37,7 +37,7 @@ asyncTest('test sently callback', function(assert) {
 	});
 });
 //
-// insert into DEVICE values ('SSO','test sso','','token','5','1','','0','0');
+// insert into DEVICE values ('SSO','test sso','','token','5','1','','','0','0');
 // insert into USER values ('test sso','234242424','','','','','','','','','1','1349743961','1349743961');
 // insert into USER values ('test list devices','23432424','test@email.com','test list devices','','','','','','','1','1349743961','1349743961');
 //
