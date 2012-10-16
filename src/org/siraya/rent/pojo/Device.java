@@ -1,15 +1,23 @@
 package org.siraya.rent.pojo;
 import java.util.Random;
-
+import javax.validation.constraints.Size;
 import org.siraya.rent.pojo.User;
 import org.codehaus.jackson.annotate.JsonIgnore;
 public class Device {
+	@Size(min = 2, max = 15)
 	private String id;
+
+	@Size(min = 2, max = 15)
 	private String userId;
+
+	@Size(min = 2, max = 15)
 	private String token;
 	private long created;
 	private long modified;
+	
 	private int status;
+	
+	@Size(min = 2, max = 15)
 	private String name;
 	private int authRetry;
 
@@ -24,7 +32,7 @@ public class Device {
 	public static String genId(){
 		return java.util.UUID.randomUUID().toString();
 	}
-	
+
 	public String getId() {
 		return id;
 	}
