@@ -13,7 +13,8 @@ define([
   './model.user'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
-var $template = $('<div>').append(template);	
+var $template = $('<div>').append(template);
+var mobileAuthRequestForm = null;
 RENT.user.view.RegisterView = Backbone.View.extend({
 
 	initialize : function() {
@@ -29,11 +30,11 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		}
 	},
 	handleMobileAuthRequestForm:function(){
-		var form = RENT.getQueryVariables();
+		mobileAuthRequestForm = RENT.getQueryVariables();
 		var _this = this;
-		if (form['requestId'] != null) {
+		if (mobileAuthRequestForm['requestId'] != null) {
 			logger.debug('deal with request');
-			this.model.mobile_auth_request(form,{
+			this.model.mobile_auth_request(mobileAuthRequestForm,{
 				success:function(model,response){
 					logger.debug('success');					
 					_this.model.set(model);
@@ -292,11 +293,10 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	dotDone:function(){
 		//
 		// redirect back to .done
-		//
-		var query_variable = RENT.getQueryVariables();		  
-		if (query_variable['.done'] != undefined) {
-			logger.info('.done exist '+query_variable['.done']);
-			window.location.replace(query_variable['.done']);
+		//		  
+		if (mobileAuthRequestForm != null && mobileAuthRequestForm['done'] != undefined) {
+			logger.info('done exist '+mobileAuthRequestForm['done']);
+			window.location.replace(mobileAuthRequestForm['done']);
 			return;
 		}		
 	},

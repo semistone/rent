@@ -52,6 +52,7 @@ public class TestUserService {
 		user.setPassword("test");
 		user.setStatus(0);
 		userService = new UserService();
+		userService.debug = true;
 		device.setUser(user);
 		device.setId(deviceId);
 		if (isMock) {
@@ -71,11 +72,11 @@ public class TestUserService {
 			request.setRequestId("r" + time / 1000);
 			request.setForceReauth(false);
 			request.setRequestFrom(this.userId);
-			request.setRequestTime(time / 1000);
+			request.setRequestTime(time/1000);
 			request.setAuthUserId("test id");
-			request.setMobilePhone("771232131313");
+			request.setMobilePhone("8862332131313");
 			request.setDone("http://www.yahoo.com");
-			request.setSign("96EDD356D2C863B5483CA811061BD639CB9FF29C");
+			
 			setting = new HashMap<String, Object>();
 			Map<String, Object> setting2;
 			setting2 = new HashMap<String, Object>();
@@ -84,6 +85,7 @@ public class TestUserService {
 			setting.put("max_user_per_device", 4);
 			setting.put("886", setting2);
 			setting.put("general", "thebestsecretkey");
+			setting.put("cookie", "thebestsecretkey");
 			setting2.put("country", "TW");
 			setting2.put("lang", "zh");
 
@@ -188,11 +190,25 @@ public class TestUserService {
 							IUserService.SSO_DEVICE_ID, userId);
 					device.setStatus(DeviceStatus.ApiKeyOnly.getStatus());
 					will(returnValue(device));
-					one(userDao).getUserByMobilePhone(request.getMobilePhone());
+					one(userDao).getUserByMobilePhone(with(any(String.class)));
+					// check mobile phone and return null
 					one(mobileAuthRequestDao).newRequest(request);
 					one(config).get("general");
 					will(returnValue(setting));
+	
 
+					//
+					// copy from new device by mobile phone
+					//
+					one(userDao).newUser(with(any(User.class)));
+					one(config).get("mobile_country_code");
+					will(returnValue(setting));
+					one(config).get("keydb");
+					will(returnValue(setting));
+					
+					one(deviceDao).getDeviceByDeviceIdAndUserId(
+							with(any(String.class)),with(any(String.class)));
+					will(returnValue(device));
 				}
 			});
 

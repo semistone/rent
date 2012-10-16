@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 import javax.ws.rs.core.Response;
 import org.siraya.rent.pojo.MobileAuthRequest;
+import org.siraya.rent.pojo.MobileAuthResponse;
 import org.siraya.rent.filter.UserAuthorizeData;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.utils.RentException;
@@ -197,10 +198,8 @@ public class UserRestApi {
 		Device currentDevice = new Device();
 		currentDevice.setId(this.userAuthorizeData.getDeviceId());
 		currentDevice.setUserId(this.userAuthorizeData.getUserId());
-		Device device = userService.mobileAuthRequest(currentDevice, request);
-		device.setId(this.userAuthorizeData.getDeviceId());
-		device = userService.getDevice(device);
-		return Response.status(HttpURLConnection.HTTP_OK).entity(device)
+		MobileAuthResponse response = userService.mobileAuthRequest(currentDevice, request);
+		return Response.status(HttpURLConnection.HTTP_OK).entity(response)
 				.build();
 	}
 	
