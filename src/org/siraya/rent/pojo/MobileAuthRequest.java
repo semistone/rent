@@ -1,5 +1,7 @@
 package org.siraya.rent.pojo;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 
 /**
  *  Design mobile auth request form.
@@ -38,6 +40,7 @@ public class MobileAuthRequest {
 	public void setDone(String dotDone) {
 		this.done = dotDone;
 	}
+	
 	public String getMobilePhone() {
 		return mobilePhone;
 	}

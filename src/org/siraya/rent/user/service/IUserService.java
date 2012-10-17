@@ -5,11 +5,9 @@ package org.siraya.rent.user.service;
  * 
  */
 import java.util.List;
-
+import org.siraya.rent.pojo.MobileAuthResponse;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.Device;
-import org.siraya.rent.user.dao.IUserDAO;
-import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.pojo.MobileAuthRequest;
 public interface IUserService {
     public final static String SSO_DEVICE_ID = "SSO";
@@ -48,7 +46,7 @@ public interface IUserService {
 
 	public String getSignatureOfMobileAuthRequest(MobileAuthRequest request);
 	
-	public Device mobileAuthRequest(Device currentDevice, MobileAuthRequest request);
+	public MobileAuthResponse mobileAuthRequest(Device currentDevice, MobileAuthRequest request);
 	/**
 	 * update user email
 	 * @param userId
