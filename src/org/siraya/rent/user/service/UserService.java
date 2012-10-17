@@ -126,8 +126,6 @@ public class UserService implements IUserService {
 		User user = new User();
 		String id = java.util.UUID.randomUUID().toString();
 		user.setId(id);
-
-		user.validate("mobilePhone", mobilePhone);
 		user.setMobilePhone(encodeUtility.encrypt(mobilePhone, User.ENCRYPT_KEY));
 		user.setCc((String) map.get("country"));
 		user.setLang((String) map.get("lang"));
