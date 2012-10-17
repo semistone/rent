@@ -7,7 +7,14 @@ define([
 var RENT = {
 	CONSTANTS:{
 		APIs_BASE_DIR: './',
-		AJAX_TIMEOUT : 3000
+		AJAX_TIMEOUT : 3000,
+		COUNTRIES: {
+			"886": "general.taiwan",
+			"86": "general.china",
+			"81" : "general.japan",
+			"1"  : "general.unit_state"
+		}
+
 	},
 
     // set language and resource file and css for locale
@@ -91,6 +98,15 @@ var RENT = {
         	}, $.i18n.prop('rent.error.validate_format'));
     		callback();
     	});
+    },
+    generateCountryOptions:function(selectElement){
+    	var options = selectElement.prop('options');
+    	if (options.length > 0) {
+    		return;
+    	}
+		$.each(CONSTANTS.COUNTRIES , function(key, value) {
+			options[options.length] = new Option(key, $.i18n.prop(value));
+		});
     }
     
 }

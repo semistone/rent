@@ -129,6 +129,7 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 	render: function(){
 		this.model.trigger('change_view','step1');
 		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
+		RENT.generateCountryOptions(this.$el.find('#country_code'));
 		var _this = this;
 		RENT.initValidator(function(){
 			_this.$el.find("#register_form").validate();			

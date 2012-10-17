@@ -64,6 +64,8 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 			return Response.Status.NOT_FOUND;
 		case 12://ErrorInvalidParameter
 			return Response.Status.BAD_REQUEST;
+		case 15: //ErrorPermissionDeny
+			return Response.Status.FORBIDDEN;
 		default:
 			return Response.Status.INTERNAL_SERVER_ERROR;
 		}

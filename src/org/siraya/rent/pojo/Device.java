@@ -1,9 +1,13 @@
 package org.siraya.rent.pojo;
 import java.util.Random;
+
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.siraya.rent.pojo.User;
 import org.codehaus.jackson.annotate.JsonIgnore;
 public class Device {
+
+	@NotNull
 	@Size(min = 2, max = 15)
 	private String id;
 

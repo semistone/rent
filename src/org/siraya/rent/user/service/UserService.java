@@ -382,8 +382,8 @@ public class UserService implements IUserService {
 				logger.debug("current user exist");
 
 			} else {
-				logger.debug("this mobile not exist yet");
-				int cc = 886; // todo: fix country code
+				logger.debug("this mobile phone's user not exist yet");
+				int cc = Integer.parseInt(request.getCountryCode());
 				user = this.newUserByMobileNumber(cc, mobilePhone);
 			}
 			request.setMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY)); // encrypt mobile phone
