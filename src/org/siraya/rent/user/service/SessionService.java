@@ -29,7 +29,7 @@ public class SessionService implements ISessionService {
 		int ret = this.deviceDao.updateLastLoginIp(session);
 		if (ret != 1) {
 			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
-					"update device not found");
+					"new session try to update device but update device not found");
 		}
 	}
 	public void setSessionDao(ISessionDao sessionDao) {

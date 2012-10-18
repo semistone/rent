@@ -297,7 +297,14 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		//		  
 		if (mobileAuthRequestForm != null && mobileAuthRequestForm['done'] != undefined) {
 			logger.info('done exist '+mobileAuthRequestForm['done']);
-			window.location.replace(mobileAuthRequestForm['done']);
+			var field = ['requestId','responseTime','status','sign'];
+			var params = '?';
+			$.each(this.model.toJSON(),function(key,value){
+				if ($.inArray(key,field) >=0 ){
+					params += key+'='+encodeURIComponent(value)+'&';
+				}
+			});
+			window.location.replace(mobileAuthRequestForm['done']+ params);
 			return;
 		}		
 	},
