@@ -104,8 +104,8 @@ var RENT = {
     	if (options.length > 0) {
     		return;
     	}
-		$.each(CONSTANTS.COUNTRIES , function(key, value) {
-			options[options.length] = new Option(key, $.i18n.prop(value));
+		$.each(this.CONSTANTS.COUNTRIES , function(key, value) {
+			options[options.length] = new Option($.i18n.prop(value),key);
 		});
     }
     
