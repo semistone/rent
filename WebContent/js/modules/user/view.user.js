@@ -85,7 +85,8 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		case 2:
 			logger.debug('render register view step3');
 			this.model.unbind('change'); 
-			new RENT.user.view.RegisterStep3View({
+			RENT.user.dotDone(mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
+			new RENT.user.view.RegisterMainView({
 				el : '#register_content',
 				model: this.model
 			}).render();
@@ -281,32 +282,14 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		}).render();
 	}
 });
-
 //
-// step3 view
+// Register main view
 //
-RENT.user.view.RegisterStep3View = Backbone.View.extend({
+RENT.user.view.RegisterMainView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render','delete_device','show_my_device','verify_status_event');
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.model.on('verify_status_event',this.verify_status_event);
-	},
-	dotDone:function(){
-		//
-		// redirect back to .done
-		//		  
-		if (mobileAuthRequestForm != null && mobileAuthRequestForm['done'] != undefined) {
-			logger.info('done exist '+mobileAuthRequestForm['done']);
-			var field = ['requestId','responseTime','status','sign'];
-			var params = '?';
-			$.each(this.model.toJSON(),function(key,value){
-				if ($.inArray(key,field) >=0 ){
-					params += key+'='+encodeURIComponent(value)+'&';
-				}
-			});
-			window.location.replace(mobileAuthRequestForm['done']+ params);
-			return;
-		}		
 	},
 	events : {
 		"click #named_my_devices_link" : 'name_device_popup',
@@ -323,7 +306,6 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 	},
 	render:function(){
 		this.model.trigger('change_view','step3');
-		this.dotDone();
 		this.$el.html(this.tmpl);
 		//
 		// i18n
@@ -371,7 +353,6 @@ RENT.user.view.RegisterStep3View = Backbone.View.extend({
 		});
 	}
 });
-		
 
 RENT.user.view.ErrorView = Backbone.View.extend({
 	initialize : function() {
