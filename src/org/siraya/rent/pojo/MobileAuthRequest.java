@@ -1,5 +1,7 @@
 package org.siraya.rent.pojo;
 
+import java.util.Random;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -31,6 +33,9 @@ public class MobileAuthRequest {
 	private String requestId;
 	@NotNull
 	private long requestTime;
+
+	private String token;
+
 
 	public String getCountryCode() {
 		return countryCode;
@@ -117,5 +122,19 @@ public class MobileAuthRequest {
 				this.requestFrom, this.done, this.requestTime,
 				this.mobilePhone, this.forceReauth, this.callback,
 				this.authUserId, token);
+	}
+	
+	@JsonIgnore
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+	public String genToken(){
+		Random r  = new Random();
+		this.token= String.format("%06d", r.nextInt(999999));
+		return this.token;
 	}
 }

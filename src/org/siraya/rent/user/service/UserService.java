@@ -1,7 +1,5 @@
 package org.siraya.rent.user.service;
 
-import junit.framework.Assert;
-
 import org.siraya.rent.pojo.MobileAuthRequest;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.VerifyEvent;
@@ -376,8 +374,9 @@ public class UserService implements IUserService {
 		// get auth user from mobile phone
 		//
 		String mobilePhone = request.getMobilePhone();
+		User user = null;
 		if (mobilePhone != null) {
-			User user = this.userDao.getUserByMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY));
+			user = this.userDao.getUserByMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY));
 			if (user != null) {
 				logger.debug("current user exist");
 
@@ -391,7 +390,18 @@ public class UserService implements IUserService {
 			//
 			// get device from deviceDao
 			//
-			currentDevice = this.getDevice(currentDevice);
+			try{
+				currentDevice = this.getDevice(currentDevice);
+			}catch(RentException e){
+				//
+				// skip device not found error and set as staus to removed.
+				//
+				if (e.getErrorCode() != RentException.RentErrorCode.ErrorNotFound) {
+					throw e;
+				}
+				currentDevice.setStatus(DeviceStatus.Authing.getStatus());
+			}
+
 		} else {
 			logger.debug("requset mobile phone is empty");
 		}
@@ -401,6 +411,8 @@ public class UserService implements IUserService {
 		//
 		try {
 			logger.debug("save request into database");
+			request.genToken();
+			request.setToken(encodeUtility.encrypt(request.getToken(), Device.ENCRYPT_KEY));
 			mobileAuthRequestDao.newRequest(request);
 		}catch(Exception e){
 			logger.error("insert request into dao error",e);
@@ -414,7 +426,8 @@ public class UserService implements IUserService {
 		response.setRequestId(request.getRequestId());
 		response.setStatus(currentDevice.getStatus());
 		response.setResponseTime(java.util.Calendar.getInstance().getTimeInMillis()/1000);
-	
+		response.setUser(user);
+		response.setDevice(currentDevice);
 		String responseSign = EncodeUtility.sha1(response.toString(requestFrom.getToken()));
 		response.setSign(responseSign);
 	

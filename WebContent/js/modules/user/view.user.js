@@ -64,6 +64,12 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		this.$el.html($template.find('#tmpl_register_form').html());
 		var status =this.model.get('status');
 		logger.debug("render user status:"+status);
+		if (mobileAuthRequestForm != null && 
+			(status == undefined || status == 0) &&
+			this.model.get('userId') != null
+		) {
+			status = 1;
+		}
 		switch (status) {
 		case undefined:
 			logger.debug('render register view step1');

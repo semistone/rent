@@ -2,5 +2,5 @@ package org.siraya.rent.mobile.service;
 
 public interface IMobileGatewayService {
 	
-	public void sendSMS(String phone,String message) throws Exception;
+	public void sendSMS(String phone,String message);
 }

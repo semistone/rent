@@ -13,8 +13,7 @@ public class Device {
 
 	@Size(min = 2, max = 15)
 	private String userId;
-
-	@Size(min = 2, max = 15)
+	@NotNull
 	private String token;
 	private long created;
 	private long modified;

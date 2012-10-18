@@ -17,6 +17,7 @@ import org.siraya.rent.pojo.User;
 import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
 import org.siraya.rent.pojo.Device;
+import org.siraya.rent.user.service.DeviceStatus;
 import org.siraya.rent.user.service.IMobileAuthService;
 import org.siraya.rent.user.service.IUserService;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ public class UserRestApi {
 	private IMobileAuthService mobileAuthService;
 	@Autowired
 	private CookieUtils cookieUtils;
+
 	@Autowired
 	private UserAuthorizeData userAuthorizeData;
 
@@ -176,6 +178,21 @@ public class UserRestApi {
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
 	}
 
+	/**
+	 * verify auth code
+	 * @param deviceId
+	 * @param authCode
+	 * @return
+	 */
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/verify_mobile_auth_request_code")
+	public Response verifyMobileAuthRequestCode(Map<String,Object> request) throws Exception{
+		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
+	}
+
+	
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -196,9 +213,17 @@ public class UserRestApi {
 	@Path("/mobile_auth_request")
 	public Response mobileAuthRequest(MobileAuthRequest request){	
 		Device currentDevice = new Device();
-		currentDevice.setId(this.userAuthorizeData.getDeviceId());
-		currentDevice.setUserId(this.userAuthorizeData.getUserId());
+		String deviceId = this.userAuthorizeData.getDeviceId();
+		String userId = this.userAuthorizeData.getUserId();
+		currentDevice.setId(deviceId);
+		currentDevice.setUserId(userId);
 		MobileAuthResponse response = userService.mobileAuthRequest(currentDevice, request);
+		//
+		// if force reauth or status is init, then sent sms auth message.
+		//
+		if (request.isForceReauth() || response.getStatus() == DeviceStatus.Init.getStatus()) {
+			this.mobileAuthService.sendAuthMessage(request,response);
+		}
 		return Response.status(HttpURLConnection.HTTP_OK).entity(response)
 				.build();
 	}
@@ -228,5 +253,7 @@ public class UserRestApi {
 	public void setUserAuthorizeData(UserAuthorizeData userAuthorizeData) {
 		this.userAuthorizeData = userAuthorizeData;
 	}
-
+	public void setCookieUtils(CookieUtils cookieUtils) {
+		this.cookieUtils = cookieUtils;
+	}
 }

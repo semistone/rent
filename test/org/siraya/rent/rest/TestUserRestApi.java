@@ -2,6 +2,8 @@ package org.siraya.rent.rest;
 
 import org.jmock.Expectations;
 import java.util.HashMap;
+import java.util.Map;
+
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
@@ -13,15 +15,19 @@ import org.siraya.rent.rest.UserRestApi;
 import org.siraya.rent.user.service.IUserService;
 import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.pojo.Device;
+import org.siraya.rent.pojo.MobileAuthRequest;
+import org.siraya.rent.pojo.MobileAuthResponse;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.filter.UserAuthorizeData;
 import javax.ws.rs.core.Response;
+import org.siraya.rent.utils.EncodeUtility;
+import org.siraya.rent.utils.IApplicationConfig;
 
 import junit.framework.Assert;
 import org.siraya.rent.user.service.IMobileAuthService;
-@ContextConfiguration(locations = {"classpath*:/applicationContext*.xml"})
-public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
-	@Autowired
+
+public class TestUserRestApi{
+
 	UserRestApi userRestApi;
 	private Mockery context;
 	private IMobileAuthService mobileAuthService;
@@ -34,12 +40,20 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 	private String mobilePhone= "886234242342";
 	private Device device = new Device();
 	private User  user = new User();
+	private CookieUtils cookieUtils = new CookieUtils();
 	private java.util.Map<String, Object> request;
+	private MobileAuthRequest mobileAuthRequest;
+	private MobileAuthResponse mobileAuthResponse;
+	private EncodeUtility encodeUtility = new EncodeUtility();
+	private IApplicationConfig config;
+	private Map<String, Object> setting;
 	@Before
 	public void setUp(){
 		request = new java.util.HashMap<String,Object>();
 		if (isMock){
+			userRestApi = new UserRestApi();
 			context = new JUnit4Mockery();
+			config = context.mock(IApplicationConfig.class);
 			mobileAuthService = context.mock(IMobileAuthService.class);	
 			userRestApi.setMobileAuthService(mobileAuthService);
 			userService = context.mock(IUserService.class);	
@@ -48,7 +62,12 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 			userAuthorizeData.setUserId(userId);
 			userAuthorizeData.setDeviceId(deviceId);
 			userRestApi.setUserAuthorizeData(userAuthorizeData);
-			
+			mobileAuthResponse = new MobileAuthResponse();
+			userRestApi.setCookieUtils(cookieUtils);
+			cookieUtils.setEncodeUtility(encodeUtility);
+			encodeUtility.setApplicationConfig(config);
+			setting = new HashMap<String, Object>();
+			setting.put("cookie", "thebestsecretkey");
 		}
 	}
 	@Test   
@@ -60,6 +79,8 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 					will(returnValue(device));
 					one(userService).newUserByMobileNumber(cc, mobilePhone);
 					will(returnValue(user));
+					one(config).get("keydb");
+					will(returnValue(setting));					
 				}
 			});
 		}
@@ -98,5 +119,21 @@ public class TestUserRestApi extends AbstractJUnit4SpringContextTests{
 
 		Response response = userRestApi.verifyMobileAuthCode(request);
 		Assert.assertEquals(200, response.getStatus());
+	}
+	 
+	@Test 
+	public void mobileAuthRequest(){
+		mobileAuthRequest = new MobileAuthRequest();
+		if (isMock) {
+			context.checking(new Expectations() {
+				{
+					one(userService).mobileAuthRequest(with(any(Device.class)), with(any(MobileAuthRequest.class)));
+					will(returnValue(mobileAuthResponse));
+					one(mobileAuthService).sendAuthMessage(mobileAuthRequest, mobileAuthResponse);
+				}
+			});
+		};
+
+		this.userRestApi.mobileAuthRequest(mobileAuthRequest);
 	}
 }

@@ -4,7 +4,8 @@ public interface IDontTryService {
 	public enum DontTryType {
 		Today(0),
 		Week(1),	
-		Month(2);
+		Month(2),
+		Life(3);
 		private int type;
 		private DontTryType(int type) {
 			this.type = type;
