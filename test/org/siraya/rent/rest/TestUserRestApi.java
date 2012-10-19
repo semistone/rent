@@ -63,6 +63,13 @@ public class TestUserRestApi{
 			userAuthorizeData.setDeviceId(deviceId);
 			userRestApi.setUserAuthorizeData(userAuthorizeData);
 			mobileAuthResponse = new MobileAuthResponse();
+			mobileAuthRequest = new MobileAuthRequest();
+			mobileAuthRequest.setRequestId("123565623422");
+			mobileAuthRequest.setCountryCode("886");
+			mobileAuthRequest.setSign("test");
+			mobileAuthRequest.setMobilePhone("8869234242");
+			mobileAuthRequest.setRequestFrom("2343242");
+			mobileAuthRequest.setRequestTime(12413131);
 			userRestApi.setCookieUtils(cookieUtils);
 			cookieUtils.setEncodeUtility(encodeUtility);
 			encodeUtility.setApplicationConfig(config);
@@ -123,7 +130,6 @@ public class TestUserRestApi{
 	 
 	@Test 
 	public void mobileAuthRequest(){
-		mobileAuthRequest = new MobileAuthRequest();
 		if (isMock) {
 			context.checking(new Expectations() {
 				{

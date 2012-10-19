@@ -44,7 +44,7 @@ public class UserService implements IUserService {
     private EncodeUtility encodeUtility;    
 
 	private static Logger logger = LoggerFactory.getLogger(UserService.class);
-	boolean debug = false;
+
     
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
     public void removeDevice (Device device) throws Exception{
@@ -344,10 +344,12 @@ public class UserService implements IUserService {
      */
 	public MobileAuthResponse mobileAuthRequest(Device currentDevice, MobileAuthRequest request){
 		String userId = request.getRequestFrom();
+	  	Map<String,Object> generalSetting = applicationConfig.get("general");
 		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(
 				SSO_DEVICE_ID, userId);
+		boolean debug = (boolean)generalSetting.get("debug");
 		String sign = this._getSignatureOfMobileAuthRequest(request, requestFrom);
-		if (!this.debug && !sign.equals(request.getSign())) {
+		if (!debug && !sign.equals(request.getSign())) {
 			throw new RentException(RentErrorCode.ErrorPermissionDeny,
 					"sign verify failed "+sign);
 		}
@@ -440,6 +442,15 @@ public class UserService implements IUserService {
 	
 	public List<Device> getSsoDevices(){
 		return this.deviceDao.getSsoDevices();
+	}
+	
+	public MobileAuthRequest getMobileAuthRequest(String requestId) {
+		MobileAuthRequest request = this.mobileAuthRequestDao.get(requestId);
+		if (request == null) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
+					"request id "+requestId+" not found");
+		}
+		return request;
 	}
 	
 	public IMobileAuthRequestDao getMobileAuthRequestDao() {

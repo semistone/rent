@@ -4,6 +4,7 @@ import java.util.Random;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
@@ -21,7 +22,6 @@ public class MobileAuthRequest {
 
 	@NotNull
 	private String sign;
-	@NotNull
 	private String done;
 	private String mobilePhone;
 	private String authUserId;
@@ -30,6 +30,7 @@ public class MobileAuthRequest {
 	@NotNull
 	private String requestFrom;
 	@NotNull
+	@Size(min = 2, max = 16)
 	private String requestId;
 	@NotNull
 	private long requestTime;

@@ -54,6 +54,7 @@ public interface IUserService {
 	 */
 	public void setupEmail(User user) throws Exception;
 	
+	public MobileAuthRequest getMobileAuthRequest(String requestId);
 	/**
 	 * 
 	 * @param loginId

@@ -1,9 +1,14 @@
 package org.siraya.rent.rest;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
@@ -26,10 +31,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+
 import javax.ws.rs.core.NewCookie;
 import java.net.HttpURLConnection;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.DefaultValue;
+
+import junit.framework.Assert;
 @Component("userRestApi")
 @Path("/user")
 public class UserRestApi {
@@ -43,14 +52,16 @@ public class UserRestApi {
 	@Autowired
 	private UserAuthorizeData userAuthorizeData;
 
-
+	private Validator validator;
 	private static Logger logger = LoggerFactory.getLogger(UserRestApi.class);
     private static Map<String,String> OK;
     public UserRestApi (){
-    	if (OK == null) {
-    		OK = new HashMap<String,String>();
-    		OK.put("status", "SUCCESS");
-    	}
+		if (OK == null) {
+			OK = new HashMap<String, String>();
+			OK.put("status", "SUCCESS");
+		}
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		validator = factory.getValidator();
     }
     @POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -212,6 +223,14 @@ public class UserRestApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/mobile_auth_request")
 	public Response mobileAuthRequest(MobileAuthRequest request){	
+		Set<ConstraintViolation<MobileAuthRequest>> constraintViolations = validator
+				.validate(request);
+		if (constraintViolations.size() != 0) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"validate request object fail");
+		}
+
 		Device currentDevice = new Device();
 		String deviceId = this.userAuthorizeData.getDeviceId();
 		String userId = this.userAuthorizeData.getUserId();
@@ -235,6 +254,20 @@ public class UserRestApi {
 			@DefaultValue("0") @QueryParam("offset")int offset){
 		logger.debug("get devices list limit:"+limit+" offset"+offset);
 		return this.userService.getUserDevices(this.userAuthorizeData.getUserId(), limit, offset);
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/show_mobile_auth_request/{requestId}")
+	public MobileAuthRequest getMobileAuthRequest(@PathParam("requestId")String requestId){		
+		MobileAuthRequest request = this.userService
+				.getMobileAuthRequest(requestId);
+		if (!this.userAuthorizeData.getUserId().equals(request.getAuthUserId())) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorPermissionDeny,
+					"can't not access");
+		}
+		return request;
 	}
 	
 	

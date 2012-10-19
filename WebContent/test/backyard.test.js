@@ -62,7 +62,9 @@ asyncTest('test mobile auth request', function(assert) {
 	$.ajax(setting);
 
 });
+
 asyncTest('test get_signature_of_mobile_auth_request', function(assert) {
+
 	var success = function(){
 		ok(true, 'expect execute success');
 		start();		
@@ -81,6 +83,23 @@ asyncTest('test get_signature_of_mobile_auth_request', function(assert) {
 	};
 	var test = new RENT.backyard.model.MainModel();
 	test.get_signature_of_mobile_auth_request(data,{
+		success:success,
+		error:error
+	});
+});
+// insert into MOBILE_AUTH_REQUEST values ('test_request','0','http://tw.yahoo.com',null,'test id',null,'12313131',null,null,'0');
+asyncTest('test show_mobile_auth_request', function(assert) {
+	var success = function(){
+		ok(true, 'expect execute success');
+		start();		
+	};
+	var error = function(){
+		ok(false, 'expect execute success');
+		start();		
+	};
+
+	var test = new RENT.backyard.model.MainModel();
+	test.show_mobile_auth_request('test_request',{
 		success:success,
 		error:error
 	});
