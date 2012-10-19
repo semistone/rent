@@ -10,7 +10,7 @@ import org.siraya.rent.pojo.MobileAuthRequest;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import java.util.List;
 @ContextConfiguration(locations = {"classpath*:/applicationContext.xml","classpath*:/applicationContext-mybatis.xml"})
-public class TestMobileAuthRequest extends AbstractJUnit4SpringContextTests{
+public class TestMobileAuthRequestDao extends AbstractJUnit4SpringContextTests{
     @Autowired
     private IMobileAuthRequestDao mobileAuthRequestDao;
     private MobileAuthRequest request;
