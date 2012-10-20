@@ -49,24 +49,21 @@ public class CookieUtils {
      * @return
      */
     public  NewCookie newSessionCookie(Session session){
-    	String id = session.getId();
-    	String ip = session.getLastLoginIp();
+
     	String userId = session.getUserId();
     	String deviceId = session.getDeviceId();
-    	String sign = EncodeUtility.sha1(deviceId+userId);
-    	if (id == null) {
-    		session.genId();
-    		session.setSession(id);
-    	}
 
     	if (userId == null || deviceId == null ) {
     		return null;
     	} else{
-    		logger.debug("user is "+userId);
-    		logger.debug("device is "+deviceId);
+    		if (logger.isDebugEnabled()) {
+        		logger.debug("user is "+userId);
+        		logger.debug("device is "+deviceId);    			
+    		}
     	}
-    	String value = id + ":" + ip + ":" +sign;
-		value = encodeUtility.encrypt(value, KEY_NAME);
+    	
+		String value = encodeUtility.encrypt(session.toString(),
+				KEY_NAME);
 		logger.debug("cookie value is " + value);
 		NewCookie sessionCookie = new NewCookie("S", value, "/", null, 1,
 				"session",NewCookie.DEFAULT_MAX_AGE , false);

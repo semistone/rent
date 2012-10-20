@@ -28,7 +28,7 @@ import org.siraya.rent.utils.RentException;
 import javax.annotation.security.RolesAllowed;
 @Component("adminRestApi")
 @Path("/admin")
-@RolesAllowed({"admin"})
+@RolesAllowed({org.siraya.rent.filter.UserRole.ADMIN})
 public class AdminRestApi {
     @Autowired
     private IApplicationConfig applicationConfig;

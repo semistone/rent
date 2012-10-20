@@ -1,13 +1,31 @@
 package org.siraya.rent.pojo;
 
+import org.siraya.rent.filter.UserRole;
+import org.siraya.rent.utils.EncodeUtility;
+
 public class Session {
 	private String id;
 	private String session;
 	private String deviceId;
 	private String userId;
 	private String lastLoginIp;
-
+	private int roleId;
 	private long created;
+	public int getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(int roleId) {
+		this.roleId = roleId;
+	}
+
+	public void setDeviceVerified(boolean isDeviceVerified) {
+		int deviceVerified = UserRole.UserRoleId.DEVICE_CONFIRMED.getRoleId();
+		if (this.roleId <= deviceVerified) {
+			this.roleId = deviceVerified;
+		}
+	}
+
 	
     public void genId(){
     	this.id=java.util.UUID.randomUUID().toString();
@@ -51,5 +69,13 @@ public class Session {
 	}
 	public void setLastLoginIp(String lastLoginIp) {
 		this.lastLoginIp = lastLoginIp;
+	}
+	
+	public String toString(){
+    	if (id == null) {
+    		this.genId();
+    	}
+    	String sign = EncodeUtility.sha1(deviceId+userId);
+    	return id + ":" + lastLoginIp + ":" +sign;
 	}
 }

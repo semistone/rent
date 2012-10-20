@@ -11,6 +11,7 @@ public class Authorizer implements SecurityContext {
     private UserAuthorizeData user;
     private Principal principal;
 
+	
     public Authorizer(final UserAuthorizeData user) {
         this.user = user;
         if (user.getUserId() == null){
@@ -29,8 +30,10 @@ public class Authorizer implements SecurityContext {
     }
 
     public boolean isUserInRole(String role) {
-    	return true;
-        //return (role.equals(user.getRole()));
+    	int checkRole = UserRole.getRoleId(role);
+    	int userRole = this.user.getRoleId();
+    	return checkRole <= userRole;
+
     }
 
     public boolean isSecure() {

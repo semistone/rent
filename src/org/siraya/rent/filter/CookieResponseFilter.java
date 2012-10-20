@@ -23,14 +23,16 @@ public class CookieResponseFilter implements ContainerResponseFilter {
 	private CookieUtils cookieUtils;
 	@Autowired
 	private ISessionService sessionService;
+	@Autowired
+	private UserAuthorizeData userAuthorizeData;
 	public ContainerResponse filter(ContainerRequest request,
 			ContainerResponse response) {
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
 		String ip = headers.getFirst("X-Real-IP");
 		logger.debug("real ip is "+ip);
 		Map<String,Cookie>cookies = request.getCookies();
-		String userId= headers.getFirst("USER_ID");
-		String deviceId = headers.getFirst("DEVICE_ID");
+		String userId= this.userAuthorizeData.getUserId();
+		String deviceId = this.userAuthorizeData.getDeviceId();
 		if (!cookies.containsKey("S") && userId != null && deviceId != null) {
 			logger.debug("cookie session not exist, create new session cookie");
 

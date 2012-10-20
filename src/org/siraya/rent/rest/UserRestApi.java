@@ -1,5 +1,5 @@
 package org.siraya.rent.rest;
-
+import org.siraya.rent.pojo.Session;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -108,8 +108,13 @@ public class UserRestApi {
 
 		device.setUserId(userId);
 		device.setId(deviceId);
+		Session session = this.userAuthorizeData.getSession();
+		if (device.getStatus() == DeviceStatus.Authed.getStatus()) {
+			session.setDeviceVerified(true);
+		}
 		device = userService.getDevice(device);
-		return Response.status(HttpURLConnection.HTTP_OK).entity(device).build();
+		NewCookie cookie = this.cookieUtils.newSessionCookie(session);
+		return Response.status(HttpURLConnection.HTTP_OK).cookie(cookie).entity(device).build();
 	}
 	/**
      * create new device and assign a device id for it.
