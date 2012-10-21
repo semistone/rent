@@ -11,4 +11,6 @@ public interface IMobileAuthService {
 	
 	public void verifyAuthCodeByMobilePhone(String mobilePhone,String authCode);
 	
+	public MobileAuthResponse verifyMobileAuthRequestCode(MobileAuthRequest request);
+	
 }

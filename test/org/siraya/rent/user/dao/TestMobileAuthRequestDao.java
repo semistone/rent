@@ -13,6 +13,8 @@ import java.util.List;
 public class TestMobileAuthRequestDao extends AbstractJUnit4SpringContextTests{
     @Autowired
     private IMobileAuthRequestDao mobileAuthRequestDao;
+    @Autowired
+    private IMobileAuthResponseDao mobileAuthResponseDao;
     private MobileAuthRequest request;
     @Before
 	public void setUp(){
@@ -24,15 +26,20 @@ public class TestMobileAuthRequestDao extends AbstractJUnit4SpringContextTests{
     	request.setAuthUserId("test id");
     	request.setRequestFrom("test xxx");
     	request.setDone("http://www.yahoo.com");
+    	request.setStatus(1);
     }
 	
     @Test   
     public void testCRUD(){
 		mobileAuthRequestDao.newRequest(request);
+
+		mobileAuthResponseDao.updateResponse(request);
 		MobileAuthRequest request2 = mobileAuthRequestDao.get(request
 				.getRequestId());
 		Assert.assertEquals(request.getAuthUserId(), request2.getAuthUserId());
-
+		
+		Assert.assertEquals(request.getStatus(), request2.getStatus());
+		
 		List<MobileAuthRequest> list = mobileAuthRequestDao
 				.getRequestsByAuthUser(request.getAuthUserId(), 10, 0);
 		Assert.assertNotSame(0, list.size());
@@ -40,5 +47,7 @@ public class TestMobileAuthRequestDao extends AbstractJUnit4SpringContextTests{
 		list = mobileAuthRequestDao.getRequestsByFrom(request.getRequestFrom(),
 				10, 0);
 		Assert.assertNotSame(0, list.size());
+		
+    
     }
 }

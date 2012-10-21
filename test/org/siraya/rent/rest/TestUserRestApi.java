@@ -70,6 +70,9 @@ public class TestUserRestApi{
 			mobileAuthRequest.setMobilePhone("8869234242");
 			mobileAuthRequest.setRequestFrom("2343242");
 			mobileAuthRequest.setRequestTime(12413131);
+			mobileAuthRequest.setUserId(userId);
+			Device device = new Device("xxx", mobileAuthRequest.getUserId());
+			mobileAuthRequest.setDevice(device);
 			userRestApi.setCookieUtils(cookieUtils);
 			cookieUtils.setEncodeUtility(encodeUtility);
 			encodeUtility.setApplicationConfig(config);
@@ -129,11 +132,11 @@ public class TestUserRestApi{
 	}
 	 
 	@Test 
-	public void mobileAuthRequest(){
+	public void testMobileAuthRequest(){
 		if (isMock) {
 			context.checking(new Expectations() {
 				{
-					one(userService).mobileAuthRequest(with(any(Device.class)), with(any(MobileAuthRequest.class)));
+					one(userService).mobileAuthRequest(mobileAuthRequest);
 					will(returnValue(mobileAuthResponse));
 					one(mobileAuthService).sendAuthMessage(mobileAuthRequest, mobileAuthResponse);
 				}
@@ -141,5 +144,18 @@ public class TestUserRestApi{
 		};
 
 		this.userRestApi.mobileAuthRequest(mobileAuthRequest);
+	}
+	
+	@Test 
+	public void testVerifyMobileAuthRequestCode(){
+		if (isMock) {
+			context.checking(new Expectations() {
+				{
+					one(mobileAuthService).verifyMobileAuthRequestCode(mobileAuthRequest);
+					will(returnValue(mobileAuthResponse));
+				}
+			});
+		};
+		this.userRestApi.verifyMobileAuthRequestCode(mobileAuthRequest);
 	}
 }

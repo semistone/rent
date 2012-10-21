@@ -77,7 +77,7 @@ public class TestUserService {
 			request.setAuthUserId("test id");
 			request.setMobilePhone("8862332131313");
 			request.setDone("http://www.yahoo.com");
-			
+			request.setDevice(device);
 			setting = new HashMap<String, Object>();
 			Map<String, Object> setting2;
 			setting2 = new HashMap<String, Object>();
@@ -215,6 +215,6 @@ public class TestUserService {
 
 		}
 
-		userService.mobileAuthRequest(device, request);
+		userService.mobileAuthRequest( request);
 	}
 }

@@ -10,5 +10,7 @@
     <result column="CALLBACK" jdbcType="VARCHAR" property="callback" />
     <result column="REQUEST_TIME" jdbcType="DECIMAL" property="requestTime" />
     <result column="REQUEST_FROM" jdbcType="VARCHAR" property="requestFrom" />
+    <result column="STATUS" jdbcType="INTEGER" property="status" />    
+    <result column="RESPONSE_TIME" jdbcType="DECIMAL" property="responseTime" />
   </resultMap>
 </mapper>

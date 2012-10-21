@@ -46,7 +46,7 @@ public interface IUserService {
 
 	public String getSignatureOfMobileAuthRequest(MobileAuthRequest request);
 	
-	public MobileAuthResponse mobileAuthRequest(Device currentDevice, MobileAuthRequest request);
+	public MobileAuthResponse mobileAuthRequest(MobileAuthRequest request);
 	/**
 	 * update user email
 	 * @param userId

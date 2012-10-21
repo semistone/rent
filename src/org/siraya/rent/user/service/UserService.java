@@ -342,7 +342,8 @@ public class UserService implements IUserService {
      * step4: authUser and mobilePhone can't have together.
      * step5: save request into database.
      */
-	public MobileAuthResponse mobileAuthRequest(Device currentDevice, MobileAuthRequest request){
+	public MobileAuthResponse mobileAuthRequest( MobileAuthRequest request){
+		Device currentDevice = request.getDevice();
 		String userId = request.getRequestFrom();
 	  	Map<String,Object> generalSetting = applicationConfig.get("general");
 		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(

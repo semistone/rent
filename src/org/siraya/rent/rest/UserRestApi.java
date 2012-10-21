@@ -203,9 +203,13 @@ public class UserRestApi {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/verify_mobile_auth_request_code")
-	public Response verifyMobileAuthRequestCode(Map<String,Object> request) throws Exception{
-		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
+	public MobileAuthResponse verifyMobileAuthRequestCode(MobileAuthRequest request){
+		Device device = new Device(this.userAuthorizeData.getDeviceId(), this.userAuthorizeData.getUserId());
+		request.setDevice(device);
+		MobileAuthResponse response = this.mobileAuthService.verifyMobileAuthRequestCode(request);
+		return response;
 	}
+	
 
 	
 	@PUT
@@ -235,12 +239,10 @@ public class UserRestApi {
 					"validate request object fail");
 		}
 
-		Device currentDevice = new Device();
-		String deviceId = this.userAuthorizeData.getDeviceId();
-		String userId = this.userAuthorizeData.getUserId();
-		currentDevice.setId(deviceId);
-		currentDevice.setUserId(userId);
-		MobileAuthResponse response = userService.mobileAuthRequest(currentDevice, request);
+		Device currentDevice = new Device(this.userAuthorizeData.getDeviceId(),
+				this.userAuthorizeData.getUserId());
+		request.setDevice(currentDevice);
+		MobileAuthResponse response = userService.mobileAuthRequest(request);
 		//
 		// if force reauth or status is init, then sent sms auth message.
 		//

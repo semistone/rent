@@ -9,4 +9,7 @@ public interface IMobileAuthResponseDao {
 	
     @Update("UPDATE MOBILE_AUTH_REQUEST SET RESPONSE_TIME=#{responseTime}, STATUS=#{status} WHERE REQUEST_ID=#{requestId}")
     public int updateResponse(MobileAuthResponse response);
+    
+    @Update("UPDATE MOBILE_AUTH_REQUEST SET STATUS=#{status} WHERE REQUEST_ID=#{requestId}")    
+    public int updateResponseStatus(MobileAuthResponse response);
 }

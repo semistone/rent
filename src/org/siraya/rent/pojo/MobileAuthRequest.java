@@ -15,7 +15,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * @author User
  * 
  */
-public class MobileAuthRequest {
+public class MobileAuthRequest extends MobileAuthResponse{
 	@NotNull
 	@Pattern(regexp = "^[\\d]{1,3}$")
 	private String countryCode;
@@ -34,10 +34,16 @@ public class MobileAuthRequest {
 	private String requestId;
 	@NotNull
 	private long requestTime;
-
+	
 	private String token;
-
-
+	private String authCode;
+	
+	public void setAuthCode(String authCode){
+		this.authCode = authCode;
+	}
+	public String getAuthCode() {
+		return this.authCode;
+	}
 	public String getCountryCode() {
 		return countryCode;
 	}
@@ -47,6 +53,9 @@ public class MobileAuthRequest {
 	}
 
 	public long getRequestTime() {
+		if (requestTime == 0) {
+			requestTime = java.util.Calendar.getInstance().getTimeInMillis()/1000;
+		}
 		return requestTime;
 	}
 

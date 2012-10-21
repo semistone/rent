@@ -19,7 +19,8 @@ import org.slf4j.LoggerFactory;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.Map;
-
+import org.siraya.rent.user.dao.IMobileAuthRequestDao;
+import org.siraya.rent.user.dao.IMobileAuthResponseDao;
 import junit.framework.Assert;
 import org.siraya.rent.user.dao.IUserDAO;
 import org.siraya.rent.utils.RentException;
@@ -34,6 +35,11 @@ public class MobileAuthService implements IMobileAuthService {
     @Autowired
     protected IDontTryService dontTryService;
 
+    @Autowired
+    private IMobileAuthRequestDao mobileAuthRequestDao;
+
+	@Autowired
+    private IMobileAuthResponseDao mobileAuthResponseDao;   
 	@Autowired
     private IDeviceDao deviceDao;    
 
@@ -106,6 +112,11 @@ public class MobileAuthService implements IMobileAuthService {
 						RentException.RentErrorCode.ErrorGeneral,
 						"update device status fail");
 			}
+		}
+		int ret = this.mobileAuthResponseDao.updateResponseStatus(response);
+		if (ret != 1) {
+			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
+					"update mobile response status fail");
 		}
     }
     
@@ -190,6 +201,70 @@ public class MobileAuthService implements IMobileAuthService {
 	public void setUserDao(IUserDAO userDao){
 		this.userDao = userDao;
 	}
+
+	/**
+	 * step1: check request stauts
+	 * step2: check  expired
+	 * step3: check retry count
+	 * step4: check auth code
+	 * step5: update database
+	 */
+	public MobileAuthResponse verifyMobileAuthRequestCode(MobileAuthRequest request){		
+		//
+		// check status and user match
+		//
+		String authCode = request.getAuthCode();
+		request = this.mobileAuthRequestDao.get(request.getRequestId());
+		if (!request.getAuthUserId().equals(request.getDevice().getUserId())) {
+			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
+					"use not match");
+		}
+		if (request.getStatus() != DeviceStatus.Authing.getStatus()) {
+			throw new RentException(RentErrorCode.ErrorStatusViolate,
+					"request status isn't authing but "+request.getStatus());
+		}
+		//
+		// check expire
+		//
+		Map<String,Object> setting = applicationConfig.get("general");
+    	long time=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+		int timeout = (Integer)setting.get("auth_verify_timeout");
+    	if (time > request.getRequestTime() + timeout ) {	
+			throw new RentException(RentErrorCode.ErrorAuthExpired,
+					"verify mobile auth code has been timeout");
+    	}		
+		int retryLimit = (Integer)setting.get("auth_retry_limit");
+		//
+		// check retry count
+		//
+		dontTryService.doTry(request.getRequestId(), DontTryType.Life,
+				retryLimit);
+		//
+		// check auth code
+		//
+		String decryptToken = encodeUtility.decrypt(request.getToken(), Device.ENCRYPT_KEY);
+		if (!authCode.equals(decryptToken)) {
+			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
+					"token not match "+decryptToken);
+		}
+		//
+		// update database
+		//
+		User user = this.userDao.getUserByUserId(request.getAuthUserId());
+		if (user.getStatus() == UserStatus.Init.getStatus()){
+			logger.debug("update user status to authed");
+			user.setModified((long)0);
+			userDao.updateUserStatus(user.getId(), UserStatus.Authed.getStatus()
+					,  UserStatus.Init.getStatus(), user.getModified());
+		}
+		MobileAuthResponse response = new MobileAuthResponse();
+		response.setResponseTime(0);
+		response.setUser(user);
+		response.setStatus(DeviceStatus.Authing.getStatus());
+		response.setRequestId(request.getRequestId());
+		this.mobileAuthResponseDao.updateResponse(response);
+		return response;
+	}
 	/**
 	 * 
 	 */
@@ -204,6 +279,16 @@ public class MobileAuthService implements IMobileAuthService {
 		_verifyAuthCode(device,authCode);
 	}
 
+	/**
+	 * step1: check device stauts
+	 * step2: check auth code expired
+	 * step3: check retry count
+	 * step4: check auth code
+	 * step5: update database
+	 * 
+	 * @param device
+	 * @param authCode
+	 */
 	private void _verifyAuthCode(Device device,String  authCode){
 		device.setModified(0); // reset modified to get current time.
 		if (device.getStatus() != DeviceStatus.Authing.getStatus()) {
@@ -305,5 +390,21 @@ public class MobileAuthService implements IMobileAuthService {
 	}
     public void setDontTryService(IDontTryService dontTryService) {
 		this.dontTryService = dontTryService;
+	}
+    public IMobileAuthRequestDao getMobileAuthRequestDao() {
+		return mobileAuthRequestDao;
+	}
+
+	public void setMobileAuthRequestDao(IMobileAuthRequestDao mobileAuthRequestDao) {
+		this.mobileAuthRequestDao = mobileAuthRequestDao;
+	}
+
+	public IMobileAuthResponseDao getMobileAuthResponseDao() {
+		return mobileAuthResponseDao;
+	}
+
+	public void setMobileAuthResponseDao(
+			IMobileAuthResponseDao mobileAuthResponseDao) {
+		this.mobileAuthResponseDao = mobileAuthResponseDao;
 	}
 }

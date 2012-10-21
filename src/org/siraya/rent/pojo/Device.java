@@ -28,6 +28,13 @@ public class Device {
 	private String lastLoginTime;
 	private User user;
     public static String ENCRYPT_KEY = "general";
+    public Device(){
+    	
+    }
+    public Device(String id, String userId) {
+    	this.id= id;
+    	this.userId = userId;
+    }
 	public String genToken(){
 		Random r  = new Random();
 		return String.format("%06d", r.nextInt(999999));

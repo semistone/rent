@@ -27,6 +27,9 @@ public class MobileAuthResponse {
 		this.status = status;
 	}
 	public long getResponseTime() {
+		if (responseTime == 0) {
+			responseTime=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+		}
 		return responseTime;
 	}
 	public void setResponseTime(long responseTime) {

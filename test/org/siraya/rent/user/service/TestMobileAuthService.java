@@ -1,10 +1,10 @@
 package org.siraya.rent.user.service;
-
+import org.siraya.rent.user.dao.IMobileAuthRequestDao;
 import java.util.HashMap;
 import java.util.Map;
 import org.siraya.rent.donttry.service.IDontTryService;
 
-
+import org.siraya.rent.user.dao.IMobileAuthResponseDao;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -39,6 +39,8 @@ public class TestMobileAuthService {
 	private Map<String, Object> setting;
 	private IMobileGatewayService mobileGatewayService;
 	private boolean isMock = true;
+	private IMobileAuthRequestDao mobileAuthRequestDao;
+	private IMobileAuthResponseDao mobileAuthResponseDao;
 	private MobileAuthRequest mobileAuthRequest = new MobileAuthRequest();
 	private MobileAuthResponse mobileAuthResponse = new MobileAuthResponse();
 	@Before
@@ -59,7 +61,9 @@ public class TestMobileAuthService {
 		device.setToken(authCode);
 		if (isMock){
 			deviceDao = context.mock(IDeviceDao.class);	
-			this.mobileGatewayService = context.mock(IMobileGatewayService.class);	
+			this.mobileGatewayService = context.mock(IMobileGatewayService.class);
+			this.mobileAuthRequestDao = context.mock(IMobileAuthRequestDao.class);
+			this.mobileAuthResponseDao = context.mock(IMobileAuthResponseDao.class);
 			this.dontTryService = context.mock(IDontTryService.class);	
 			userDao = context.mock(IUserDAO.class);	
 			mobileAuthService.setDeviceDao(deviceDao);
@@ -76,11 +80,19 @@ public class TestMobileAuthService {
 			mobileAuthService.setEncodeUtility(encodeUtility);
 			mobileAuthService.setMobileGatewayService(mobileGatewayService);
 			mobileAuthService.setDontTryService(dontTryService);
+			mobileAuthService.setMobileAuthRequestDao(mobileAuthRequestDao);
+			mobileAuthService.setMobileAuthResponseDao(mobileAuthResponseDao);
 		}
 		mobileAuthRequest.setRequestId("request id ");
 		mobileAuthRequest.setMobilePhone("FE4DC1C73AE63F2BDE5C80E1E3B93BFC");
 		mobileAuthRequest.setToken("FE4DC1C73AE63F2BDE5C80E1E3B93BFC");
+		mobileAuthRequest.setAuthUserId(device.getUserId());
+		mobileAuthRequest.setDevice(device);
+		mobileAuthRequest.setRequestTime(0);
+		mobileAuthRequest.setAuthCode("886911826844");
+		mobileAuthRequest.setAuthUserId(user.getId());
 		mobileAuthResponse.setUser(user);
+
 		mobileAuthResponse.setDevice(device);
 	}
 	
@@ -281,5 +293,34 @@ public class TestMobileAuthService {
 			});	
 		}
 		mobileAuthService.sendAuthMessage(mobileAuthRequest, mobileAuthResponse);
+	}
+	
+	@Test
+	public void testVerifyMobileAuthRequestCode(){
+		mobileAuthRequest.setStatus(1);
+		if (isMock) {
+			context.checking(new Expectations() {
+				{
+					one(mobileAuthRequestDao).get(mobileAuthRequest.getRequestId());
+					will(returnValue(mobileAuthRequest));
+					one(config).get("general");
+					will(returnValue(setting));
+					one(dontTryService).doTry(mobileAuthRequest.getRequestId(),
+							IDontTryService.DontTryType.Life, 3);
+					one(config).get("keydb");
+					will(returnValue(setting));
+					one(userDao).getUserByUserId(mobileAuthRequest.getAuthUserId());
+					will(returnValue(user));
+					one(userDao).updateUserStatus(with(any(String.class)), with(any(Integer.class)), 
+							with(any(Integer.class)), with(any(long.class)));
+					will(returnValue(1));
+					one(mobileAuthResponseDao).updateResponse(with(any(MobileAuthResponse.class)));
+					will(returnValue(1));
+
+				}
+			});	
+		}
+		mobileAuthService.verifyMobileAuthRequestCode(mobileAuthRequest);
+		
 	}
 }
