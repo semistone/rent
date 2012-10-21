@@ -11,6 +11,7 @@ import org.siraya.rent.user.dao.IDeviceDao;
 import org.junit.Test;
 import org.siraya.rent.filter.UserRole;
 import org.siraya.rent.mobile.service.IMobileGatewayService;
+import org.siraya.rent.pojo.Device;
 import org.siraya.rent.pojo.Session;
 import org.siraya.rent.pojo.User;
 public class TestSessionService {
@@ -22,6 +23,7 @@ public class TestSessionService {
 	private IRoleDao roleDao;
 	private IDeviceDao deviceDao; 
 	private List<Role> roles;
+	private Device device;
 	long time = java.util.Calendar.getInstance().getTimeInMillis();
 	@Before
 	public void setUp() {
@@ -34,14 +36,18 @@ public class TestSessionService {
 			this.sessionService.setDeviceDao(deviceDao);
 			this.sessionService.setSessionDao(sessionDao);
 			this.sessionService.setRoleDao(roleDao);
+			device = new Device();
+			device.setId("testid ");
+			device.setUserId("userid");
+
+			this.roles = new java.util.ArrayList<Role>();
+			roles.add(new Role("x", UserRole.UserRoleId.ADMIN));
+			roles.add(new Role("x", UserRole.UserRoleId.ROOT));
+			session = new Session();
+			session.setDeviceId(device.getId());
+			session.setUserId(device.getUserId());
+			session.genId();
 		}
-		this.roles = new java.util.ArrayList<Role>();
-		roles.add(new Role("x",UserRole.UserRoleId.ADMIN));
-		roles.add(new Role("x",UserRole.UserRoleId.ROOT));
-		session = new Session();
-		session.setDeviceId("d"+time);
-		session.setUserId("u"+time);
-		session.genId();
 	}
 	
 	@Test
@@ -54,23 +60,14 @@ public class TestSessionService {
 					will(returnValue(1));
 					one(roleDao).getRoleByUserId(session.getUserId());
 					will(returnValue(roles));
+					one(deviceDao).getDeviceByDeviceIdAndUserId(device.getId(), device.getUserId());
+					will(returnValue(device));
+
 				}
 			});
 		}
 		sessionService.newSession(session);
 	}
 	
-	@Test(expected=org.siraya.rent.utils.RentException.class)
-	public void testNewSessionButUpdateFail(){
-		if (isMock) {
-			context.checking(new Expectations() {
-				{
-					one(sessionDao).newSession(session);
-					one(deviceDao).updateLastLoginIp(session);
-					will(returnValue(0));
-				}
-			});
-		}
-		sessionService.newSession(session);
-	}
+
 }

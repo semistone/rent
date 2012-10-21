@@ -289,6 +289,8 @@ public class TestMobileAuthService {
 					one(deviceDao).updateDeviceStatus(with(any(String.class)),with(any(String.class)), 
 							with(any(int.class)), with(any(int.class)), with(any(long.class)));
 					will(returnValue(1));
+					one(mobileAuthResponseDao).updateResponseStatus(with(any(MobileAuthResponse.class)));
+					will(returnValue(1));
 				}
 			});	
 		}
