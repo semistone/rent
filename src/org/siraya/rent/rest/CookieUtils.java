@@ -61,7 +61,7 @@ public class CookieUtils {
         		logger.debug("device is "+deviceId);    			
     		}
     	}
-    	
+
 		String value = encodeUtility.encrypt(session.toString(),
 				KEY_NAME);
 		logger.debug("cookie value is " + value);

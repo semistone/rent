@@ -19,6 +19,7 @@ public class Session {
 	public Session(){
 		this.isNew = true;
 		this.isChange = true;
+		this.roles = new java.util.ArrayList<Integer>();
 	}
 	public boolean isNew() {
 		return isNew;
@@ -29,12 +30,17 @@ public class Session {
 		this.deviceId = strings[1];
 		this.userId = strings[2];
 		this.lastLoginIp = strings[3];
-		String rolesString = strings[4];
+		String rolesString = null;
+		if (strings.length == 5) {
+			rolesString = strings[4];
+		}
 		this.roles = new  java.util.ArrayList<Integer>();
-		String[] roleArray = rolesString.split(" ");
-		int size = roleArray.length;
-		for(int i =0 ; i < size ; i++) {
-			this.roles.add(Integer.parseInt(roleArray[i]));
+		if (rolesString != null) {
+			String[] roleArray = rolesString.split(" ");
+			int size = roleArray.length;
+			for(int i =0 ; i < size ; i++) {
+				this.roles.add(Integer.parseInt(roleArray[i]));
+			}			
 		}
 	}
 
@@ -103,6 +109,6 @@ public class Session {
     	for(int i = 0; i < size ; i++) {
     		rolesString+=roles.get(i)+" ";
     	}
-    	return id + ":" + this.deviceId +":"+userId+":"+ lastLoginIp+":"+rolesString.trim();
+    	return this.id + ":" + this.deviceId +":"+this.userId+":"+ this.lastLoginIp+":"+rolesString.trim();
 	}
 }
