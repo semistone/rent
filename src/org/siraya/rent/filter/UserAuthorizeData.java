@@ -10,13 +10,7 @@ public class UserAuthorizeData {
 	public Session getSession() {
 		return session;
 	}
-	public int getRoleId() {
-		if (session == null) {
-			return 0; //anonymous
-		} else {
-			return session.getRoleId();			
-		}
-	}
+
 	public void setSession(Session session) {
 		this.session = session;
 	}

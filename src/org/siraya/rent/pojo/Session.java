@@ -2,30 +2,53 @@ package org.siraya.rent.pojo;
 
 import org.siraya.rent.filter.UserRole;
 import org.siraya.rent.utils.EncodeUtility;
-
+import java.util.List;
 public class Session {
 	private String id;
 	private String session;
 	private String deviceId;
 	private String userId;
 	private String lastLoginIp;
-	private int roleId;
+	private List roles;
 	private long created;
-	public int getRoleId() {
-		return roleId;
+	private boolean isChange = false;
+	private boolean isNew = false;
+	public boolean isChange() {
+		return isChange;
 	}
-
-	public void setRoleId(int roleId) {
-		this.roleId = roleId;
+	public Session(){
+		this.isNew = true;
+		this.isChange = true;
 	}
-
-	public void setDeviceVerified(boolean isDeviceVerified) {
-		int deviceVerified = UserRole.UserRoleId.DEVICE_CONFIRMED.getRoleId();
-		if (this.roleId <= deviceVerified) {
-			this.roleId = deviceVerified;
+	public boolean isNew() {
+		return isNew;
+	}
+	public Session(String cookieValue){
+		String[] strings = cookieValue.split(":");
+		this.id = strings[0];
+		this.deviceId = strings[1];
+		this.userId = strings[2];
+		this.lastLoginIp = strings[3];
+		String rolesString = strings[4];
+		this.roles = new  java.util.ArrayList<Integer>();
+		String[] roleArray = rolesString.split(" ");
+		int size = roleArray.length;
+		for(int i =0 ; i < size ; i++) {
+			this.roles.add(Integer.parseInt(roleArray[i]));
 		}
 	}
 
+	public void setDeviceVerified(boolean isDeviceVerified) {
+		int deviceConfirmed = UserRole.UserRoleId.DEVICE_CONFIRMED.getRoleId();
+		if (!this.roles.contains(deviceConfirmed)) {
+			this.roles.add(deviceConfirmed);
+			this.isChange = true;
+		}
+	}
+
+	public boolean isUserInRole(int roleId) {
+		return this.roles.contains(roleId);
+	}
 	
     public void genId(){
     	this.id=java.util.UUID.randomUUID().toString();
@@ -75,7 +98,11 @@ public class Session {
     	if (id == null) {
     		this.genId();
     	}
-    	String sign = EncodeUtility.sha1(deviceId+userId);
-    	return id + ":" + lastLoginIp + ":" +sign;
+    	String rolesString = "";
+    	int size = this.roles.size();
+    	for(int i = 0; i < size ; i++) {
+    		rolesString+=roles.get(i)+" ";
+    	}
+    	return id + ":" + this.deviceId +":"+userId+":"+ lastLoginIp+":"+rolesString.trim();
 	}
 }

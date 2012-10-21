@@ -27,32 +27,17 @@ public class CookieResponseFilter implements ContainerResponseFilter {
 	private UserAuthorizeData userAuthorizeData;
 	public ContainerResponse filter(ContainerRequest request,
 			ContainerResponse response) {
-		MultivaluedMap<String, String> headers = request.getRequestHeaders();
-		String ip = headers.getFirst("X-Real-IP");
-		logger.debug("real ip is "+ip);
 		Map<String,Cookie>cookies = request.getCookies();
-		String userId= this.userAuthorizeData.getUserId();
-		String deviceId = this.userAuthorizeData.getDeviceId();
-		if (!cookies.containsKey("S") && userId != null && deviceId != null) {
-			logger.debug("cookie session not exist, create new session cookie");
-
-			Session session = new Session();
-			session.setDeviceId(deviceId);
-			session.setUserId(userId);
-    		session.genId();
-			session.setLastLoginIp(ip);
+		Session session = this.userAuthorizeData.getSession();
+		if (session != null && session.isChange()) {
+			logger.info("update session");
 			NewCookie sessionCookie = cookieUtils.newSessionCookie(session);
-			if (sessionCookie == null) {
-				return response;
+			if (session.isNew()) {
+				sessionService.newSession(session);				
 			}
-		
-			logger.info("new session");
-			sessionService.newSession(session);				
-		
-			
 			logger.debug("build new response with session cookie");
 			Response cookieResponse = Response.fromResponse(response.getResponse()).cookie(sessionCookie).build();			  
-			response.setResponse(cookieResponse);
+			response.setResponse(cookieResponse);			
 		}
 		return response;
 	}

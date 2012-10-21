@@ -65,16 +65,27 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 
 	private void extractSessionCookie(ContainerRequest request){
 		Map<String, Cookie> cookies = request.getCookies();
+		MultivaluedMap<String, String> headers = request.getRequestHeaders();
+		String ip = headers.getFirst("X-Real-IP");
 		if (cookies.containsKey("S")) {
 			String value = cookies.get("S").getValue();
-			Session session = cookieUtils.extractSessionCookie(value,userAuthorizeData);			
+			cookieUtils.extractSessionCookie(value,userAuthorizeData);	
+			Session session = userAuthorizeData.getSession();
 			if (session != null) {
-				MultivaluedMap<String, String> headers = request.getRequestHeaders();
-				String ip = headers.getFirst("X-Real-IP");
 				if(ip != null && !session.getLastLoginIp().equals(ip)){
 					logger.debug("ip not match remove session cookie");
 					cookies.remove("S");
 				}
+			}
+		}else{
+			String userId = this.userAuthorizeData.getUserId();
+			String deviceId = this.userAuthorizeData.getDeviceId();
+			if (userId != null && deviceId != null) {
+				Session session = new Session();
+				session.genId();
+				session.setDeviceId(deviceId);
+				session.setUserId(userId);	
+				session.setLastLoginIp(ip);
 			}
 		}
 	}

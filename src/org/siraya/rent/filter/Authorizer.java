@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.Principal;
+import org.siraya.rent.pojo.Session;
 public class Authorizer implements SecurityContext {
     private static Logger logger = LoggerFactory.getLogger(Authorizer.class);
     private UserAuthorizeData user;
@@ -31,9 +32,11 @@ public class Authorizer implements SecurityContext {
 
     public boolean isUserInRole(String role) {
     	int checkRole = UserRole.getRoleId(role);
-    	int userRole = this.user.getRoleId();
-    	return checkRole <= userRole;
-
+    	Session session = this.user.getSession();
+    	if (session == null) {
+    		return false;
+    	}
+    	return session.isUserInRole(checkRole);
     }
 
     public boolean isSecure() {
