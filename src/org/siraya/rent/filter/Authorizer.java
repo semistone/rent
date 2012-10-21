@@ -11,7 +11,6 @@ public class Authorizer implements SecurityContext {
     private static Logger logger = LoggerFactory.getLogger(Authorizer.class);
     private UserAuthorizeData user;
     private Principal principal;
-
 	
     public Authorizer(final UserAuthorizeData user) {
         this.user = user;
@@ -33,10 +32,16 @@ public class Authorizer implements SecurityContext {
     public boolean isUserInRole(String role) {
     	int checkRole = UserRole.getRoleId(role);
     	Session session = this.user.getSession();
+    	
     	if (session == null) {
+    		logger.debug("session is null no allow role "+role);
     		return false;
     	}
-    	return session.isUserInRole(checkRole);
+    	boolean ret =  session.isUserInRole(checkRole);
+    	if (ret == false) {
+    		logger.info("user "+this.user.getUserId()+" not in role "+role);
+    	}
+    	return ret;
     }
 
     public boolean isSecure() {

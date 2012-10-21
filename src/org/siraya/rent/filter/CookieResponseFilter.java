@@ -27,14 +27,10 @@ public class CookieResponseFilter implements ContainerResponseFilter {
 	private UserAuthorizeData userAuthorizeData;
 	public ContainerResponse filter(ContainerRequest request,
 			ContainerResponse response) {
-		Map<String,Cookie>cookies = request.getCookies();
 		Session session = this.userAuthorizeData.getSession();
 		if (session != null && session.isChange()) {
 			logger.info("update session");
 			NewCookie sessionCookie = cookieUtils.newSessionCookie(session);
-			if (session.isNew()) {
-				sessionService.newSession(session);				
-			}
 			logger.debug("build new response with session cookie");
 			Response cookieResponse = Response.fromResponse(response.getResponse()).cookie(sessionCookie).build();			  
 			response.setResponse(cookieResponse);			

@@ -14,6 +14,24 @@ public class UserRole {
 		public int getRoleId(){
 			return id;
 		}
+
+		public static UserRoleId find(int role) {
+			switch (role) {
+			case 0:
+				return ANONYMOUS;
+			case 1:
+				return DEVICE_CONFIRMED;
+			case 2:
+				return LOGINED;
+			case 3:
+				return ADMIN;
+			case 4:
+				return ROOT;
+			default:
+				return null;
+			}
+		}
+
 	};
 	public final static String ANONYMOUS = "anonymous";
 	public final static String DEVICE_CONFIRMED = "deviceConfirmed";

@@ -113,8 +113,7 @@ public class UserRestApi {
 			session.setDeviceVerified(true);
 		}
 		device = userService.getDevice(device);
-		NewCookie cookie = this.cookieUtils.newSessionCookie(session);
-		return Response.status(HttpURLConnection.HTTP_OK).cookie(cookie).entity(device).build();
+		return Response.status(HttpURLConnection.HTTP_OK).entity(device).build();
 	}
 	/**
      * create new device and assign a device id for it.

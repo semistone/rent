@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.siraya.rent.user.service.ISessionService;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
@@ -30,8 +31,9 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 	@Autowired
 	private CookieUtils cookieUtils;
 	@Autowired
-	protected IApplicationConfig applicationConfig;
-
+	private IApplicationConfig applicationConfig;
+	@Autowired
+	private ISessionService sessionService;
 	public UserAuthorizeData getUserAuthorizeData() {
 		return userAuthorizeData;
 	}
@@ -50,7 +52,7 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		// test security context
 		//
 		userAuthorizeData.request = request;
-		logger.debug("pass filter");
+
 		this.extraceDeviceCookie(request);
 		this.extractSessionCookie(request);
 		if (userAuthorizeData.getDeviceId() == null) {
@@ -85,7 +87,9 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 				session.genId();
 				session.setDeviceId(deviceId);
 				session.setUserId(userId);	
-				session.setLastLoginIp(ip);
+				session.setLastLoginIp(ip);		
+				sessionService.newSession(session);				
+				this.userAuthorizeData.setSession(session);
 			}
 		}
 	}

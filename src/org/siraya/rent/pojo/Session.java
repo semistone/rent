@@ -1,15 +1,18 @@
 package org.siraya.rent.pojo;
 
 import org.siraya.rent.filter.UserRole;
-import org.siraya.rent.utils.EncodeUtility;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 public class Session {
+	private static Logger logger = LoggerFactory.getLogger(Session.class);
 	private String id;
 	private String session;
 	private String deviceId;
 	private String userId;
 	private String lastLoginIp;
-	private List roles;
+	private List<Integer> roles;
 	private long created;
 	private boolean isChange = false;
 	private boolean isNew = false;
@@ -24,6 +27,13 @@ public class Session {
 	public boolean isNew() {
 		return isNew;
 	}
+	public List<Integer> getRoles() {
+		return roles;
+	}
+	public void addRole(int role){
+		this.roles.add(role);
+	}
+	
 	public Session(String cookieValue){
 		String[] strings = cookieValue.split(":");
 		this.id = strings[0];
@@ -47,6 +57,7 @@ public class Session {
 	public void setDeviceVerified(boolean isDeviceVerified) {
 		int deviceConfirmed = UserRole.UserRoleId.DEVICE_CONFIRMED.getRoleId();
 		if (!this.roles.contains(deviceConfirmed)) {
+			logger.debug("add role device confirmed");
 			this.roles.add(deviceConfirmed);
 			this.isChange = true;
 		}

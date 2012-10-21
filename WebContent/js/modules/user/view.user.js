@@ -266,7 +266,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		success = function(data, textStatus, jqXHR) {
 			logger.debug("verify success " + textStatus);
 			_this.undelegateEvents();
-			new RENT.user.view.RegisterStep3View({
+			new RENT.user.view.RegisterMainView({
 				el : _this.el,
 				model: _this.model
 			}).render();
