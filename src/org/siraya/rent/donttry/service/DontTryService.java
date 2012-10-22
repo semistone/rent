@@ -62,7 +62,7 @@ public class DontTryService implements IDontTryService{
 		dontTryDao.newCounter(dontTry);
     	dontTry = dontTryDao.getByName(name, dontTry.getStartDate());
     	if (dontTry.getCount() > maxCount) {
-    		throw new RentException(RentException.RentErrorCode.ErrorExceedLimit,"exceed donttry limit");
+    		throw new RentException(RentException.RentErrorCode.ErrorExceedLimit,"exceed donttry limit try "+dontTry.getCount());
     	}
     }
 

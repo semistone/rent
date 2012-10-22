@@ -41,6 +41,10 @@ public class SessionService implements ISessionService {
 		}
 		Device device = this.deviceDao.getDeviceByDeviceIdAndUserId(deviceId,
 				userId);
+		if (device == null) {
+			throw new RentException(RentException.RentErrorCode.ErrorDeviceNotFound,
+					"device data not found");
+		}
 		if (device.getStatus() == DeviceStatus.Authing.getStatus()) {
 			logger.debug("add role device authed");
 			session.setDeviceVerified(true);

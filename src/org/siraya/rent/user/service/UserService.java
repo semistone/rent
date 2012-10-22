@@ -382,7 +382,7 @@ public class UserService implements IUserService {
 			user = this.userDao.getUserByMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY));
 			if (user != null) {
 				logger.debug("current user exist");
-
+				request.setUser(user);
 			} else {
 				logger.debug("this mobile phone's user not exist yet");
 				int cc = Integer.parseInt(request.getCountryCode());
@@ -429,7 +429,6 @@ public class UserService implements IUserService {
 		response.setRequestId(request.getRequestId());
 		response.setStatus(currentDevice.getStatus());
 		response.setResponseTime(java.util.Calendar.getInstance().getTimeInMillis()/1000);
-		response.setUser(user);
 		response.setDevice(currentDevice);
 		String responseSign = EncodeUtility.sha1(response.toString(requestFrom.getToken()));
 		response.setSign(responseSign);

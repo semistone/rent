@@ -4,6 +4,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
+import org.siraya.rent.filter.UserAuthorizeData;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
@@ -21,6 +22,8 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
     private static Logger logger = LoggerFactory.getLogger(RentExceptionExceptionMapper.class);
 	@Autowired
 	private CookieUtils cookieUtils;
+	@Autowired
+	private UserAuthorizeData userAuthorizeData;
     public RentExceptionExceptionMapper(){
 
 	}
@@ -46,6 +49,11 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 		}
 		if (code == RentException.RentErrorCode.ErrorCookieFormat) {
 			responseBuilder.cookie(cookieUtils.removeDeviceCookie());
+		}
+		if (code == RentException.RentErrorCode.ErrorDeviceNotFound){
+			logger.debug("rebuild device cookie");
+			String deviceId = userAuthorizeData.getDeviceId();
+			responseBuilder.cookie(cookieUtils.newDeviceCookie(deviceId));
 		}
 
 		return responseBuilder.entity(response).build();

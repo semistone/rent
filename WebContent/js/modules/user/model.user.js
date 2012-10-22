@@ -24,6 +24,13 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 		Backbone.sync("update",this, options);
 	},
 
+	verify_mobile_auth_request_code:function(auth_code,options){
+		options = $.extend(options, {
+			url : this.url + 'verify_mobile_auth_request_code'
+		});
+		this.set('authCode', auth_code, {silent:true});
+		Backbone.sync("update",this, options);	
+	},
 	send_mobile_auth_message : function(options) {
 		options = $.extend(options, {
 			url : this.url + 'send_mobile_auth_message'

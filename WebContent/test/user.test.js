@@ -97,4 +97,25 @@ asyncTest('test name device', function(assert) {
 	};
 	user.name_device('test',options);
 });
+
+//
+//  insert into MOBILE_AUTH_REQUEST (REQUEST_ID,STATUS,TOKEN,USER_ID) values
+//       ('test_verify','1','FE4DC1C73AE63F2BDE5C80E1E3B93BFC','test list devices');
+//
+asyncTest('test verify_mobile_auth_request_code', function(assert) {
+	var user = new RENT.user.model.UserModel();
+	options = {
+		success:function(){
+			ok(true, 'expect execute success');
+			start();	
+		},
+		error:function(){
+			ok('', 'expect execute success');
+			start();
+		}
+	};
+	user.set('requestId','test_verify');
+	user.verify_mobile_auth_request_code('886911826844',options);
+});
+
 });

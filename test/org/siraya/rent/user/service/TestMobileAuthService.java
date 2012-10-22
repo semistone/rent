@@ -90,9 +90,9 @@ public class TestMobileAuthService {
 		mobileAuthRequest.setDevice(device);
 		mobileAuthRequest.setRequestTime(0);
 		mobileAuthRequest.setAuthCode("886911826844");
+		mobileAuthRequest.setRequestFrom("test user");
 		mobileAuthRequest.setAuthUserId(user.getId());
 		mobileAuthResponse.setUser(user);
-
 		mobileAuthResponse.setDevice(device);
 	}
 	
@@ -318,6 +318,10 @@ public class TestMobileAuthService {
 					will(returnValue(1));
 					one(mobileAuthResponseDao).updateResponse(with(any(MobileAuthResponse.class)));
 					will(returnValue(1));
+					one(userDao).getUserByUserId(mobileAuthRequest.getUserId());
+					will(returnValue(user));
+					one(deviceDao).getDeviceByDeviceIdAndUserId("SSO", mobileAuthRequest.getRequestFrom());
+					will(returnValue(device));
 
 				}
 			});	

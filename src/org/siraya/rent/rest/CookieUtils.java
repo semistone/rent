@@ -41,6 +41,7 @@ public class CookieUtils {
 		return deviceCookie;	
 	}
     
+
     /**
      * session cookie 
      *  id : ip : sha1(device id + user id)
