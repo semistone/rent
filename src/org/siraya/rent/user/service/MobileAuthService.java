@@ -85,7 +85,7 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		String phone = encodeUtility.decrypt(request.getMobilePhone(),
 				User.ENCRYPT_KEY);
-		User user = response.getUser();
+		User user = request.getUser();
 		if (user == null) {
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
 					"user can't be null in mobile auth response");

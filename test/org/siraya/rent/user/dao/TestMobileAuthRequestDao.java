@@ -23,6 +23,7 @@ public class TestMobileAuthRequestDao extends AbstractJUnit4SpringContextTests{
     	request.setRequestId("r"+time/1000);
     	request.setForceReauth(false);
     	request.setRequestTime(time/1000);
+    	request.setToken("Tset");
     	request.setAuthUserId("test id");
     	request.setRequestFrom("test xxx");
     	request.setDone("http://www.yahoo.com");
@@ -37,7 +38,7 @@ public class TestMobileAuthRequestDao extends AbstractJUnit4SpringContextTests{
 		MobileAuthRequest request2 = mobileAuthRequestDao.get(request
 				.getRequestId());
 		Assert.assertEquals(request.getAuthUserId(), request2.getAuthUserId());
-		
+		Assert.assertEquals(request.getToken(), request2.getToken());	
 		Assert.assertEquals(request.getStatus(), request2.getStatus());
 		
 		List<MobileAuthRequest> list = mobileAuthRequestDao

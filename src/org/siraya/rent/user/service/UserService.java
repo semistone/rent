@@ -355,7 +355,7 @@ public class UserService implements IUserService {
 					"sign verify failed "+sign);
 		}
 
-		logger.debug("do verify expired");
+		logger.debug("check verify expired");
 		long expire = 300;
 		long now = Calendar.getInstance().getTimeInMillis() / 1000;
 		if (request.getRequestTime() > now) {
@@ -430,6 +430,7 @@ public class UserService implements IUserService {
 		response.setStatus(currentDevice.getStatus());
 		response.setResponseTime(java.util.Calendar.getInstance().getTimeInMillis()/1000);
 		response.setDevice(currentDevice);
+		response.setUser(user);
 		String responseSign = EncodeUtility.sha1(response.toString(requestFrom.getToken()));
 		response.setSign(responseSign);
 	

@@ -18,12 +18,13 @@ var mobileAuthRequestForm = null;
 RENT.user.view.RegisterView = Backbone.View.extend({
 
 	initialize : function() {
-		_.bindAll(this, 'render', 'error','change_view');
+		_.bindAll(this, 'render', 'error','change_view','verify_success');
 		if (this.model == null) {
 			this.model = new RENT.user.model.UserModel();
 		}
 		this.model.bind('change',this.render);
 		this.model.bind('change_view',this.change_view);
+		this.model.bind('verify_success',this.verify_success);
 		if (!this.handleMobileAuthRequestForm()){
 			//only no mobile auth request need to do fetch.
 			this.model.fetch({error:this.error});			
@@ -113,15 +114,19 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		case 'step2':
 			this.$el.find('#register_title').text($.i18n.prop('user.register.step2'));
 			break;
-		case 'step3':
-			if (this.model.get('status') == 2) {
-				this.$el.find('#register_title').text($.i18n.prop('user.register.register_manage_tool'));				
-			} else{
-				this.$el.find('#register_title').text($.i18n.prop('user.register.step3'));				
-			}
+		case 'step3':			
+			this.$el.find('#register_title').text($.i18n.prop('user.register.register_manage_tool'));
 			break;
 
 		}
+	},
+	verify_success:function(){
+		this.$el.find('#register_title').text($.i18n.prop('user.register.step3'));
+		RENT.user.dotDone(mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
+		new RENT.user.view.RegisterMainView({
+			el : _this.el,
+			model: _this.model
+		}).render();
 	}
 
 });
@@ -266,15 +271,15 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		success = function(data, textStatus, jqXHR) {
 			logger.debug("verify success " + textStatus);
 			_this.undelegateEvents();
-			new RENT.user.view.RegisterMainView({
-				el : _this.el,
-				model: _this.model
-			}).render();
-			_this.model.trigger('verify_status_event');
+			_this.model.trigger('verify_success');
 		};
 		var auth_code = this.$el.find('#auth_code').val();
 		logger.debug('click do verify button auth code is '+auth_code);
-		this.model.verify_mobile_auth_code(auth_code,{success:success});
+		if (mobileAuthRequestForm != null) {
+			this.model.verify_mobile_auth_request_code(auth_code,{success:success});
+		} else {
+			this.model.verify_mobile_auth_code(auth_code,{success:success});			
+		}
 	},
 	error :function(model,resp){
 		logger.error("verify fail ");
