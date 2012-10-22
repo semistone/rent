@@ -1,16 +1,19 @@
 package org.siraya.rent.pojo;
 import java.util.Random;
+
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.siraya.rent.pojo.User;
 import org.codehaus.jackson.annotate.JsonIgnore;
 public class Device {
+
+	@NotNull
 	@Size(min = 2, max = 15)
 	private String id;
 
 	@Size(min = 2, max = 15)
 	private String userId;
-
-	@Size(min = 2, max = 15)
+	@NotNull
 	private String token;
 	private long created;
 	private long modified;
@@ -25,6 +28,13 @@ public class Device {
 	private String lastLoginTime;
 	private User user;
     public static String ENCRYPT_KEY = "general";
+    public Device(){
+    	
+    }
+    public Device(String id, String userId) {
+    	this.id= id;
+    	this.userId = userId;
+    }
 	public String genToken(){
 		Random r  = new Random();
 		return String.format("%06d", r.nextInt(999999));

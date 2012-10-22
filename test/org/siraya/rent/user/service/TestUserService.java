@@ -52,7 +52,7 @@ public class TestUserService {
 		user.setPassword("test");
 		user.setStatus(0);
 		userService = new UserService();
-		userService.debug = true;
+	
 		device.setUser(user);
 		device.setId(deviceId);
 		if (isMock) {
@@ -73,10 +73,11 @@ public class TestUserService {
 			request.setForceReauth(false);
 			request.setRequestFrom(this.userId);
 			request.setRequestTime(time/1000);
+			request.setCountryCode("886");
 			request.setAuthUserId("test id");
 			request.setMobilePhone("8862332131313");
 			request.setDone("http://www.yahoo.com");
-			
+			request.setDevice(device);
 			setting = new HashMap<String, Object>();
 			Map<String, Object> setting2;
 			setting2 = new HashMap<String, Object>();
@@ -214,6 +215,6 @@ public class TestUserService {
 
 		}
 
-		userService.mobileAuthRequest(device, request);
+		userService.mobileAuthRequest( request);
 	}
 }

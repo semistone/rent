@@ -6,11 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.Principal;
+import org.siraya.rent.pojo.Session;
 public class Authorizer implements SecurityContext {
     private static Logger logger = LoggerFactory.getLogger(Authorizer.class);
     private UserAuthorizeData user;
     private Principal principal;
-
+	
     public Authorizer(final UserAuthorizeData user) {
         this.user = user;
         if (user.getUserId() == null){
@@ -29,8 +30,18 @@ public class Authorizer implements SecurityContext {
     }
 
     public boolean isUserInRole(String role) {
-    	return true;
-        //return (role.equals(user.getRole()));
+    	int checkRole = UserRole.getRoleId(role);
+    	Session session = this.user.getSession();
+    	
+    	if (session == null) {
+    		logger.debug("session is null no allow role "+role);
+    		return false;
+    	}
+    	boolean ret =  session.isUserInRole(checkRole);
+    	if (ret == false) {
+    		logger.info("user "+this.user.getUserId()+" not in role "+role);
+    	}
+    	return ret;
     }
 
     public boolean isSecure() {

@@ -120,8 +120,9 @@ public class TestCookieUtils  {
 				}
 			});	
 		}
-		Session session = cookieUtils.extractSessionCookie("123", new UserAuthorizeData());
-		Assert.assertNull(session);
+		UserAuthorizeData userAuthorizeData = new UserAuthorizeData();
+		cookieUtils.extractSessionCookie("123", userAuthorizeData);
+		Assert.assertNull(userAuthorizeData.getSession());
 	}
 	@Test
 	public void testExtractSessionCookieUserNotMatch(){
@@ -135,14 +136,14 @@ public class TestCookieUtils  {
 			});	
 		}
 		UserAuthorizeData userAuthorizeData  = new UserAuthorizeData();
-
-		Session session = cookieUtils.extractSessionCookie(cookie,userAuthorizeData );
+		cookieUtils.extractSessionCookie(cookie,userAuthorizeData );
+		Session session =userAuthorizeData.getSession();
 		Assert.assertNull(session);
 	}
 
 	@Test
 	public void testExtractSessionCookieUser(){
-		String cookie = "107FF6C8752C23E782EBAF9447D9ED5659CBF357C42E1263079F7EADCA8022E11127DF9CF615EA81BCEA1E166FE3E9042F520137F4B2A94C165CF2B7D9D338E99AAF2290DA3E3FD1D1E283F0868C87718E5C7060522AE04B1A720AEAE5BD3398";
+		String cookie = "9A1D2E9BC04F8D540B42D6E6D9B15040F9816C01414AEA7FD1467ECE1D4103E5B5F2CBE8FC57FA7A1986585F2730E982B7303B25E0746F779C348BCF07E639B92F9F4356187CEFDD5D8CBCA616D81524";
 		if (isMock) {
 			context.checking(new Expectations() {
 				{
@@ -154,7 +155,8 @@ public class TestCookieUtils  {
 		UserAuthorizeData userAuthorizeData  = new UserAuthorizeData();
 		userAuthorizeData.setDeviceId("d1350194731");
 		userAuthorizeData.setUserId("u1350194731");
-		Session session = cookieUtils.extractSessionCookie(cookie,userAuthorizeData);
+		cookieUtils.extractSessionCookie(cookie,userAuthorizeData);
+		Session session = userAuthorizeData.getSession();
 		Assert.assertNotNull(session);
 	}
 

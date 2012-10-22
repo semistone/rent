@@ -23,36 +23,41 @@ public class DontTryService implements IDontTryService{
 	public void doTry(String name,DontTryType limitType,int maxCount){
     	DontTry dontTry = new DontTry();
     	dontTry.setName(name);
-		Calendar cal = Calendar.getInstance();
-    	
-		switch (limitType.getType()) {
-		case 2:
-			cal.set(Calendar.DAY_OF_MONTH, 1);
-			cal.clear(Calendar.HOUR_OF_DAY);
-			cal.clear(Calendar.HOUR);
-			cal.clear(Calendar.MINUTE);
-			cal.clear(Calendar.SECOND);
-			cal.clear(Calendar.MILLISECOND);
-			break;
-		case 1:
-			cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
-			cal.clear(Calendar.DAY_OF_WEEK);
-			cal.clear(Calendar.HOUR_OF_DAY);
-			cal.clear(Calendar.HOUR);
-			cal.clear(Calendar.MINUTE);
-			cal.clear(Calendar.SECOND);
-			cal.clear(Calendar.MILLISECOND);
-			break;
-		case 0:
-			cal.clear(Calendar.HOUR_OF_DAY);
-			cal.clear(Calendar.HOUR);
-			cal.clear(Calendar.MINUTE);
-			cal.clear(Calendar.SECOND);
-			cal.clear(Calendar.MILLISECOND);
-			break;
 
+		if (limitType.getType() == DontTryType.Life.getType()) {
+			dontTry.setStartDate(new java.util.Date(0));			
+		}else {
+			Calendar cal = Calendar.getInstance();
+	    	
+			switch (limitType.getType()) {
+			case 2:
+				cal.set(Calendar.DAY_OF_MONTH, 1);
+				cal.clear(Calendar.HOUR_OF_DAY);
+				cal.clear(Calendar.HOUR);
+				cal.clear(Calendar.MINUTE);
+				cal.clear(Calendar.SECOND);
+				cal.clear(Calendar.MILLISECOND);
+				break;
+			case 1:
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				cal.clear(Calendar.DAY_OF_WEEK);
+				cal.clear(Calendar.HOUR_OF_DAY);
+				cal.clear(Calendar.HOUR);
+				cal.clear(Calendar.MINUTE);
+				cal.clear(Calendar.SECOND);
+				cal.clear(Calendar.MILLISECOND);
+				break;
+			case 0:
+				cal.clear(Calendar.HOUR_OF_DAY);
+				cal.clear(Calendar.HOUR);
+				cal.clear(Calendar.MINUTE);
+				cal.clear(Calendar.SECOND);
+				cal.clear(Calendar.MILLISECOND);
+				break;
+
+			}
+			dontTry.setStartDate(cal.getTime());
 		}
-		dontTry.setStartDate(cal.getTime());
 		logger.debug("do try "+name+" start date is "+dontTry.getStartDate());
 		dontTryDao.newCounter(dontTry);
     	dontTry = dontTryDao.getByName(name, dontTry.getStartDate());

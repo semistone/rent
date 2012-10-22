@@ -1,4 +1,7 @@
 package org.siraya.rent.user.dao;
+import java.util.List;
+
+import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +27,13 @@ public class TestSessionDao  extends AbstractJUnit4SpringContextTests{
 	}
 	
     @Test   
-    public void testCRUD(){
-    	sessionDao.newSession(session);
+	public void testCRUD() {
+		sessionDao.newSession(session);
+
+		List<Session> list = sessionDao.getSessions(session.getUserId(), 10, 0);
+		Assert.assertNotSame(0, list.size());
+		
+		Session session2=sessionDao.getSession(session.getId());
+		Assert.assertEquals(session.getDeviceId(), session2.getDeviceId());
     }
 }

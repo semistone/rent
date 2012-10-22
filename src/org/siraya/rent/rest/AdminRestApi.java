@@ -28,7 +28,7 @@ import org.siraya.rent.utils.RentException;
 import javax.annotation.security.RolesAllowed;
 @Component("adminRestApi")
 @Path("/admin")
-@RolesAllowed({"admin"})
+@RolesAllowed({org.siraya.rent.filter.UserRole.ADMIN})
 public class AdminRestApi {
     @Autowired
     private IApplicationConfig applicationConfig;
@@ -51,7 +51,7 @@ public class AdminRestApi {
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/sms_gateway_debug_mode/{mode}")
-    public Response sms_gateway_debug_mode(@PathParam("mode") boolean mode) {
+    public Response smsGatewayDebugMode(@PathParam("mode") boolean mode) {
     	logger.debug("set debug flag "+mode);
     	Map<String,Object> sently = this.applicationConfig.get("sently");
     	sently.put("debug", mode);
@@ -63,7 +63,7 @@ public class AdminRestApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/show_token")
-	public Response show_token(){
+	public Response showToken(){
 		String deviceId = userAuthorizeData.getDeviceId();
 		String userId = userAuthorizeData.getUserId();
 		if (userId == null) {
@@ -82,6 +82,12 @@ public class AdminRestApi {
 		return Response.status(HttpURLConnection.HTTP_OK).entity(response).build();
 	}
 	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/show_mobile_auth_request/{requestId}")
+	public MobileAuthRequest getMobileAuthRequest(@PathParam("requestId")String requestId){
+		return this.userService.getMobileAuthRequest(requestId);	
+	}
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

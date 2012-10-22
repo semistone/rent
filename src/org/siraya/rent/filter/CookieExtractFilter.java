@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.siraya.rent.user.service.ISessionService;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
@@ -30,8 +31,9 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 	@Autowired
 	private CookieUtils cookieUtils;
 	@Autowired
-	protected IApplicationConfig applicationConfig;
-
+	private IApplicationConfig applicationConfig;
+	@Autowired
+	private ISessionService sessionService;
 	public UserAuthorizeData getUserAuthorizeData() {
 		return userAuthorizeData;
 	}
@@ -50,7 +52,7 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		// test security context
 		//
 		userAuthorizeData.request = request;
-		logger.debug("pass filter");
+
 		this.extraceDeviceCookie(request);
 		this.extractSessionCookie(request);
 		if (userAuthorizeData.getDeviceId() == null) {
@@ -65,16 +67,29 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 
 	private void extractSessionCookie(ContainerRequest request){
 		Map<String, Cookie> cookies = request.getCookies();
+		MultivaluedMap<String, String> headers = request.getRequestHeaders();
+		String ip = headers.getFirst("X-Real-IP");
 		if (cookies.containsKey("S")) {
 			String value = cookies.get("S").getValue();
-			Session session = cookieUtils.extractSessionCookie(value,userAuthorizeData);			
+			cookieUtils.extractSessionCookie(value,userAuthorizeData);	
+			Session session = userAuthorizeData.getSession();
 			if (session != null) {
-				MultivaluedMap<String, String> headers = request.getRequestHeaders();
-				String ip = headers.getFirst("X-Real-IP");
 				if(ip != null && !session.getLastLoginIp().equals(ip)){
 					logger.debug("ip not match remove session cookie");
 					cookies.remove("S");
 				}
+			}
+		}else{
+			String userId = this.userAuthorizeData.getUserId();
+			String deviceId = this.userAuthorizeData.getDeviceId();
+			if (userId != null && deviceId != null) {
+				Session session = new Session();
+				session.genId();
+				session.setDeviceId(deviceId);
+				session.setUserId(userId);	
+				session.setLastLoginIp(ip);		
+				sessionService.newSession(session);				
+				this.userAuthorizeData.setSession(session);
 			}
 		}
 	}

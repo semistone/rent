@@ -48,8 +48,9 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 		Backbone.sync("delete",this, options);	
 	},
 	mobile_auth_request:function(data,options){
-		var field = ['requestId','mobilePhone','sign','forceReauth','authUserId',
-		             'requestFrom','requsetTime','callback','requestTime','done'];
+		var field = ['requestId','mobilePhone','sign', 'forceReauth', 'authUserId',
+		             'requestFrom', 'requsetTime', 'callback',
+		             'requestTime', 'done', 'countryCode'];
 		$.each(data,function(key,value){
 			if ($.inArray(key,field) <0 ){
 				logger.debug('delete key '+key);

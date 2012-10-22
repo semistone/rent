@@ -113,6 +113,7 @@ RENT.backyard.view.MobileAuthRequestView= Backbone.View.extend({
 	render:function(){
 		logger.debug("render sso form");
 		this.$el.html(Mustache.to_html(this.tmpl,this.model.toJSON()));	
+		RENT.generateCountryOptions(this.$el.find('#countryCode'));
 		var _this = this;
 		this.model.list_sso_devices({
 			success:function(model,response){

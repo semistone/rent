@@ -1,9 +1,14 @@
 package org.siraya.rent.rest;
-
+import org.siraya.rent.pojo.Session;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
@@ -17,6 +22,7 @@ import org.siraya.rent.pojo.User;
 import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
 import org.siraya.rent.pojo.Device;
+import org.siraya.rent.user.service.DeviceStatus;
 import org.siraya.rent.user.service.IMobileAuthService;
 import org.siraya.rent.user.service.IUserService;
 import org.slf4j.Logger;
@@ -25,10 +31,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+
 import javax.ws.rs.core.NewCookie;
 import java.net.HttpURLConnection;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.DefaultValue;
+
+import junit.framework.Assert;
 @Component("userRestApi")
 @Path("/user")
 public class UserRestApi {
@@ -38,17 +48,20 @@ public class UserRestApi {
 	private IMobileAuthService mobileAuthService;
 	@Autowired
 	private CookieUtils cookieUtils;
+
 	@Autowired
 	private UserAuthorizeData userAuthorizeData;
 
-
+	private Validator validator;
 	private static Logger logger = LoggerFactory.getLogger(UserRestApi.class);
     private static Map<String,String> OK;
     public UserRestApi (){
-    	if (OK == null) {
-    		OK = new HashMap<String,String>();
-    		OK.put("status", "SUCCESS");
-    	}
+		if (OK == null) {
+			OK = new HashMap<String, String>();
+			OK.put("status", "SUCCESS");
+		}
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		validator = factory.getValidator();
     }
     @POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -95,6 +108,10 @@ public class UserRestApi {
 
 		device.setUserId(userId);
 		device.setId(deviceId);
+		Session session = this.userAuthorizeData.getSession();
+		if (device.getStatus() == DeviceStatus.Authed.getStatus()) {
+			session.setDeviceVerified(true);
+		}
 		device = userService.getDevice(device);
 		return Response.status(HttpURLConnection.HTTP_OK).entity(device).build();
 	}
@@ -176,6 +193,25 @@ public class UserRestApi {
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
 	}
 
+	/**
+	 * verify auth code
+	 * @param deviceId
+	 * @param authCode
+	 * @return
+	 */
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/verify_mobile_auth_request_code")
+	public MobileAuthResponse verifyMobileAuthRequestCode(MobileAuthRequest request){
+		Device device = new Device(this.userAuthorizeData.getDeviceId(), this.userAuthorizeData.getUserId());
+		request.setDevice(device);
+		MobileAuthResponse response = this.mobileAuthService.verifyMobileAuthRequestCode(request);
+		return response;
+	}
+	
+
+	
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -195,10 +231,24 @@ public class UserRestApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/mobile_auth_request")
 	public Response mobileAuthRequest(MobileAuthRequest request){	
-		Device currentDevice = new Device();
-		currentDevice.setId(this.userAuthorizeData.getDeviceId());
-		currentDevice.setUserId(this.userAuthorizeData.getUserId());
-		MobileAuthResponse response = userService.mobileAuthRequest(currentDevice, request);
+		Set<ConstraintViolation<MobileAuthRequest>> constraintViolations = validator
+				.validate(request);
+		if (constraintViolations.size() != 0) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"validate request object fail");
+		}
+
+		Device currentDevice = new Device(this.userAuthorizeData.getDeviceId(),
+				this.userAuthorizeData.getUserId());
+		request.setDevice(currentDevice);
+		MobileAuthResponse response = userService.mobileAuthRequest(request);
+		//
+		// if force reauth or status is init, then sent sms auth message.
+		//
+		if (request.isForceReauth() || response.getStatus() == DeviceStatus.Init.getStatus()) {
+			this.mobileAuthService.sendAuthMessage(request,response);
+		}
 		return Response.status(HttpURLConnection.HTTP_OK).entity(response)
 				.build();
 	}
@@ -210,6 +260,20 @@ public class UserRestApi {
 			@DefaultValue("0") @QueryParam("offset")int offset){
 		logger.debug("get devices list limit:"+limit+" offset"+offset);
 		return this.userService.getUserDevices(this.userAuthorizeData.getUserId(), limit, offset);
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/show_mobile_auth_request/{requestId}")
+	public MobileAuthRequest getMobileAuthRequest(@PathParam("requestId")String requestId){		
+		MobileAuthRequest request = this.userService
+				.getMobileAuthRequest(requestId);
+		if (!this.userAuthorizeData.getUserId().equals(request.getAuthUserId())) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorPermissionDeny,
+					"can't not access");
+		}
+		return request;
 	}
 	
 	
@@ -228,5 +292,7 @@ public class UserRestApi {
 	public void setUserAuthorizeData(UserAuthorizeData userAuthorizeData) {
 		this.userAuthorizeData = userAuthorizeData;
 	}
-
+	public void setCookieUtils(CookieUtils cookieUtils) {
+		this.cookieUtils = cookieUtils;
+	}
 }

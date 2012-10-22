@@ -1,7 +1,5 @@
 package org.siraya.rent.user.service;
 
-import junit.framework.Assert;
-
 import org.siraya.rent.pojo.MobileAuthRequest;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.VerifyEvent;
@@ -46,7 +44,7 @@ public class UserService implements IUserService {
     private EncodeUtility encodeUtility;    
 
 	private static Logger logger = LoggerFactory.getLogger(UserService.class);
-	boolean debug = false;
+
     
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
     public void removeDevice (Device device) throws Exception{
@@ -126,8 +124,6 @@ public class UserService implements IUserService {
 		User user = new User();
 		String id = java.util.UUID.randomUUID().toString();
 		user.setId(id);
-
-		user.validate("mobilePhone", mobilePhone);
 		user.setMobilePhone(encodeUtility.encrypt(mobilePhone, User.ENCRYPT_KEY));
 		user.setCc((String) map.get("country"));
 		user.setLang((String) map.get("lang"));
@@ -346,12 +342,15 @@ public class UserService implements IUserService {
      * step4: authUser and mobilePhone can't have together.
      * step5: save request into database.
      */
-	public MobileAuthResponse mobileAuthRequest(Device currentDevice, MobileAuthRequest request){
+	public MobileAuthResponse mobileAuthRequest( MobileAuthRequest request){
+		Device currentDevice = request.getDevice();
 		String userId = request.getRequestFrom();
+	  	Map<String,Object> generalSetting = applicationConfig.get("general");
 		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(
 				SSO_DEVICE_ID, userId);
+		boolean debug = (boolean)generalSetting.get("debug");
 		String sign = this._getSignatureOfMobileAuthRequest(request, requestFrom);
-		if (!this.debug && !sign.equals(request.getSign())) {
+		if (!debug && !sign.equals(request.getSign())) {
 			throw new RentException(RentErrorCode.ErrorPermissionDeny,
 					"sign verify failed "+sign);
 		}
@@ -378,14 +377,15 @@ public class UserService implements IUserService {
 		// get auth user from mobile phone
 		//
 		String mobilePhone = request.getMobilePhone();
+		User user = null;
 		if (mobilePhone != null) {
-			User user = this.userDao.getUserByMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY));
+			user = this.userDao.getUserByMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY));
 			if (user != null) {
 				logger.debug("current user exist");
 
 			} else {
-				logger.debug("this mobile not exist yet");
-				int cc = 886; // todo: fix country code
+				logger.debug("this mobile phone's user not exist yet");
+				int cc = Integer.parseInt(request.getCountryCode());
 				user = this.newUserByMobileNumber(cc, mobilePhone);
 			}
 			request.setMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY)); // encrypt mobile phone
@@ -393,7 +393,18 @@ public class UserService implements IUserService {
 			//
 			// get device from deviceDao
 			//
-			currentDevice = this.getDevice(currentDevice);
+			try{
+				currentDevice = this.getDevice(currentDevice);
+			}catch(RentException e){
+				//
+				// skip device not found error and set as staus to removed.
+				//
+				if (e.getErrorCode() != RentException.RentErrorCode.ErrorNotFound) {
+					throw e;
+				}
+				currentDevice.setStatus(DeviceStatus.Authing.getStatus());
+			}
+
 		} else {
 			logger.debug("requset mobile phone is empty");
 		}
@@ -403,6 +414,8 @@ public class UserService implements IUserService {
 		//
 		try {
 			logger.debug("save request into database");
+			request.genToken();
+			request.setToken(encodeUtility.encrypt(request.getToken(), Device.ENCRYPT_KEY));
 			mobileAuthRequestDao.newRequest(request);
 		}catch(Exception e){
 			logger.error("insert request into dao error",e);
@@ -416,7 +429,8 @@ public class UserService implements IUserService {
 		response.setRequestId(request.getRequestId());
 		response.setStatus(currentDevice.getStatus());
 		response.setResponseTime(java.util.Calendar.getInstance().getTimeInMillis()/1000);
-	
+		response.setUser(user);
+		response.setDevice(currentDevice);
 		String responseSign = EncodeUtility.sha1(response.toString(requestFrom.getToken()));
 		response.setSign(responseSign);
 	
@@ -429,6 +443,15 @@ public class UserService implements IUserService {
 	
 	public List<Device> getSsoDevices(){
 		return this.deviceDao.getSsoDevices();
+	}
+	
+	public MobileAuthRequest getMobileAuthRequest(String requestId) {
+		MobileAuthRequest request = this.mobileAuthRequestDao.get(requestId);
+		if (request == null) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
+					"request id "+requestId+" not found");
+		}
+		return request;
 	}
 	
 	public IMobileAuthRequestDao getMobileAuthRequestDao() {
