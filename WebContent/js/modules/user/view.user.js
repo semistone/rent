@@ -306,10 +306,11 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		_.bindAll(this, 'render','delete_device','show_my_device','verify_status_event');
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.model.on('verify_status_event',this.verify_status_event);
+		this.rightView = new Backbone.View();
 	},
 	events : {
 		"click #named_my_devices_link" : 'name_device_popup',
-		'click #delete_device_link' : 'delete_device',
+		'click #delete_my_device_link' : 'delete_device',
 		'click #show_my_devices_link' : 'show_my_device'
 	},
 	verify_status_event:function(){
@@ -344,15 +345,18 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	},
 	name_device_popup:function(){
 		logger.debug('click name device popup');
-		new RENT.user.view.NameDeviceView({
+		this.rightView.undelegateEvents();
+		this.rightView = new RENT.user.view.NameDeviceView({
 			el : this.$el.find('#register_right'),
-			model : this.model}).render();
+			model : this.model});
+		this.rightView.render();
 	},
 	delete_device:function(){
 		logger.debug('click delete device');
 		var _this = this;
 		this.model.delete_device(null,{
 			success:function(model,resp){
+				_this.rightView.undelegateEvents();
 				_this.undelegateEvents();
 				new RENT.user.view.RegisterStep1View({el:_this.el,model:_this.model}).render();
 			},
@@ -363,7 +367,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	},
 	show_my_device:function(){
 		logger.debug('click show my devies'); 
-		new RENT.user.view.ShowDevicesView({
+		this.rightView.undelegateEvents();
+		this.rightView = new RENT.user.view.ShowDevicesView({
 			el : this.$el.find('#register_right'),
 			model : this.model
 		});
@@ -408,7 +413,7 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 			success : function() {
 				logger.debug('click name device popup save success');
 				_this.undelegateEvents();
-				new RENT.user.view.ShowDevicesView({
+				this.rightViewnew RENT.user.view.ShowDevicesView({
 					el:_this.el,
 					model:_this.model
 				}).render();
