@@ -56,8 +56,13 @@ var RENT = {
 		});
 	},
 	simpleErrorDialog:function(resp,msg){
-		var resp = $.parseJSON(resp.responseText);
-		var title = $.i18n.prop('rent.error_msg.' + resp.errorCode);
+		var title;
+		if (resp == null) {
+			title = $.i18n.prop("rent.error_msg.server");
+		} else {
+			resp = $.parseJSON(resp.responseText);
+			title = $.i18n.prop('rent.error_msg.' + resp.errorCode);			
+		}
 		logger.error('ajax response error message:' + resp.errorMsg);
 		this.simpleDialog(title, msg);
 	},

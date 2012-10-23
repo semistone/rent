@@ -66,6 +66,8 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 			return Response.Status.BAD_REQUEST;
 		case 15: //ErrorPermissionDeny
 			return Response.Status.FORBIDDEN;
+		case 19:
+			return Response.Status.CONFLICT;
 		default:
 			return Response.Status.INTERNAL_SERVER_ERROR;
 		}

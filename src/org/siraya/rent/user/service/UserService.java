@@ -417,6 +417,8 @@ public class UserService implements IUserService {
 			request.genToken();
 			request.setToken(encodeUtility.encrypt(request.getToken(), Device.ENCRYPT_KEY));
 			mobileAuthRequestDao.newRequest(request);
+		}catch(org.springframework.dao.DuplicateKeyException e) {
+			throw new RentException(RentException.RentErrorCode.ErrorDuplicate,"insert request but duplicate error");
 		}catch(Exception e){
 			logger.error("insert request into dao error",e);
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral,"insert request into dao error");
@@ -450,6 +452,13 @@ public class UserService implements IUserService {
 		if (request == null) {
 			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
 					"request id "+requestId+" not found");
+		}
+		//
+		// sign response.
+		//
+		if (request.getStatus() == DeviceStatus.Authed.getStatus()) {
+			String sign = getSignatureOfMobileAuthRequest(request);
+			request.setSign(sign);
 		}
 		return request;
 	}

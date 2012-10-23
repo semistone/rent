@@ -41,11 +41,16 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 					_this.model.set(model);
 				},
 				error:function(resp){
-					_this.error(_this.model,resp);
+					if (resp != null && resp.status == 409) {
+						_this.model.set({status:1});
+					} else {
+						_this.error(_this.model,resp);						
+					}
 				}
 			});
 			return true;
 		} else {
+			mobileAuthRequestForm = null; //reset to null
 			return false;			
 		}
 	},
@@ -124,8 +129,8 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		this.$el.find('#register_title').text($.i18n.prop('user.register.step3'));
 		RENT.user.dotDone(mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
 		new RENT.user.view.RegisterMainView({
-			el : _this.el,
-			model: _this.model
+			el : this.el,
+			model: this.model
 		}).render();
 	}
 
@@ -275,10 +280,10 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		};
 		var auth_code = this.$el.find('#auth_code').val();
 		logger.debug('click do verify button auth code is '+auth_code);
-		if (mobileAuthRequestForm != null) {
-			this.model.verify_mobile_auth_request_code(auth_code,{success:success});
-		} else {
+		if (mobileAuthRequestForm == undefined || mobileAuthRequestForm == null) {
 			this.model.verify_mobile_auth_code(auth_code,{success:success});			
+		} else {
+			this.model.verify_mobile_auth_request_code(auth_code,{success:success});
 		}
 	},
 	error :function(model,resp){
