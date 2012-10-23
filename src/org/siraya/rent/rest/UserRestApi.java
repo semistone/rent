@@ -99,15 +99,16 @@ public class UserRestApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response get() throws Exception{
 		logger.debug("call get device");
-		Device device = new Device();
+
 		String deviceId = this.userAuthorizeData.getDeviceId();
 		String userId = this.userAuthorizeData.getUserId();
-		if (deviceId == null || userId == null) {	
+		if (userId == null || userId.equals("anonymous")) {	
 			throw new RentException(RentErrorCode.ErrorNotFound, "device id or user id is null");
 		}
-
-		device.setUserId(userId);
-		device.setId(deviceId);
+		Device device = new Device(deviceId,userId);
+		//
+		// if device authed add role.
+		//
 		Session session = this.userAuthorizeData.getSession();
 		if (device.getStatus() == DeviceStatus.Authed.getStatus()) {
 			session.setDeviceVerified(true);

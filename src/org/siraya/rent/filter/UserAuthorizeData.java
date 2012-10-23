@@ -5,8 +5,10 @@ public class UserAuthorizeData {
 	private String userId;
 	private String deviceId;
 
-	public ContainerRequest request;
-	public Session session;
+	private ContainerRequest request;
+	private Session session;
+	private boolean isNewDevice = false;
+
 	public Session getSession() {
 		return session;
 	}
@@ -25,6 +27,25 @@ public class UserAuthorizeData {
 	}
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+	public boolean isNewDevice() {
+		return isNewDevice;
+	}
+
+	public void setNewDevice(boolean isNewDevice) {
+		this.isNewDevice = isNewDevice;
+	}
+
+	public ContainerRequest getRequest() {
+		return request;
+	}
+
+	public void setRequest(ContainerRequest request) {
+		this.request = request;
+	}
+	
+	public void signOff() {
+		this.isNewDevice = true;
 	}
 
 }

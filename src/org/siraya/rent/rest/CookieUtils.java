@@ -111,8 +111,10 @@ public class CookieUtils {
     	try{
     		deviceCookie = encodeUtility.decrypt(deviceCookie,KEY_NAME);
     	}catch (RentException e){
+    		userAuthorizeData.signOff();
+    		userAuthorizeData.setDeviceId(Device.genId());
     		throw new RentException(RentException.RentErrorCode.ErrorCookieFormat,
-    				"unknown cookie format");
+    				"unknown device cookie format, sign off and generate new one");
     	}
     	String[] strings=deviceCookie.split(":");
 	    int len = strings.length;

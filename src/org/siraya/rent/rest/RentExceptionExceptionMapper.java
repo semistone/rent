@@ -28,6 +28,9 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 
 	}
 	
+    /**
+     * map RentException to standard error message.
+     */
 	public  Response toResponse(RentException exception) {
 		logger.debug("extract exception to response");
 		HashMap<String, String> response = new HashMap<String, String>();
@@ -39,23 +42,11 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 		Response.Status status = mapToHttpStatusCode(code);
 		logger.error("error",exception);
 		Response.ResponseBuilder responseBuilder = Response.status(status).type(MediaType.APPLICATION_JSON);
-		//
-		// if no device id, then set device id cookie
-		//
-		if (code == RentException.RentErrorCode.ErrorNullDeviceId) {
-			String id = Device.genId();
-			response.put("deviceId", id);
-			responseBuilder.cookie(cookieUtils.newDeviceCookie(id));
-		}
-		if (code == RentException.RentErrorCode.ErrorCookieFormat) {
-			responseBuilder.cookie(cookieUtils.removeDeviceCookie());
-		}
-		if (code == RentException.RentErrorCode.ErrorDeviceNotFound){
-			logger.debug("rebuild device cookie");
-			String deviceId = userAuthorizeData.getDeviceId();
-			responseBuilder.cookie(cookieUtils.newDeviceCookie(deviceId));
-		}
 
+		if (code == RentException.RentErrorCode.ErrorDeviceNotFound){
+			// remove user part of device cookie.
+			this.userAuthorizeData.signOff();
+		}
 		return responseBuilder.entity(response).build();
 	}
 	
@@ -69,6 +60,7 @@ public class RentExceptionExceptionMapper implements ExceptionMapper<RentExcepti
 		case 4:// ErrorNotFound
 		case 8: // ErrorRemoved
 		case 13: // ErrorNullDeviceId
+		case 18: // ErrorDeviceNotFound
 			return Response.Status.NOT_FOUND;
 		case 12://ErrorInvalidParameter
 			return Response.Status.BAD_REQUEST;

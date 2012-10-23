@@ -28,12 +28,36 @@ public class CookieResponseFilter implements ContainerResponseFilter {
 	public ContainerResponse filter(ContainerRequest request,
 			ContainerResponse response) {
 		Session session = this.userAuthorizeData.getSession();
+		boolean changeCookie = false;
+		NewCookie sessionCookie = null;
+		NewCookie deviceCookie = null;
+		//
+		// update session cookie if need.
+		//
 		if (session != null && session.isChange()) {
-			logger.info("update session");
-			NewCookie sessionCookie = cookieUtils.newSessionCookie(session);
+			sessionCookie = cookieUtils.newSessionCookie(session);
 			logger.debug("build new response with session cookie");
-			Response cookieResponse = Response.fromResponse(response.getResponse()).cookie(sessionCookie).build();			  
-			response.setResponse(cookieResponse);			
+			changeCookie = true;
+		} 
+		//
+		// update device cookie if need.
+		//
+		if (this.userAuthorizeData.isNewDevice()) {
+			deviceCookie = cookieUtils.newDeviceCookie(this.userAuthorizeData.getDeviceId());
+			logger.debug("build new response with device cookie");
+			changeCookie = true;									
+		}
+		
+		if (changeCookie) {			
+			Response.ResponseBuilder responseBuilder  = Response.fromResponse(response.getResponse());
+			if (sessionCookie != null) {
+				responseBuilder.cookie(sessionCookie);
+			}
+			if (deviceCookie != null) {
+				responseBuilder.cookie(deviceCookie);				
+			}
+			Response cookieResponse = responseBuilder.build();
+			response.setResponse(cookieResponse);
 		}
 		return response;
 	}

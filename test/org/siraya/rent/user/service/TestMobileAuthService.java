@@ -92,7 +92,7 @@ public class TestMobileAuthService {
 		mobileAuthRequest.setAuthCode("886911826844");
 		mobileAuthRequest.setRequestFrom("test user");
 		mobileAuthRequest.setAuthUserId(user.getId());
-		mobileAuthResponse.setUser(user);
+		mobileAuthRequest.setUser(user);
 		mobileAuthResponse.setDevice(device);
 	}
 	
