@@ -198,6 +198,11 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 		var success = function(model, response) {
 			logger.debug('render register view step2');
 			_this.undelegateEvents();
+			if (model.status == 2) {
+				logger.debug('device has authed');
+				_this.model.trigger('verify_success');
+				return;
+			}
 			new RENT.user.view.RegisterStep2View({
 				el : _this.el,
 				model : _this.model

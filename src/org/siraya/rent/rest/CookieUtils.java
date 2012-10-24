@@ -24,7 +24,7 @@ public class CookieUtils {
 
 		String value= device.getId()+":"+device.getUserId();
 		value = encodeUtility.encrypt(value, KEY_NAME);
-		logger.debug("cookie value is "+value);
+		logger.debug("device cookie value is "+value);
 		NewCookie deviceCookie = new NewCookie("D", value, "/",
 				null, 1, "no comment", 1073741823, // maxAge max int value/2
 				false);
@@ -34,7 +34,7 @@ public class CookieUtils {
     public  NewCookie newDeviceCookie(String Id){    	
     	String value= Id+":";
 		value = encodeUtility.encrypt(value,KEY_NAME);
-		logger.debug("cookie value is "+value);
+		logger.debug("device cookie value is "+value);
 		NewCookie deviceCookie = new NewCookie("D", value, "/",
 				null, 1, "no comment", 1073741823 , // maxAge max int value/2
 				false);
@@ -65,7 +65,7 @@ public class CookieUtils {
 
 		String value = encodeUtility.encrypt(session.toString(),
 				KEY_NAME);
-		logger.debug("cookie value is " + value);
+		logger.debug("session cookie value is " + value);
 		NewCookie sessionCookie = new NewCookie("S", value, "/", null, 1,
 				"session",NewCookie.DEFAULT_MAX_AGE , false);
 		return sessionCookie;

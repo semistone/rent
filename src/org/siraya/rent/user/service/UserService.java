@@ -190,6 +190,7 @@ public class UserService implements IUserService {
 				device.getId(), user.getId());
 		if (oldDevice != null) {
 			logger.debug("old device exist");
+			device = oldDevice;
 		} else {
 			// old device not exist
 			device.setStatus(DeviceStatus.Init.getStatus());
