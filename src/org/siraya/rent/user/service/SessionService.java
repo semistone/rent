@@ -29,6 +29,7 @@ public class SessionService implements ISessionService {
 
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
 	public void newSession(Session session) {
+		logger.debug("new session");
 		this.sessionDao.newSession(session);
 		String deviceId = session.getDeviceId();
 		String userId = session.getUserId();
