@@ -348,7 +348,7 @@ public class UserService implements IUserService {
 	  	Map<String,Object> generalSetting = applicationConfig.get("general");
 		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(
 				SSO_DEVICE_ID, userId);
-		boolean debug = (boolean)generalSetting.get("debug");
+		boolean debug = (Boolean)generalSetting.get("debug");
 		String sign = this._getSignatureOfMobileAuthRequest(request, requestFrom);
 		if (!debug && !sign.equals(request.getSign())) {
 			throw new RentException(RentErrorCode.ErrorPermissionDeny,
