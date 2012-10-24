@@ -45,7 +45,7 @@ public class Authorizer implements SecurityContext {
     }
 
     public boolean isSecure() {
-        return "https".equals(user.request.getRequestUri().getScheme());
+        return "https".equals(user.getRequest().getRequestUri().getScheme());
     }
 
     public String getAuthenticationScheme() {

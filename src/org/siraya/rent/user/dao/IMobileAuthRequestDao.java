@@ -11,8 +11,8 @@ import java.util.List;
 public interface IMobileAuthRequestDao {
 	
 	
-	@Insert("INSERT INTO MOBILE_AUTH_REQUEST (REQUEST_ID,FORCE_REAUTH,DONE,MOBILE_PHONE,AUTH_USER_ID,CALLBACK,REQUEST_TIME,REQUEST_FROM) values (#{requestId},#{forceReauth}" +
-			",#{done},#{mobilePhone},#{authUserId},#{callback},#{requestTime},#{requestFrom})")
+	@Insert("INSERT INTO MOBILE_AUTH_REQUEST (REQUEST_ID,FORCE_REAUTH,DONE,MOBILE_PHONE,AUTH_USER_ID,CALLBACK,REQUEST_TIME,REQUEST_FROM,USER_ID,TOKEN) values (#{requestId},#{forceReauth}" +
+			",#{done}, #{mobilePhone}, #{authUserId}, #{callback}, #{requestTime}, #{requestFrom},#{userId}, #{token})")
     public void newRequest(MobileAuthRequest request);
 
 	@Select("select * from MOBILE_AUTH_REQUEST where REQUEST_ID=#{requestId}")

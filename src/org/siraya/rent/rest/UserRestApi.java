@@ -69,6 +69,14 @@ public class UserRestApi {
 	public Response post(Map<String,Object> request) throws Exception{
 		logger.debug("call new device");
 		Response response =  this.newDevice(request);
+		//
+		// if session exist, mean already authed.
+		//
+		Session session = this.userAuthorizeData.getSession();
+		if ( session != null && session.isNew()) { 
+			logger.debug("device have authed");
+			return response;
+		}
 		if (response.getStatus() == HttpURLConnection.HTTP_OK) {
 			//
 			// send mobile auth message
@@ -99,15 +107,16 @@ public class UserRestApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response get() throws Exception{
 		logger.debug("call get device");
-		Device device = new Device();
+
 		String deviceId = this.userAuthorizeData.getDeviceId();
 		String userId = this.userAuthorizeData.getUserId();
-		if (deviceId == null || userId == null) {	
+		if (userId == null || userId.equals("anonymous")) {	
 			throw new RentException(RentErrorCode.ErrorNotFound, "device id or user id is null");
 		}
-
-		device.setUserId(userId);
-		device.setId(deviceId);
+		Device device = new Device(deviceId,userId);
+		//
+		// if device authed add role.
+		//
 		Session session = this.userAuthorizeData.getSession();
 		if (device.getStatus() == DeviceStatus.Authed.getStatus()) {
 			session.setDeviceVerified(true);
@@ -132,8 +141,7 @@ public class UserRestApi {
 			String mobilePhone=(String)request.get("mobilePhone");
 
 			User user =userService.newUserByMobileNumber(Integer.parseInt(cc), mobilePhone);
-			Device device = new Device();
-			device.setId(deviceId);
+			Device device = new Device(deviceId,user.getId());
 			device.setUser(user);
 			device = userService.newDevice(device);
 			//
@@ -141,11 +149,24 @@ public class UserRestApi {
 			//
 			this.userAuthorizeData.setDeviceId(device.getId());
 			this.userAuthorizeData.setUserId(device.getUserId());
-
+			//
+			// if device authed, then new session.
+			// 
+			if (device.getStatus() == DeviceStatus.Authed.getStatus()) {
+				logger.debug("device has authed, new session");
+				Session session = this.userAuthorizeData.getSession();
+				if (session == null) {
+					session = new Session();
+					this.userAuthorizeData.setSession(session);
+				}
+				session.setDeviceId(deviceId);
+				session.setUserId(device.getUserId());
+				session.setDeviceVerified(true);
+			}
 			//
 			// set device id into cookie
 			//
-
+			logger.debug("set device cookie");
 			NewCookie deviceCookie = cookieUtils.createDeviceCookie(device);
 			
 			return Response.status(HttpURLConnection.HTTP_OK).entity(device).cookie(deviceCookie)
@@ -276,6 +297,15 @@ public class UserRestApi {
 		return request;
 	}
 	
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/sign_off")
+	public Response signOff() {
+		this.userAuthorizeData.signOff();
+		return Response.status(HttpURLConnection.HTTP_OK).entity(this.OK)
+				.build();
+	}
 	
 	void setUserService(IUserService userService) {
 		this.userService = userService;

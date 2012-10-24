@@ -85,7 +85,7 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		String phone = encodeUtility.decrypt(request.getMobilePhone(),
 				User.ENCRYPT_KEY);
-		User user = response.getUser();
+		User user = request.getUser();
 		if (user == null) {
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
 					"user can't be null in mobile auth response");
@@ -215,13 +215,15 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		String authCode = request.getAuthCode();
 		request = this.mobileAuthRequestDao.get(request.getRequestId());
-		if (!request.getAuthUserId().equals(request.getDevice().getUserId())) {
-			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
-					"use not match");
+		if (request == null) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
+					"request id not found in database");
 		}
-		if (request.getStatus() != DeviceStatus.Authing.getStatus()) {
+	
+		if (request.getStatus() != DeviceStatus.Authing.getStatus()
+				&& request.getStatus() != DeviceStatus.Authed.getStatus()) {
 			throw new RentException(RentErrorCode.ErrorStatusViolate,
-					"request status isn't authing but "+request.getStatus());
+					"request status isn't authing or authed but " + request.getStatus());
 		}
 		//
 		// check expire
@@ -248,20 +250,41 @@ public class MobileAuthService implements IMobileAuthService {
 					"token not match "+decryptToken);
 		}
 		//
-		// update database
+		// update user database
 		//
-		User user = this.userDao.getUserByUserId(request.getAuthUserId());
+		User user = this.userDao.getUserByUserId(request.getUserId());
+		if (user == null) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
+					"user " + request.getUserId() + " not found");
+		}
 		if (user.getStatus() == UserStatus.Init.getStatus()){
 			logger.debug("update user status to authed");
 			user.setModified((long)0);
 			userDao.updateUserStatus(user.getId(), UserStatus.Authed.getStatus()
 					,  UserStatus.Init.getStatus(), user.getModified());
 		}
+		//
+		// prepare response
+		//
 		MobileAuthResponse response = new MobileAuthResponse();
 		response.setResponseTime(0);
 		response.setUser(user);
-		response.setStatus(DeviceStatus.Authing.getStatus());
+		response.setStatus(DeviceStatus.Authed.getStatus());
 		response.setRequestId(request.getRequestId());
+		//
+		// sign response
+		//
+		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(
+				IUserService.SSO_DEVICE_ID, request.getRequestFrom());
+		if (requestFrom == null) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
+					"request from user not found");
+		}
+		String responseSign = EncodeUtility.sha1(response.toString(requestFrom.getToken()));
+		response.setSign(responseSign);
+		//
+		// update mobile auth response into database.
+		//
 		this.mobileAuthResponseDao.updateResponse(response);
 		return response;
 	}

@@ -1,5 +1,6 @@
 package org.siraya.rent.filter;
 
+import org.siraya.rent.pojo.Device;
 import org.siraya.rent.pojo.Session;
 import org.siraya.rent.rest.CookieUtils;
 import org.slf4j.Logger;
@@ -51,13 +52,14 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		//
 		// test security context
 		//
-		userAuthorizeData.request = request;
+		userAuthorizeData.setRequest(request);
 
 		this.extraceDeviceCookie(request);
 		this.extractSessionCookie(request);
 		if (userAuthorizeData.getDeviceId() == null) {
-			throw new RentException(RentErrorCode.ErrorNullDeviceId,
-					"no device cookie");
+			String deviceId = Device.genId();
+			this.userAuthorizeData.setDeviceId(deviceId);
+			this.userAuthorizeData.setNewDevice(true);
 		}
 		logger.debug("set security context");
 		request.setSecurityContext(new Authorizer(userAuthorizeData));
@@ -99,17 +101,14 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		if (cookies.containsKey("D")) {
 			String value = cookies.get("D").getValue();
 			cookieUtils.extractDeviceCookie(value, userAuthorizeData);
-			if (userAuthorizeData.getDeviceId() != null)
-				headers.add("DEVICE_ID", userAuthorizeData.getDeviceId());
-			if (userAuthorizeData.getUserId() != null)
-				headers.add("USER_ID", userAuthorizeData.getUserId());
 		} else {
+			/* for openAPI but not yet.
 			if (headers.containsKey("DEVICE_ID")) {
 				userAuthorizeData.setDeviceId(headers.getFirst("DEVICE_ID"));
 			}
 			if (headers.containsKey("USER_ID")) {
 				userAuthorizeData.setUserId(headers.getFirst("USER_ID"));
-			}
+			}*/
 		}
 		request.setHeaders((InBoundHeaders) headers);
 	}

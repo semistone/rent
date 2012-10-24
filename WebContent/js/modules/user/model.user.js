@@ -24,6 +24,13 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 		Backbone.sync("update",this, options);
 	},
 
+	verify_mobile_auth_request_code:function(auth_code,options){
+		options = $.extend(options, {
+			url : this.url + 'verify_mobile_auth_request_code'
+		});
+		this.set('authCode', auth_code, {silent:true});
+		Backbone.sync("update",this, options);	
+	},
 	send_mobile_auth_message : function(options) {
 		options = $.extend(options, {
 			url : this.url + 'send_mobile_auth_message'
@@ -62,8 +69,13 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 			url : this.url + 'mobile_auth_request'
 		});
 		Backbone.sync("create",this, options);	
+	},
+	sign_off:function(options){
+		options = $.extend(options, {
+			url : this.url + 'sign_off'
+		});
+		Backbone.sync("fetch",this, options);	
 	}
-	
 });
 
 RENT.user.collection.UserCollection = Backbone.Collection.extend({

@@ -6,7 +6,9 @@
     <result column="FORCE_REAUTH" jdbcType="BOOLEAN" property="forceReauth" />
     <result column="DONE" jdbcType="VARCHAR" property="done" />
     <result column="MOBILE_PHONE" jdbcType="VARCHAR" property="mobilePhone" />
+    <result column="TOKEN" jdbcType="VARCHAR" property="token" />
     <result column="AUTH_USER_ID" jdbcType="VARCHAR" property="authUserId" />
+    <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
     <result column="CALLBACK" jdbcType="VARCHAR" property="callback" />
     <result column="REQUEST_TIME" jdbcType="DECIMAL" property="requestTime" />
     <result column="REQUEST_FROM" jdbcType="VARCHAR" property="requestFrom" />
