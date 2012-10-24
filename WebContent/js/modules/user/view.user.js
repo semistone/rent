@@ -116,26 +116,35 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		case 'step2':
 			this.$el.find('#register_title').text($.i18n.prop('user.register.step2'));
 			break;
-		case 'step3':			
-			this.$el.find('#register_title').text($.i18n.prop('user.register.register_manage_tool'));
+		case 'step3':
+			this.$el.find('#register_title').text($.i18n.prop('user.register.step3'));
 			break;
+		case 'main':
+			this.$el.find('#register_title').text($.i18n.prop('user.register.register_manage_tool'));
+			break;			
 
 		}
 	},
 	verify_success:function(){
 		this.$el.find('#register_title').text($.i18n.prop('user.register.step3'));
 		RENT.user.dotDone(mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
-		this.main_view();
+		var view = new RENT.user.view.NameDeviceView({
+			el: '#register_content',
+			model: this.model
+		});
+		view.render();
+		this.model.trigger('change_view','step3');
+		var _this = this;
+		view.on('success',function(){
+			_this.main_view();
+			view.off('success');
+		});
 	},
 	main_view:function(){
 		logger.debug('show main view');
 		var view = new RENT.user.view.RegisterMainView({
-			el : this.el,
+			el : '#register_content',
 			model: this.model
-		});
-		var _this = this;
-		view.on('sign_off',function(){
-			new RENT.user.view.RegisterStep1View({el:_this.el,model:_this.model}).render();
 		});
 		view.render();
 	}
@@ -313,26 +322,23 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 //
 RENT.user.view.RegisterMainView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render','sign_off','show_my_device','verify_status_event');
+		_.bindAll(this, 'render','sign_off','show_my_device');
 		this.tmpl = $template.find('#tmpl_register_step3').html();
-		this.model.on('verify_status_event',this.verify_status_event);
 		this.rightView = new Backbone.View();
+		var _this = this;
+		this.on('sign_off',function(){
+			new RENT.user.view.RegisterStep1View({el:_this.el,model:_this.model}).render();
+			_this.off('sign_off');
+		});
+
 	},
 	events : {
 		"click #named_my_devices_link" : 'name_device_popup',
 		'click #sign_off_link' : 'sign_off',
 		'click #show_my_devices_link' : 'show_my_device'
 	},
-	verify_status_event:function(){
-		logger.debug('verify_status_event');
-		//
-		// animation affect.
-		//
-		this.$el.find('#auth_success_block').show().fadeOut(3000);
-		this.model.off('verify_status_event');
-	},
 	render:function(){
-		this.model.trigger('change_view','step3');
+		this.model.trigger('change_view','main');
 		this.$el.html(this.tmpl);
 		//
 		// i18n
