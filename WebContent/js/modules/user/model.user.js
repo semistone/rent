@@ -69,8 +69,13 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 			url : this.url + 'mobile_auth_request'
 		});
 		Backbone.sync("create",this, options);	
+	},
+	sign_off:function(options){
+		options = $.extend(options, {
+			url : this.url + 'sign_off'
+		});
+		Backbone.sync("fetch",this, options);	
 	}
-	
 });
 
 RENT.user.collection.UserCollection = Backbone.Collection.extend({

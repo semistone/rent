@@ -278,6 +278,13 @@ public class UserRestApi {
 	}
 	
 	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/sign_off")
+	public void signOff() {
+		this.userAuthorizeData.signOff();
+	}
+	
 	void setUserService(IUserService userService) {
 		this.userService = userService;
 	}
