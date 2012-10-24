@@ -1,0 +1,2 @@
+<%@ page language="java" contentType="application/json;charset=UTF-8" %>
+[{"id":"48c14278-eb35-46c8-b7ec-d0b920fe6cd6","session":null,"deviceId":"test new device","userId":"test list devices","lastLoginIp":null,"roles":[],"created":1351086880,"new":true,"change":true},{"id":"2d000a8c-19ba-4c3e-9e77-6838fe94242c","session":null,"deviceId":"test new device","userId":"test list devices","lastLoginIp":null,"roles":[],"created":1351086786,"new":true,"change":true}]

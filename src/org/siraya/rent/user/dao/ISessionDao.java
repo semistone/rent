@@ -13,9 +13,9 @@ public interface ISessionDao {
     @Insert("insert into SESSION values(#{id},#{deviceId},#{userId},#{lastLoginIp},#{created})")
     public void newSession(Session session);
     
-	@Select("select * from SESSION where USER_ID=#{userId} order by CREATED desc limit #{limit} offset #{offset}")
+	@Select("select * from SESSION where USER_ID=#{userId} and DEVICE_ID=#{deviceId} order by CREATED desc limit #{limit} offset #{offset}")
     @ResultMap("rent.mapper.SessionResultMap")
-    public List<Session> getSessions(@Param("userId")String userId, @Param("limit")int limit, @Param("offset")int offset);
+    public List<Session> getSessions(@Param("userId")String userId,@Param("deviceId")String deviceId, @Param("limit")int limit, @Param("offset")int offset);
 
 
 	@Select("select * from SESSION where ID=#{id} ")
