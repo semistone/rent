@@ -127,18 +127,22 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 	},
 	verify_success:function(){
 		this.$el.find('#register_title').text($.i18n.prop('user.register.step3'));
-		RENT.user.dotDone(mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
-		var view = new RENT.user.view.NameDeviceView({
-			el: '#register_content',
-			model: this.model
-		});
-		view.render();
-		this.model.trigger('change_view','step3');
-		var _this = this;
-		view.on('success',function(){
-			_this.main_view();
-			view.off('success');
-		});
+		if (this.model.get('name') == null) {
+			RENT.user.dotDone(mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
+			var view = new RENT.user.view.NameDeviceView({
+				el: '#register_content',
+				model: this.model
+			});
+			view.render();
+			this.model.trigger('change_view','step3');
+			var _this = this;
+			view.on('success',function(){
+				_this.main_view();
+				view.off('success');
+			});			
+		} else {
+			this.main_view();
+		}
 	},
 	main_view:function(){
 		logger.debug('show main view');
@@ -460,7 +464,9 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 	}
 	
 });
-
+//
+// device list
+// 
 RENT.user.view.ShowDevicesView = Backbone.View.extend({
 	events:{
 		'click .delete_device_link': 'delete_device',
@@ -500,7 +506,6 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 	},
 	list_sessions:function(ev){
 		var deviceId = $(ev.target).parent().attr('id');
-
 		logger.debug("list sessions device id "+deviceId); 
 		this.undelegateEvents();
 		this.model.set({deviceId:deviceId},{silent:true});
@@ -519,8 +524,8 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 			_this.collection.remove(model);
 			
 		};
-		var error = function(model){
-			logger.debug("delete fail");			
+		var error = function(model,resp){
+			RENT.simpleErrorDialog(resp);
 		};
 		this.model.delete_device(id,{
 			success:success,
@@ -528,6 +533,9 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 		});
 	}
 });
+//
+//session list
+//
 RENT.user.view.ShowSessionsView = Backbone.View.extend({
 	initialize : function() {
 		logger.debug('initialize show sessions view');
@@ -540,6 +548,9 @@ RENT.user.view.ShowSessionsView = Backbone.View.extend({
 			var deviceId = this.model.get('deviceId');
 			options = {
 				data: $.param({ deviceId:deviceId,limit: limit, offset:offset}),
+				error:function(model,resp){
+					RENT.simpleErrorDialog(resp);
+				}
 			};
 			this.collection.fetch(options);
 		}
@@ -549,18 +560,24 @@ RENT.user.view.ShowSessionsView = Backbone.View.extend({
 	render:function(){
 		this.model.trigger('change_view','show_sessions');
 		logger.debug("render sessions");
-		var obj = {sessions:this.collection.toJSON() };
-		this.$el.html(Mustache.to_html(this.tmpl,obj ));
-		//
-		// i18n
-		//
-		this.$el.find('.i18n_id').text(
-				$.i18n.prop('general.id'));
-		this.$el.find('#i18n_last_login_ip').text(
-				$.i18n.prop('user.register.last_login_ip'));
-		this.$el.find('#i18n_sessions').text(
-				$.i18n.prop('user.register.show_sessions'));
-		
+		var sessions = this.collection.toJSON();
+        $.each(sessions,function(index, row){
+        	logger.debug('created is '+row.created);
+        	var date = new Date(row.created * 1000);
+        	var then = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDay();
+                then += ' '+date.getHours()+':'+date.getMinutes();
+            row['createdDate'] = then;
+        });    
+        this.$el.html(Mustache.to_html(this.tmpl,{sessions:sessions} ));
+        //
+        // i18n
+    	//
+        this.$el.find('.i18n_created').text(
+    				$.i18n.prop('general.created'));
+        this.$el.find('#i18n_last_login_ip').text(
+    				$.i18n.prop('user.register.last_login_ip'));
+        this.$el.find('#i18n_sessions').text(
+    				$.i18n.prop('user.register.show_sessions'));
 	}
 });
 return RENT.user.view.RegisterView;
