@@ -1,10 +1,11 @@
 define([
   'Facebook',
+  'Underscore',
   'Backbone',
   'RentCommon',
   'logger',
   './namespace.user'
-], function(FB, Backbone, RENT, logger) {
+], function(FB, _, Backbone, RENT, logger) {
 RENT.user.model.FBModel = Backbone.Model.extend({
 	testAPI:function() {
 		console.log('Welcome!  Fetching your information.... ');
