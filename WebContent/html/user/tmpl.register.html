@@ -133,14 +133,42 @@
 			</thead>
 			<tbody>
 {{#devices}}
-				<tr>
-					<td>{{id}}</td>
-					<td>{{name}}</td>
-					<td>{{lastLoginIp}}</td>
-					<td>{{lastLoginTime}}</td>
-					<td><a href="#" id="{{id}}" class="close delete_device_link">x</a></td>
+				<tr id="{{id}}">
+					<td class="show_sessions_link">{{id}}</td>
+					<td class="show_sessions_link">{{name}}</td>
+					<td class="show_sessions_link">{{lastLoginIp}}</td>
+					<td class="show_sessions_link">{{lastLoginTime}}</td>
+					<td><a href="#"  class="close delete_device_link">x</a></td>
 				</tr>
 {{/devices}}
+			</tbody>
+		</table>
+	</div>
+</div>
+</script>
+
+<script id="tmpl_show_sessions" type="x-tmpl-mustache">
+<div class="row">
+	<div class="span6">
+    	<h4 id="i18n_sessions"></h4>
+	</div>
+</div>
+<div class="row">
+	<div class="span6">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<td><span class="i18n_created"></span></td>
+					<td><span id="i18n_last_login_ip"></span></td>
+				</tr>
+			</thead>
+			<tbody>
+{{#sessions}}
+				<tr>
+					<td>{{createdDate}}</td>
+					<td>{{lastLoginIp}}</td>
+				</tr>
+{{/sessions}}
 			</tbody>
 		</table>
 	</div>

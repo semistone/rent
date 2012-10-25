@@ -93,13 +93,19 @@ public class CookieUtils {
     		logger.error("decrypt session cookie fail");
     	} 
 		try {
-
+			String userId = userAuthorizeData.getUserId();
+			if (userId == null) {
+				logger.error("user id is null when extract session");
+				return;
+			}
 			Session session = new Session(cookieValue);
-			if (!userAuthorizeData.getUserId().equals(session.getUserId())
+			if (!userId.equals(session.getUserId())
 					|| !userAuthorizeData.getDeviceId().equals(
 							session.getDeviceId())) {
 				logger.error("device id and user id not match");
 		
+			} else {
+				logger.debug("session user match");
 			}
 			userAuthorizeData.setSession(session);
     	}catch(Exception e){

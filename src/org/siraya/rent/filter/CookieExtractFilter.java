@@ -55,12 +55,12 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		userAuthorizeData.setRequest(request);
 
 		this.extraceDeviceCookie(request);
-		this.extractSessionCookie(request);
 		if (userAuthorizeData.getDeviceId() == null) {
 			String deviceId = Device.genId();
 			this.userAuthorizeData.setDeviceId(deviceId);
 			this.userAuthorizeData.setNewDevice(true);
 		}
+		this.extractSessionCookie(request);
 		logger.debug("set security context");
 		request.setSecurityContext(new Authorizer(userAuthorizeData));
 
@@ -72,27 +72,34 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
 		String ip = headers.getFirst("X-Real-IP");
 		if (cookies.containsKey("S")) {
+			logger.debug("extract session cookie exist");
 			String value = cookies.get("S").getValue();
 			cookieUtils.extractSessionCookie(value,userAuthorizeData);	
 			Session session = userAuthorizeData.getSession();
 			if (session != null) {
-				if(ip != null && !session.getLastLoginIp().equals(ip)){
+				if (ip == null) {
+					logger.debug("ip is null");
+				} else if (!session.getLastLoginIp().equals(ip)){
 					logger.debug("ip not match remove session cookie");
 					cookies.remove("S");
-				}
+					this.newSession(ip);
+				} 
 			}
 		}else{
-			String userId = this.userAuthorizeData.getUserId();
-			String deviceId = this.userAuthorizeData.getDeviceId();
-			if (userId != null && deviceId != null) {
-				Session session = new Session();
-				session.genId();
-				session.setDeviceId(deviceId);
-				session.setUserId(userId);	
-				session.setLastLoginIp(ip);		
-				sessionService.newSession(session);				
-				this.userAuthorizeData.setSession(session);
-			}
+			newSession(ip);
+		}
+	}
+	private void newSession(String ip){
+		String userId = this.userAuthorizeData.getUserId();
+		String deviceId = this.userAuthorizeData.getDeviceId();
+		if (userId != null && deviceId != null) {
+			Session session = new Session();
+			session.genId();
+			session.setDeviceId(deviceId);
+			session.setUserId(userId);	
+			session.setLastLoginIp(ip);		
+			sessionService.newSession(session);				
+			this.userAuthorizeData.setSession(session);
 		}
 	}
 	private void extraceDeviceCookie(ContainerRequest request) {
