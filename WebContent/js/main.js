@@ -13,7 +13,8 @@ require.config({
 		RentCommon : 'libs/rent-common/rent-common',
 		Validator : 'libs/jquery-validate/jquery-validate',
 		i18N : 'libs/jquery-i18n/jquery-i18n',
-		Bootstrap : 'libs/bootstrap/bootstrap'
+		Bootstrap : 'libs/bootstrap/bootstrap',
+		Facebook : 'libs/facebook/fb'
 	},
 	shim : {
 		jQuery : {
@@ -36,7 +37,11 @@ require.config({
 		i18N : {
 			deps : [ 'jQuery' ],
 			exports : "i18n"
+		},
+		Facebook:{
+			exports: 'FB'
 		}
+		
 	}
 });
 
