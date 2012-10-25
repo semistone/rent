@@ -8,9 +8,9 @@ define([
 ], function(FB, _, Backbone, RENT, logger) {
 RENT.user.model.FBModel = Backbone.Model.extend({
 	testAPI:function() {
-		console.log('Welcome!  Fetching your information.... ');
+		var _this = this;
 		FB.api('/me', function(response) {
-			console.log('Good to see you, ' + response.name + '.');
+			_this.set(response);
 		});
 	},
 	login: function() {
@@ -38,7 +38,6 @@ RENT.user.model.FBModel = Backbone.Model.extend({
 			FB.getLoginStatus(function(response) {
 				if (response.status === 'connected') {
 					// connected
-					alert('connected');
 					_this.testAPI();
 				} else if (response.status === 'not_authorized') {
 					// not_authorized

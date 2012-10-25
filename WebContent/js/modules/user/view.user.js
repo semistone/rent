@@ -338,7 +338,11 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		// add fb module
 		//
 		require(['modules/user/model.fb'],function(){
-			new RENT.user.model.FBModel();
+			var fb = new RENT.user.model.FBModel();
+			fb.on('change',function(){
+				var tmpl = $template.find('#tmpl_fb_info').html();
+				$('#user_info').html(Mustache.to_html(tmpl,fb.toJSON() ));
+			});
 		});
 	},
 	events : {
