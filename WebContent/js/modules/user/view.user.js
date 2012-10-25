@@ -334,7 +334,12 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			new RENT.user.view.RegisterStep1View({el:_this.el,model:_this.model}).render();
 			_this.off('sign_off');
 		});
-
+		//
+		// add fb module
+		//
+		require(['modules/user/model.fb'],function(){
+			new RENT.user.model.FBModel();
+		});
 	},
 	events : {
 		"click #named_my_devices_link" : 'name_device_popup',
