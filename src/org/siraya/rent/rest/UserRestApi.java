@@ -25,6 +25,7 @@ import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.service.DeviceStatus;
 import org.siraya.rent.user.service.IMobileAuthService;
 import org.siraya.rent.user.service.IUserService;
+import org.siraya.rent.user.service.ISessionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,8 @@ public class UserRestApi {
 	private IUserService userService;
 	@Autowired
 	private IMobileAuthService mobileAuthService;
+	@Autowired
+	private ISessionService sessionService;
 	@Autowired
 	private CookieUtils cookieUtils;
 
@@ -176,7 +179,16 @@ public class UserRestApi {
 		}
 	}
 
-
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/list_sessions")
+	public List<Session> getSessions(@QueryParam("deviceId") String deviceId,
+			@DefaultValue("20") @QueryParam("limit") int limit ,
+			@DefaultValue("0") @QueryParam("offset")int offset){
+		Device device = new Device(deviceId,
+				this.userAuthorizeData.getUserId());
+		return this.sessionService.getSessions(device,limit, offset);
+	}
 	
 
 	/**

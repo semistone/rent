@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import org.siraya.rent.pojo.Role;
+import org.siraya.rent.pojo.Device;
 @Service("sessionService")
 public class SessionService implements ISessionService {
 
@@ -29,6 +30,7 @@ public class SessionService implements ISessionService {
 
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
 	public void newSession(Session session) {
+		logger.debug("new session");
 		this.sessionDao.newSession(session);
 		String deviceId = session.getDeviceId();
 		String userId = session.getUserId();
@@ -49,6 +51,17 @@ public class SessionService implements ISessionService {
 			logger.debug("add role device authed");
 			session.setDeviceVerified(true);
 		}
+	}
+	
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<Session> getSessions(Device device,int limit ,int offset){
+		List<Session> sessions = this.sessionDao.getSessions(
+				device.getUserId(), device.getId(), limit, offset);
+		if (sessions.size() == 0) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
+					"no session found");
+		}
+		return sessions;
 	}
 	
 	public void setSessionDao(ISessionDao sessionDao) {

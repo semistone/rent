@@ -1,5 +1,6 @@
 package org.siraya.rent.pojo;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.siraya.rent.filter.UserRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +15,10 @@ public class Session {
 	private String lastLoginIp;
 	private List<Integer> roles;
 	private long created;
+	@JsonIgnore
 	private boolean isChange = false;
 	private boolean isNew = false;
+	@JsonIgnore
 	public boolean isChange() {
 		return isChange;
 	}
@@ -24,9 +27,13 @@ public class Session {
 		this.isChange = true;
 		this.roles = new java.util.ArrayList<Integer>();
 	}
+	
+	@JsonIgnore
 	public boolean isNew() {
 		return isNew;
 	}
+	
+	@JsonIgnore
 	public List<Integer> getRoles() {
 		return roles;
 	}
@@ -62,7 +69,7 @@ public class Session {
 			this.isChange = true;
 		}
 	}
-
+	@JsonIgnore
 	public boolean isUserInRole(int roleId) {
 		return this.roles.contains(roleId);
 	}
@@ -77,6 +84,7 @@ public class Session {
 	public void setId(String id) {
 		this.id = id;
 	}
+	@JsonIgnore
 	public String getSession() {
 		return session;
 	}
