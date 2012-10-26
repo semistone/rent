@@ -13,6 +13,7 @@ RENT.user.model.FBModel = Backbone.Model.extend({
 			if (_this.get('id') != response.id) {
 				logger.error('id not match');
 			} else {
+				logger.debug('set fb response');
 				_this.set(response);				
 			}
 		});
@@ -32,9 +33,20 @@ RENT.user.model.FBModel = Backbone.Model.extend({
 	link_user_to_facebook: function(){
 		logger.debug('link user to facebook');
 	},
+	check_status:function(){
+		var _this = this;
+		FB.getLoginStatus(function(response) {
+			if (response.status === 'connected') {
+				// connected
+				_this.testAPI();
+			}else {
+				logger.debug('fb not connected');
+			}
+		});
+	},
 	initialize : function() {
 		var _this = this;
-		_.bindAll(this, 'login','testAPI');
+		_.bindAll(this, 'login','testAPI','check_status');
 		window.fbAsyncInit = function() {
 			FB.init({
 				appId : '362616447158349', // App ID
@@ -44,13 +56,9 @@ RENT.user.model.FBModel = Backbone.Model.extend({
 				xfbml : true
 			// parse XFBML
 			});
-			FB.getLoginStatus(function(response) {
-				if (response.status === 'connected') {
-					// connected
-					_this.testAPI();
-				} 
-			});
+			_this.check_status();
 		}
+		this.check_status();
 	}
 });
 });

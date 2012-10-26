@@ -22,9 +22,9 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		if (this.model == null) {
 			this.model = new RENT.user.model.UserModel();
 		}
-		this.model.bind('change',this.render);
-		this.model.bind('change_view',this.change_view);
-		this.model.bind('verify_success',this.verify_success);
+		this.model.on('change',this.render);
+		this.model.on('change_view',this.change_view);
+		this.model.on('verify_success',this.verify_success);
 		if (!this.handleMobileAuthRequestForm()){
 			//only no mobile auth request need to do fetch.
 			this.model.fetch({error:this.error});			
@@ -213,6 +213,7 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 			_this.undelegateEvents();
 			if (model.status == 2) {
 				logger.debug('device has authed');
+				_this.model.set(model,{silent:true});
 				_this.model.trigger('verify_success');
 				return;
 			}
@@ -329,11 +330,7 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		_.bindAll(this, 'render','sign_off','show_my_device','link_fb');
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.rightView = new Backbone.View();
-		var _this = this;
-		this.on('sign_off',function(){
-			new RENT.user.view.RegisterStep1View({el:_this.el,model:_this.model}).render();
-			_this.off('sign_off');
-		});
+		var _this = this;		
 		//
 		// add fb module
 		//
@@ -346,8 +343,9 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			var fb = new RENT.user.model.FBModel({id:id});
 			_this.fb = fb;
 			fb.on('change',function(){
+				logger.debug('change navi bar');
 				var tmpl = $template.find('#tmpl_fb_info').html();
-				$('#user_info').html(Mustache.to_html(tmpl,fb.toJSON() ));
+				$('#user_info').html(Mustache.to_html(tmpl,fb.toJSON()));
 			});
 		});
 	},
@@ -408,7 +406,9 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			success:function(model,resp){
 				_this.rightView.undelegateEvents();
 				_this.undelegateEvents();
-				_this.trigger('sign_off');
+				new RENT.user.view.RegisterStep1View({el:_this.el,model:_this.model}).render();
+				logger.debug('trigger sign off event on '+_this.model.cid);
+				_this.model.trigger('sign_off');
 			},
 			error:function(model,resp){
 				RENT.simpleErrorDialog(resp,'');
