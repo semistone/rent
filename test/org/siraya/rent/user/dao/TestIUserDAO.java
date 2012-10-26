@@ -24,7 +24,7 @@ public class TestIUserDAO extends AbstractJUnit4SpringContextTests{
     	String loginId="loginid"+time;
     	String mobilePhone=Long.toString(time/1000);
     	user.setId("id"+time);
-    	user.setLoginType(0);
+    	user.setLoginType("xx");
     	user.setMobilePhone(mobilePhone);
     	user.setCreated(time/1000);
     	user.setStatus(0);
