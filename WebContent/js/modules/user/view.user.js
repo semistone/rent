@@ -338,13 +338,13 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		// add fb module
 		//
 		require(['modules/user/model.fb'],function(){
-			var fb = new RENT.user.model.FBModel();
-			_this.fb = fb;
+			var id = null;
 			if (_this.model.get('user').loginType == 'FB') {
-				var id = _this.model.get('user.loginId');
+				id = _this.model.get('user').loginId;
 				logger.debug('login id is '+id);
-				fb.set({id: id}, {silent:true});				
 			}
+			var fb = new RENT.user.model.FBModel({id:id});
+			_this.fb = fb;
 			fb.on('change',function(){
 				var tmpl = $template.find('#tmpl_fb_info').html();
 				$('#user_info').html(Mustache.to_html(tmpl,fb.toJSON() ));
@@ -360,8 +360,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	render:function(){
 		this.model.trigger('change_view','main');
 		var device = this.model.toJSON();
-		if (device.user.loginType == null) {
-			device.user.is_fb = false;			
+		if (device.user.loginType == 'FB') {
+			device.user.is_fb = true;			
 		}
 		this.$el.html(Mustache.to_html(this.tmpl, device));
 		//
