@@ -10,9 +10,9 @@ mobile_country_code:
 filter:
     exclude: ['^sently_callback']
 general:
-    max_device_count: 3
-    max_user_per_device: 3
-    auth_retry_limit: 3
+    max_device_count: 10
+    max_user_per_device: 10
+    auth_retry_limit: 10
     auth_verify_timeout : 1800
     admin_user: 00000000
     debug: true 

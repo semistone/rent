@@ -326,7 +326,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 //
 RENT.user.view.RegisterMainView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render','sign_off','show_my_device');
+		_.bindAll(this, 'render','sign_off','show_my_device','link_fb');
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.rightView = new Backbone.View();
 		var _this = this;
@@ -339,6 +339,12 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		//
 		require(['modules/user/model.fb'],function(){
 			var fb = new RENT.user.model.FBModel();
+			_this.fb = fb;
+			if (_this.model.get('user.loginType') == 'FB') {
+				var id = _this.model.get('user.loginId');
+				logger.debug('login id is '+id);
+				fb.set({id: id}, {silent:true});				
+			}
 			fb.on('change',function(){
 				var tmpl = $template.find('#tmpl_fb_info').html();
 				$('#user_info').html(Mustache.to_html(tmpl,fb.toJSON() ));
@@ -348,11 +354,16 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	events : {
 		"click #named_my_devices_link" : 'name_device_popup',
 		'click #sign_off_link' : 'sign_off',
-		'click #show_my_devices_link' : 'show_my_device'
+		'click #show_my_devices_link' : 'show_my_device',
+		'click #link_to_fb_link' : 'link_fb'
 	},
 	render:function(){
 		this.model.trigger('change_view','main');
-		this.$el.html(this.tmpl);
+		var device = this.model.toJSON();
+		if (device.user.loginType == null) {
+			device.user.is_fb = false;			
+		}
+		this.$el.html(Mustache.to_html(this.tmpl, device));
 		//
 		// i18n
 		//
@@ -364,6 +375,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 				$.i18n.prop('user.register.named_my_devices'));	
 		this.$el.find('#i18n_delete_device').text(
 				$.i18n.prop('user.register.delete_device'));
+		this.$el.find('#i18n_link_fb').text(
+				$.i18n.prop('user.register.link_fb'));
 		
 		$('.menuItem').hover(function(){
 			$(this).addClass('focus');
@@ -383,6 +396,10 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		this.rightView.on('success',function(){
 			_this.show_my_device();
 		});
+	},
+	link_fb : function(){
+		logger.debug('login to fb');
+		this.fb.login();
 	},
 	sign_off:function(){
 		logger.debug('click signoff device');

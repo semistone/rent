@@ -118,7 +118,6 @@ public class Device {
 		this.authRetry = authRetry;
 	}	
 	
-	@JsonIgnore
 	public User getUser() {
 		return user;
 	}
