@@ -74,6 +74,11 @@
     	<ul class="nav nav-pills nav-stacked">
 			<li id="named_my_devices_link"><a id="i18n_named_my_devices"></a></li>
 			<li id="show_my_devices_link"><a id="i18n_show_my_devices"></a></li>
+{{#user}}
+	{{^is_fb}}
+			<li id="link_to_fb_link"><a id="i18n_link_fb"></a></li>
+	{{/is_fb}}
+{{/user}}
 			<li id="sign_off_link"><a id="i18n_delete_device"></a></li>
 	    </ul>
 	</div> 
@@ -174,4 +179,8 @@
 		</table>
 	</div>
 </div>
+</script>
+<script id="tmpl_fb_info" type="x-tmpl-mustache">
+<li><a href="#">{{name}}</a></li>
+<li> <img src="https://graph.facebook.com/{{id}}/picture"></li>
 </script>

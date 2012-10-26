@@ -8,20 +8,29 @@ define([
 ], function(FB, _, Backbone, RENT, logger) {
 RENT.user.model.FBModel = Backbone.Model.extend({
 	testAPI:function() {
-		console.log('Welcome!  Fetching your information.... ');
+		var _this = this;
 		FB.api('/me', function(response) {
-			console.log('Good to see you, ' + response.name + '.');
+			if (_this.get('id') != response.id) {
+				logger.error('id not match');
+			} else {
+				_this.set(response);				
+			}
 		});
 	},
 	login: function() {
+		var _this = this;
 		FB.login(function(response) {
 			if (response.authResponse) {
+				_this.link_user_to_facebook();
 				testAPI();
 				// connected
 			} else {
 				// cancelled
 			}
 		});
+	},
+	link_user_to_facebook: function(){
+		logger.debug('link user to facebook');
 	},
 	initialize : function() {
 		var _this = this;
@@ -38,15 +47,8 @@ RENT.user.model.FBModel = Backbone.Model.extend({
 			FB.getLoginStatus(function(response) {
 				if (response.status === 'connected') {
 					// connected
-					alert('connected');
 					_this.testAPI();
-				} else if (response.status === 'not_authorized') {
-					// not_authorized
-					_this.login();
-				} else {
-					// not_logged_in
-					_this.login();
-				}
+				} 
 			});
 		}
 	}
