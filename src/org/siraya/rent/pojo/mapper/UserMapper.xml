@@ -11,7 +11,7 @@
     <result column="MOBILE_PHONE" jdbcType="VARCHAR" property="mobilePhone" />
     <result column="EMAIL" jdbcType="VARCHAR" property="email" />
     <result column="LOGIN_ID" jdbcType="VARCHAR" property="loginId" />
-    <result column="LOGIN_TYPE" jdbcType="INTEGER" property="loginType" />
+    <result column="LOGIN_TYPE" jdbcType="VARCHAR" property="loginType" />
     <result column="PASSWORD" jdbcType="VARCHAR" property="password" />
     <result column="TIMEZONE" jdbcType="VARCHAR" property="timezone" />
     <result column="NATIONAL_ID" jdbcType="VARCHAR" property="nationalId" />

@@ -22,7 +22,7 @@ RENT.user.model.FBModel = Backbone.Model.extend({
 		FB.login(function(response) {
 			if (response.authResponse) {
 				_this.link_user_to_facebook();
-				testAPI();
+				_this.testAPI();
 				// connected
 			} else {
 				// cancelled
