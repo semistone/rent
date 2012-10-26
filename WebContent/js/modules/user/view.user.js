@@ -340,7 +340,7 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		require(['modules/user/model.fb'],function(){
 			var fb = new RENT.user.model.FBModel();
 			_this.fb = fb;
-			if (_this.model.get('user.loginType') == 'FB') {
+			if (_this.model.get('user').loginType == 'FB') {
 				var id = _this.model.get('user.loginId');
 				logger.debug('login id is '+id);
 				fb.set({id: id}, {silent:true});				
