@@ -3,7 +3,6 @@ package org.siraya.rent.rest;
 import org.jmock.Expectations;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
@@ -17,6 +16,7 @@ import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.pojo.MobileAuthRequest;
 import org.siraya.rent.pojo.MobileAuthResponse;
+import org.siraya.rent.pojo.Session;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.filter.UserAuthorizeData;
 import javax.ws.rs.core.Response;
@@ -46,6 +46,7 @@ public class TestUserRestApi{
 	private MobileAuthResponse mobileAuthResponse;
 	private EncodeUtility encodeUtility = new EncodeUtility();
 	private IApplicationConfig config;
+	private UserAuthorizeData userAuthorizeData;
 	private Map<String, Object> setting;
 	@Before
 	public void setUp(){
@@ -58,9 +59,12 @@ public class TestUserRestApi{
 			userRestApi.setMobileAuthService(mobileAuthService);
 			userService = context.mock(IUserService.class);	
 			userRestApi.setUserService(userService);
-			UserAuthorizeData userAuthorizeData = new UserAuthorizeData();
+			userAuthorizeData = new UserAuthorizeData();
 			userAuthorizeData.setUserId(userId);
 			userAuthorizeData.setDeviceId(deviceId);
+			Session session = new Session();
+			session.setLastLoginIp("123.0.0.1");
+			userAuthorizeData.setSession(session);
 			userRestApi.setUserAuthorizeData(userAuthorizeData);
 			mobileAuthResponse = new MobileAuthResponse();
 			mobileAuthRequest = new MobileAuthRequest();
@@ -157,5 +161,17 @@ public class TestUserRestApi{
 			});
 		};
 		this.userRestApi.verifyMobileAuthRequestCode(mobileAuthRequest);
+	}
+	
+	@Test 
+	public void testApplySSOApplication(){
+		if (isMock) {
+			context.checking(new Expectations() {
+				{
+					one(userService).applySSOApplication(device);
+				}
+			});
+		};
+		this.userRestApi.applySSOApplication(device);
 	}
 }

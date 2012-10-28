@@ -28,6 +28,7 @@ import org.siraya.rent.user.service.DeviceStatus;
 import org.siraya.rent.user.service.IMobileAuthService;
 import org.siraya.rent.user.service.IUserService;
 import org.siraya.rent.user.service.ISessionService;
+import org.siraya.rent.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -333,6 +334,44 @@ public class UserRestApi {
 		this.userService.initLoginIdAndType(user);
 		logger.info("link to facebook success");
 		return Response.status(HttpURLConnection.HTTP_OK).entity(this.OK)
+				.build();
+	}
+	
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/apply_sso_application")
+	@RolesAllowed({org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED})
+	public Device applySSOApplication(){
+		Device device = new Device(UserService.SSO_DEVICE_ID, this.userAuthorizeData.getUserId());
+		device.setLastLoginIp(this.userAuthorizeData.getSession().getLastLoginIp());
+		this.userService.applySSOApplication(device);
+		return device;
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/get_sso_application")
+	@RolesAllowed({org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED})
+	public Device getSSOApplication(){
+		Device device = new Device(UserService.SSO_DEVICE_ID, this.userAuthorizeData.getUserId());
+		return this.userService.getDevice(device);
+	}
+	
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/get_signature_of_mobile_auth_request")
+	@RolesAllowed({org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED})
+	public Response getSignatureOfMobileAuthRequest(MobileAuthRequest request){
+		if (!request.getRequestFrom()
+				.equals(this.userAuthorizeData.getUserId())) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorPermissionDeny,
+					"user not match");
+		}
+		String sign = this.userService.getSignatureOfMobileAuthRequest(request);
+		HashMap<String, String> response = new HashMap<String, String>();
+		response.put("sign", sign);
+		return Response.status(HttpURLConnection.HTTP_OK).entity(response)
 				.build();
 	}
 	

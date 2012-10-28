@@ -306,6 +306,19 @@ public class UserService implements IUserService {
     	}
     }
     
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class) 
+    public void applySSOApplication(Device device){
+    	device.setId(SSO_DEVICE_ID);
+		device.setStatus(DeviceStatus.ApiKeyOnly.getStatus());
+		device.setModified(0);
+		device.genToken();
+    	try{
+    		this.deviceDao.newDevice(device);
+		}catch(org.springframework.dao.DuplicateKeyException e) {
+			throw new RentException(RentException.RentErrorCode.ErrorDuplicate,"apply sso application but duplicate error");
+		}
+    }
+        	
     /**
      * get all user devies
      * @param userId

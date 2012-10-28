@@ -85,6 +85,13 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 			url : this.url + 'link_facebook'
 		});
 		Backbone.sync("update",this, options);		
+	},
+	apply_sso_application:function(options){
+		logger.debug('link facebook');
+		options = $.extend(options, {
+			url : this.url + 'apply_sso_application'
+		});
+		Backbone.sync("update",this, options);		
 	}
 });
 
