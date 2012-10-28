@@ -21,7 +21,7 @@ public interface IUserDAO {
     
     @Select("select * from USER where LOGIN_ID=#{loginId} and LOGIN_TYPE=#{loginType}")
     @ResultMap("rent.mapper.UserResultMap")
-    public User getUserByLoginIdAndLoginType(@Param("loginId")String loginId, @Param("loginType")int loginType);
+    public User getUserByLoginIdAndLoginType(@Param("loginId")String loginId, @Param("loginType")String loginType);
 
     @Select("select * from USER where MOBILE_PHONE=#{mobilePhone}")
     @ResultMap("rent.mapper.UserResultMap")
@@ -39,4 +39,7 @@ public interface IUserDAO {
     
     @Update("update USER set LOGIN_ID=#{loginId}, PASSWORD=#{password}, MODIFIED=#{modified} where ID = #{id} and LOGIN_ID is null")    
     public int updateUserLoginIdAndPassword(User user);
+    
+    @Update("update USER set LOGIN_ID=#{loginId}, LOGIN_TYPE=#{loginType}, MODIFIED=#{modified} where ID = #{id} and LOGIN_TYPE is null and LOGIN_ID is null")
+    public int initLoginIdAndType(User user);
 }

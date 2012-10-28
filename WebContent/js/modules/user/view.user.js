@@ -342,11 +342,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			}
 			var fb = new RENT.user.model.FBModel({id:id});
 			_this.fb = fb;
-			fb.on('change',function(){
-				logger.debug('change navi bar');
-				var tmpl = $template.find('#tmpl_fb_info').html();
-				$('#user_info').html(Mustache.to_html(tmpl,fb.toJSON()));
-			});
+			RENT.user.navBar.initFBModel(fb);
+
 		});
 	},
 	events : {
@@ -376,11 +373,6 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		this.$el.find('#i18n_link_fb').text(
 				$.i18n.prop('user.register.link_fb'));
 		
-		$('.menuItem').hover(function(){
-			$(this).addClass('focus');
-		},function(){
-			$(this).removeClass('focus');
-		});
 
 	},
 	name_device_popup:function(){
@@ -396,8 +388,25 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		});
 	},
 	link_fb : function(){
-		logger.debug('login to fb');
-		this.fb.login();
+		logger.debug('link to fb');
+		var _this = this;
+		var do_link_fb = function(){
+			_this.model.link_facebook(_this.fb.get('id'), {
+				success:function(){
+					logger.debug('link fb success');	
+					_this.$el.find('#link_to_fb_link').hide();
+				},
+				error:function(){
+					logger.debug('link fb fail');
+				}
+			});
+		};
+		//
+		// do login 
+		//
+		_this.fb.login({
+			success: do_link_fb
+		});
 	},
 	sign_off:function(){
 		logger.debug('click signoff device');

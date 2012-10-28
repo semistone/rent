@@ -67,6 +67,8 @@ public class Session {
 			logger.debug("add role device confirmed");
 			this.roles.add(deviceConfirmed);
 			this.isChange = true;
+		} else {
+			logger.debug("role device confirmed already exist");
 		}
 	}
 	@JsonIgnore

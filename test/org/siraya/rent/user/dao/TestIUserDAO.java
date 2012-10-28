@@ -12,6 +12,7 @@ import org.siraya.rent.pojo.User;
 public class TestIUserDAO extends AbstractJUnit4SpringContextTests{
     @Autowired
     private IUserDAO userDao;
+    private String loginType = "FB";
 	@Before
     public void setUp(){
     	
@@ -24,21 +25,28 @@ public class TestIUserDAO extends AbstractJUnit4SpringContextTests{
     	String loginId="loginid"+time;
     	String mobilePhone=Long.toString(time/1000);
     	user.setId("id"+time);
-    	user.setLoginType("xx");
     	user.setMobilePhone(mobilePhone);
     	user.setCreated(time/1000);
     	user.setStatus(0);
-    	user.setLoginId(loginId);
     	user.setModified(time/1000);
     	userDao.newUser(user);
+    	
+    	//
+    	//
+    	//
     	String email = "xxx@gmail.com";
     	user.setEmail(email);
+    	user.setLoginId(loginId);
+    	user.setLoginType(loginType);
+    	int ret = userDao.initLoginIdAndType(user);
+    	Assert.assertEquals(1, ret);
     	userDao.updateUserEmail(user);
-    	User user2 = userDao.getUserByLoginIdAndLoginType(loginId, 0);
+    	User user2 = userDao.getUserByLoginIdAndLoginType(loginId, loginType);
     	User user3 = userDao.getUserByMobilePhone(mobilePhone);
     	Assert.assertEquals(user.getId(),user2.getId());
     	Assert.assertEquals(email,user2.getEmail());
     	Assert.assertEquals(email,user3.getEmail());
+
     }
     
 }

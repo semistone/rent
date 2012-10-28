@@ -1,5 +1,7 @@
 package org.siraya.rent.rest;
 import org.siraya.rent.pojo.Session;
+
+import javax.annotation.security.RolesAllowed;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -120,11 +122,11 @@ public class UserRestApi {
 		//
 		// if device authed add role.
 		//
-		Session session = this.userAuthorizeData.getSession();
+		device = userService.getDevice(device);
 		if (device.getStatus() == DeviceStatus.Authed.getStatus()) {
+			Session session = this.userAuthorizeData.getSession();
 			session.setDeviceVerified(true);
 		}
-		device = userService.getDevice(device);
 		return Response.status(HttpURLConnection.HTTP_OK).entity(device).build();
 	}
 	/**
@@ -309,6 +311,30 @@ public class UserRestApi {
 		return request;
 	}
 	
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/link_facebook")
+	@RolesAllowed({org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED})
+	public Response linkFacebook(Device device){
+		User user = device.getUser();
+		if (user == null) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"user not exist");
+		}
+		//
+		// check user match
+		//
+		if (!this.userAuthorizeData.getUserId().equals(user.getId())) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorPermissionDeny,
+					"user not match");
+		}
+		this.userService.initLoginIdAndType(user);
+		logger.info("link to facebook success");
+		return Response.status(HttpURLConnection.HTTP_OK).entity(this.OK)
+				.build();
+	}
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
