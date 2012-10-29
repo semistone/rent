@@ -19,7 +19,9 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 import org.siraya.rent.pojo.MobileAuthRequest;
 import org.siraya.rent.pojo.MobileAuthResponse;
+import org.siraya.rent.pojo.Role;
 import org.siraya.rent.filter.UserAuthorizeData;
+import org.siraya.rent.filter.UserRole.UserRoleId;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
@@ -52,6 +54,7 @@ public class UserRestApi {
 	private IMobileAuthService mobileAuthService;
 	@Autowired
 	private ISessionService sessionService;
+
 	@Autowired
 	private CookieUtils cookieUtils;
 
@@ -111,14 +114,27 @@ public class UserRestApi {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response get() throws Exception{
+	public Device get() throws Exception{
 		logger.debug("call get device");
-
 		String deviceId = this.userAuthorizeData.getDeviceId();
 		String userId = this.userAuthorizeData.getUserId();
 		if (userId == null || userId.equals("anonymous")) {	
 			throw new RentException(RentErrorCode.ErrorNotFound, "device id or user id is null");
 		}
+		return this._get(deviceId, userId);
+	}
+	
+	@GET
+	@Path("/get_device/{deviceId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED})
+	public Device getDeviceById(@PathParam("requestId")String deviceId){
+		logger.debug("call get device");
+		String userId = this.userAuthorizeData.getUserId();
+		return this._get(deviceId, userId);
+	}
+
+	private Device _get(String deviceId, String userId){
 		Device device = new Device(deviceId,userId);
 		//
 		// if device authed add role.
@@ -128,7 +144,7 @@ public class UserRestApi {
 			Session session = this.userAuthorizeData.getSession();
 			session.setDeviceVerified(true);
 		}
-		return Response.status(HttpURLConnection.HTTP_OK).entity(device).build();
+		return device;
 	}
 	/**
      * create new device and assign a device id for it.
@@ -337,6 +353,15 @@ public class UserRestApi {
 				.build();
 	}
 	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/get_roles")
+	@RolesAllowed({org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED})
+	public List<Role> getRoles(){
+		String userId = this.userAuthorizeData.getUserId();
+		return this.sessionService.getRoles(userId);
+	}
+	
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/apply_sso_application")
@@ -345,16 +370,18 @@ public class UserRestApi {
 		Device device = new Device(UserService.SSO_DEVICE_ID, this.userAuthorizeData.getUserId());
 		device.setLastLoginIp(this.userAuthorizeData.getSession().getLastLoginIp());
 		this.userService.applySSOApplication(device);
+		logger.debug("add sso app role");
+		this.userAuthorizeData.getSession().addRole(UserRoleId.SSO_APP.getRoleId());
 		return device;
 	}
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/get_sso_application")
-	@RolesAllowed({org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED})
-	public Device getSSOApplication(){
+	@Path("/get_sso_application_token")
+	@RolesAllowed({org.siraya.rent.filter.UserRole.SSO_APP})
+	public String getSSOApplication(){
 		Device device = new Device(UserService.SSO_DEVICE_ID, this.userAuthorizeData.getUserId());
-		return this.userService.getDevice(device);
+		return this.userService.getDevice(device).getToken();
 	}
 	
 	@POST
@@ -378,6 +405,7 @@ public class UserRestApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/sign_off")
+	@RolesAllowed({org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED})
 	public Response signOff() {
 		this.userAuthorizeData.signOff();
 		return Response.status(HttpURLConnection.HTTP_OK).entity(this.OK)
@@ -401,5 +429,11 @@ public class UserRestApi {
 	}
 	public void setCookieUtils(CookieUtils cookieUtils) {
 		this.cookieUtils = cookieUtils;
+	}
+	public ISessionService getSessionService() {
+		return sessionService;
+	}
+	public void setSessionService(ISessionService sessionService) {
+		this.sessionService = sessionService;
 	}
 }

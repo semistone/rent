@@ -34,22 +34,26 @@ public class SessionService implements ISessionService {
 		this.sessionDao.newSession(session);
 		String deviceId = session.getDeviceId();
 		String userId = session.getUserId();
-		List<Role> roles = this.roleDao.getRoleByUserId(userId);
-		int size = roles.size();
-		for (int i = 0; i < size; i++) {
-			int role = roles.get(i).getRoleId();
-			session.addRole(role);
-			logger.debug("add role " + role + " into user" + userId);
-		}
 		Device device = this.deviceDao.getDeviceByDeviceIdAndUserId(deviceId,
 				userId);
 		if (device == null) {
 			throw new RentException(RentException.RentErrorCode.ErrorDeviceNotFound,
 					"device data not found");
 		}
-		if (device.getStatus() == DeviceStatus.Authing.getStatus()) {
+		if (device.getStatus() == DeviceStatus.Authed.getStatus()) {
 			logger.debug("add role device authed");
 			session.setDeviceVerified(true);
+			//
+			// only authed device can have roles.
+			//
+			logger.debug("add roles from db");
+			List<Role> roles = this.roleDao.getRoleByUserId(userId);
+			int size = roles.size();
+			for (int i = 0; i < size; i++) {
+				int role = roles.get(i).getRoleId();
+				session.addRole(role);
+				logger.debug("add role " + role + " into user" + userId);
+			}
 		}
 	}
 	
@@ -62,6 +66,11 @@ public class SessionService implements ISessionService {
 					"no session found");
 		}
 		return sessions;
+	}
+
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<Role> getRoles(String userId){
+		return this.roleDao.getRoleByUserId(userId);
 	}
 	
 	public void setSessionDao(ISessionDao sessionDao) {

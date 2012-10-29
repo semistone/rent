@@ -22,14 +22,15 @@ import org.siraya.rent.filter.UserAuthorizeData;
 import javax.ws.rs.core.Response;
 import org.siraya.rent.utils.EncodeUtility;
 import org.siraya.rent.utils.IApplicationConfig;
-
+import org.siraya.rent.pojo.Role;
 import junit.framework.Assert;
 import org.siraya.rent.user.service.IMobileAuthService;
-
+import org.siraya.rent.user.service.ISessionService;
 public class TestUserRestApi{
 
 	UserRestApi userRestApi;
 	private Mockery context;
+	private ISessionService sessionService;
 	private IMobileAuthService mobileAuthService;
 	private IUserService userService;
 	private boolean isMock = true;
@@ -48,6 +49,7 @@ public class TestUserRestApi{
 	private IApplicationConfig config;
 	private UserAuthorizeData userAuthorizeData;
 	private Map<String, Object> setting;
+	private java.util.List<Role> roles;
 	@Before
 	public void setUp(){
 		request = new java.util.HashMap<String,Object>();
@@ -56,9 +58,12 @@ public class TestUserRestApi{
 			context = new JUnit4Mockery();
 			config = context.mock(IApplicationConfig.class);
 			mobileAuthService = context.mock(IMobileAuthService.class);	
+			sessionService = context.mock(ISessionService.class);	
 			userRestApi.setMobileAuthService(mobileAuthService);
 			userService = context.mock(IUserService.class);	
 			userRestApi.setUserService(userService);
+			userRestApi.setSessionService(sessionService);
+			
 			userAuthorizeData = new UserAuthorizeData();
 			userAuthorizeData.setUserId(userId);
 			userAuthorizeData.setDeviceId(deviceId);
@@ -82,6 +87,7 @@ public class TestUserRestApi{
 			encodeUtility.setApplicationConfig(config);
 			setting = new HashMap<String, Object>();
 			setting.put("cookie", "thebestsecretkey");
+			roles = new java.util.ArrayList<Role>();
 		}
 	}
 	@Test   
@@ -162,16 +168,56 @@ public class TestUserRestApi{
 		};
 		this.userRestApi.verifyMobileAuthRequestCode(mobileAuthRequest);
 	}
+
+	@Test 
+	public void testGetSSOToken(){		
+		if (isMock) {
+			context.checking(new Expectations() {
+				{
+					one(userService).getDevice(with(any(Device.class)));
+					will(returnValue(device));
+				}
+			});
+		};
+		this.userRestApi.getSSOApplication();
+	}
 	
 	@Test 
 	public void testApplySSOApplication(){
 		if (isMock) {
 			context.checking(new Expectations() {
 				{
-					one(userService).applySSOApplication(device);
+					one(userService).applySSOApplication(with(any(Device.class)));
 				}
 			});
 		};
-		this.userRestApi.applySSOApplication(device);
+		this.userRestApi.applySSOApplication();
+	}
+	
+	@Test
+	public void testGetDeviceId() {
+		if (isMock) {
+			context.checking(new Expectations() {
+				{
+					one(userService).getDevice(with(any(Device.class)));
+					will(returnValue(device));
+				}
+			});
+		};
+		this.userRestApi.getDeviceById(device.getId());
+	}
+	
+	
+	@Test
+	public void testGetRoles(){
+		if (isMock) {
+			context.checking(new Expectations() {
+				{
+					one(sessionService).getRoles(userAuthorizeData.getUserId());
+					will(returnValue(roles));
+				}
+			});
+		};
+		this.userRestApi.getRoles();
 	}
 }

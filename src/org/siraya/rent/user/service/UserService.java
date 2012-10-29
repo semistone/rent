@@ -1,6 +1,8 @@
 package org.siraya.rent.user.service;
 
+import org.siraya.rent.filter.UserRole;
 import org.siraya.rent.pojo.MobileAuthRequest;
+import org.siraya.rent.pojo.Role;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.VerifyEvent;
 import org.siraya.rent.pojo.MobileAuthResponse;
@@ -8,6 +10,7 @@ import org.siraya.rent.user.dao.IUserDAO;
 import org.siraya.rent.user.dao.IVerifyEventDao;
 import org.siraya.rent.user.dao.IMobileAuthRequestDao;
 import org.siraya.rent.user.dao.IMobileAuthResponseDao;
+import org.siraya.rent.user.dao.IRoleDao;
 import org.siraya.rent.utils.EncodeUtility;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.utils.RentException;
@@ -43,6 +46,8 @@ public class UserService implements IUserService {
 	@Autowired
     private EncodeUtility encodeUtility;    
 
+	@Autowired
+	private IRoleDao roleDao;
 	private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     
@@ -314,6 +319,13 @@ public class UserService implements IUserService {
 		device.genToken();
     	try{
     		this.deviceDao.newDevice(device);
+    		//
+    		// add new role sso app
+    		//
+    		Role role = new Role();
+    		role.setUserId(device.getUserId());
+    		role.setRole(UserRole.UserRoleId.SSO_APP);
+    		this.roleDao.newRole(role);
 		}catch(org.springframework.dao.DuplicateKeyException e) {
 			throw new RentException(RentException.RentErrorCode.ErrorDuplicate,"apply sso application but duplicate error");
 		}

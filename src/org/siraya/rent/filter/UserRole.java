@@ -6,7 +6,8 @@ public class UserRole {
 		DEVICE_CONFIRMED(1),
 		LOGINED(2),
 		ADMIN(3),
-		ROOT(4);
+		ROOT(4),
+		SSO_APP(5);
 		private int id;
 		private UserRoleId(int id){
 			this.id = id;
@@ -27,6 +28,8 @@ public class UserRole {
 				return ADMIN;
 			case 4:
 				return ROOT;
+			case 5:
+				return SSO_APP;
 			default:
 				return null;
 			}
@@ -38,6 +41,7 @@ public class UserRole {
 	public final static String LOGINED = "logined";
 	public final static String ADMIN = "admin";
 	public final static String ROOT = "root";
+	public final static String SSO_APP = "sso";
 	public static int getRoleId(String role){
 		if (role.equals(ANONYMOUS)) {
 			return 0;
@@ -49,8 +53,10 @@ public class UserRole {
 			return 3;
 		} else if (role.equals(ROOT)) {
 			return 4;
+		} else if(role.equals(SSO_APP)){
+			return 5;
 		} else {
-			return 0;
+			return -1;
 		}
 	}
 
