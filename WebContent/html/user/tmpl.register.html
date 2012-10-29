@@ -78,7 +78,15 @@
 	{{^is_fb}}
 			<li id="link_to_fb_link"><a id="i18n_link_fb"></a></li>
 	{{/is_fb}}
+	{{#is_sso}}
+			<li id="show_sso_token_link"><a id="i18n_show_sso_token"></a></li>
+	{{/is_sso}}
+	{{^is_sso}}
+			<li id="apply_sso_link"><a id="i18n_apply_sso"></a></li>
+	{{/is_sso}}
+
 {{/user}}
+
 			<li id="sign_off_link"><a id="i18n_delete_device"></a></li>
 	    </ul>
 	</div> 
@@ -188,4 +196,11 @@
 {{^matchUser}}
 <li id ="login_fb_link"><a id="i18n_login_to_fb"></a></li>
 {{/matchUser}}
+</script>
+<script id="tmpl_show_sso_token" type="x-tmpl-mustache">
+<div class="row">
+	<div class="span6 well">
+		<h3 id="token">{{token}}</h3>
+	</div>
+</div>
 </script>

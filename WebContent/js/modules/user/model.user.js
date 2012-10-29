@@ -91,7 +91,21 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 		options = $.extend(options, {
 			url : this.url + 'apply_sso_application'
 		});
-		Backbone.sync("update",this, options);		
+		Backbone.sync('update',this, options);		
+	},
+	get_roles:function(options){
+		logger.debug('get user roles');
+		options = $.extend(options, {
+			url : this.url + 'get_roles'
+		});
+		Backbone.sync('fetch',this, options);
+	},
+	get_sso_application_token:function(options){
+		logger.debug('get user roles');
+		options = $.extend(options, {
+			url : this.url + 'get_sso_application_token'
+		});
+		Backbone.sync('fetch',this, options);		
 	}
 });
 

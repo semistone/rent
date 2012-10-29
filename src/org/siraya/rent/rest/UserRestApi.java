@@ -379,9 +379,12 @@ public class UserRestApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/get_sso_application_token")
 	@RolesAllowed({org.siraya.rent.filter.UserRole.SSO_APP})
-	public String getSSOApplication(){
+	public Map<String,String> getSSOApplication(){
 		Device device = new Device(UserService.SSO_DEVICE_ID, this.userAuthorizeData.getUserId());
-		return this.userService.getDevice(device).getToken();
+		String token= this.userService.getDevice(device).getToken();
+		HashMap<String, String> response = new HashMap<String, String>();
+		response.put("token", token);
+		return response;
 	}
 	
 	@POST

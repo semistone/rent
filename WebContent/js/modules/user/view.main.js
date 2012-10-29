@@ -34,18 +34,46 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			RENT.user.navBar.initFBModel(fb);
 
 		});
+		//
+		// get roles
+		//
+		this.model.get_roles({
+			success:function(model,resp){
+				logger.debug('get roles success');
+				var user = _this.model.get('user');
+				var roles = [];
+				var i = 0;
+				$.each(model,function(index, row){
+					roles[i] = row.roleId;
+					i++;//todo: change to push array.
+				});
+				logger.debug('add role '+roles)
+				user.roles = roles;
+				_this.render();
+			},
+			error:function(model,resp){
+				logger.debug('get roles error');
+				RENT.simpleErrorDialog(resp,'');
+			}
+		});
 	},
 	events : {
 		"click #named_my_devices_link" : 'name_device_popup',
 		'click #sign_off_link' : 'sign_off',
 		'click #show_my_devices_link' : 'show_my_device',
-		'click #link_to_fb_link' : 'link_fb'
+		'click #link_to_fb_link' : 'link_fb',
+		'click #show_sso_token_link':'show_sso_token'
 	},
 	render:function(){
 		this.model.trigger('change_view','main');
 		var device = this.model.toJSON();
 		if (device.user.loginType == 'FB') {
+			logger.debug('login type is fb');
 			device.user.is_fb = true;			
+		}
+		if (device.user.roles && _.contains(device.user.roles,5)) {
+			logger.debug('sso role exist');
+			device.user.is_sso = true;
 		}
 		this.$el.html(Mustache.to_html(this.tmpl, device));
 		//
@@ -61,6 +89,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 				$.i18n.prop('user.register.delete_device'));
 		this.$el.find('#i18n_link_fb').text(
 				$.i18n.prop('user.register.link_fb'));
+		this.$el.find('#i18n_show_sso_token').text(
+				$.i18n.prop('user.main.show_sso_token'));
 		
 
 	},
@@ -125,6 +155,14 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			el : this.$el.find('#register_right'),
 			model : this.model
 		});
+	},
+	show_sso_token:function(){
+		logger.debug('click show my token'); 
+		this.rightView.undelegateEvents();
+		this.rightView = new RENT.user.view.ShowSSOTokenView({
+			el : this.$el.find('#register_right'),
+			model : this.model
+		});		
 	}
 });
 //
@@ -224,7 +262,7 @@ RENT.user.view.ShowSessionsView = Backbone.View.extend({
 		this.model.trigger('change_view','show_sessions');
 		logger.debug("render sessions");
 		var sessions = this.collection.toJSON();
-     $.each(sessions,function(index, row){
+		$.each(sessions,function(index, row){
      	logger.debug('created is '+row.created);
      	var date = new Date(row.created * 1000);
      	var then = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDay();
@@ -243,4 +281,28 @@ RENT.user.view.ShowSessionsView = Backbone.View.extend({
  				$.i18n.prop('user.register.show_sessions'));
 	}
 });
+RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
+	initialize:function(){
+		logger.debug('initialize show sso token view');
+		_.bindAll(this, 'render');
+		this.tmpl = $template.find('#tmpl_show_sso_token').html();
+		var _this = this;
+		this.model.on('change',this.render);
+		this.model.get_sso_application_token({
+			success:function(model,resp){
+				logger.debug('get sso application token success');
+				_this.model.set({token:model.token});
+			},
+			error:function(model,resp){
+				logger.error('get sso application token fail');
+				RENT.simpleErrorDialog(resp,'');
+			}
+		});
+	},
+	render:function(){
+		logger.debug('render get sso application token');
+		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
+	}
+});
+
 });
