@@ -94,31 +94,35 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	name_device_popup:function(){
 		logger.debug('click name device popup');
 		this.rightView.undelegateEvents();
-		this.rightView = new RENT.user.view.NameDeviceView({
-			el : this.$el.find('#register_right'),
-			model : this.model});
-		this.rightView.render();
 		var _this = this;
-		this.rightView.on('success',function(){
-			_this.show_my_device();
+		requre(['modules/user/view.name_device'],function(){
+			this.rightView = new RENT.user.view.NameDeviceView({
+				el : _this.$el.find('#register_right'),
+				model : _this.model});
+			_this.rightView.render();
+			this.rightView.on('success',function(){
+				_this.show_my_device();
+			});			
 		});
 	},
 	link_fb : function(){
 		logger.debug('link to fb');
 		var _this = this;
 		if (this.fb == undefined) {
-			logger.error('fb object not exist');
-			RENT.simpleDialog($.i18n.prop('user.main.fb_load_fail'), '');
-			return;
+			require(['modules/user/model.fb'],function(){
+				var fb = new RENT.user.model.FBModel({id:id});
+				_this.fb = fb;
+			});
 		}
 		var do_link_fb = function(){
 			_this.model.link_facebook(_this.fb.get('id'), {
-				success:function(){
+				success:function(model,resp){
 					logger.debug('link fb success');	
 					_this.$el.find('#link_to_fb_link').hide();
 				},
-				error:function(){
+				error:function(model,resp){
 					logger.debug('link fb fail');
+					RENT.simpleErrorDialog(resp,'');
 				}
 			});
 		};

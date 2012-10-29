@@ -5,8 +5,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!../../../html/user/tmpl.register.html',
-  './namespace.user'
+  'text!../../../html/user/tmpl.register.html'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 var $template = $('<div>').append(template);
 //
