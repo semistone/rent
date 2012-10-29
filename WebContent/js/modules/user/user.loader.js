@@ -6,16 +6,17 @@ define([
   'RentCommon',
   './view.navbar'
 ], function($, logger, RegisterView, RENT){
+	RENT.user.mainView, RENT.user.navBar = null;
 	$(function(){
 		RENT.bindLoadingPage("#supersized-loader");
 	});	
 	var initialize = function(){
 		RENT.setLangRes(RENT.getLang(), ['rent_user']);
-
+		var model = new RENT.user.model.UserModel();
 		$(function(){
 			logger.debug('new register view');
-			var register = new RegisterView({el:'#main'});
-			new RENT.user.view.NavBarView({el:'#navbar',model:register.model});
+			RENT.user.navBar = new RENT.user.view.NavBarView({el:'#navbar',model:model});
+			RENT.user.mainView = new RegisterView({el:'#main', model:model});
 		});
   }
   return {

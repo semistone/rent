@@ -60,7 +60,7 @@ public interface IUserService {
 	 * @param loginId
 	 * @param password
 	 */
-	public void updateLoginIdAndPassowrd(User user) throws Exception;
+	public void updateLoginIdAndPassowrd(User user);
 	/**
 	 * verify email.
 	 * @param userId
@@ -73,6 +73,8 @@ public interface IUserService {
 	 * @param user
 	 */
 	public void updateUserInfo(User user);
+	
+	public void initLoginIdAndType(User user);
 	
 	public void nameDevice(Device device);
 	

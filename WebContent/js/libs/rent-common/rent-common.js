@@ -13,8 +13,9 @@ var RENT = {
 			"86": "general.china",
 			"81" : "general.japan",
 			"1"  : "general.unit_state"
-		}
-
+		},
+		FACEBOOK_APP: '362616447158349',
+		FACEBOOK_CHANNEL:'http://angus-ec2.siraya.net/facebook.html', // Channel File
 	},
 
     // set language and resource file and css for locale

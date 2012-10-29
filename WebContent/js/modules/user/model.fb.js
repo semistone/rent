@@ -7,50 +7,55 @@ define([
   './namespace.user'
 ], function(FB, _, Backbone, RENT, logger) {
 RENT.user.model.FBModel = Backbone.Model.extend({
-	testAPI:function() {
+	setResponse:function() {
 		var _this = this;
 		FB.api('/me', function(response) {
-			if (_this.get('id') != response.id) {
-				logger.error('id not match');
-			} else {
-				logger.debug('set fb response');
-				_this.set(response);				
-			}
+			_this.set({matchUser:_this.get('id') == response.id},{silent:true});
+			logger.debug('set fb response');
+			_this.set(response);				
+
 		});
 	},
-	login: function() {
+	login: function(options) {
 		var _this = this;
 		FB.login(function(response) {
+			if (_this.get('name') != null) {
+				logger.debug('already logined');
+				_this.trigger('login_success');				
+				if (options != null) options.success();
+				return;
+			}
 			if (response.authResponse) {
-				_this.link_user_to_facebook();
-				_this.testAPI();
+				logger.debug('login success');
+				if (options != null) options.success();
+				_this.setResponse();
+				_this.trigger('login_success');
 				// connected
 			} else {
 				// cancelled
 			}
 		});
 	},
-	link_user_to_facebook: function(){
-		logger.debug('link user to facebook');
-	},
+
 	check_status:function(){
 		var _this = this;
 		FB.getLoginStatus(function(response) {
 			if (response.status === 'connected') {
 				// connected
-				_this.testAPI();
+				_this.setResponse();
 			}else {
 				logger.debug('fb not connected');
+				_this.trigger('change');
 			}
 		});
 	},
 	initialize : function() {
 		var _this = this;
-		_.bindAll(this, 'login','testAPI','check_status');
+		_.bindAll(this, 'login','setResponse','check_status');
 		window.fbAsyncInit = function() {
 			FB.init({
-				appId : '362616447158349', // App ID
-				channelUrl : 'http://angus-ec2.siraya.net/facebook.html', // Channel File
+				appId : RENT.CONSTANTS.FACEBOOK_APP, // App ID
+				channelUrl : RENT.CONSTANTS.FACEBOOK_CHANNEL,
 				status : true, // check login status
 				cookie : true, // enable cookies to allow the server to access the session
 				xfbml : true

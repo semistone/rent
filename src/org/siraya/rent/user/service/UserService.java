@@ -265,15 +265,17 @@ public class UserService implements IUserService {
      * 
      */
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class) 
-	public void updateLoginIdAndPassowrd(User user) throws Exception{
+	public void updateLoginIdAndPassowrd(User user){
     	String userId = user.getId();
     	User user2 = userDao.getUserByUserId(userId);
     	//
     	// check original login id must be null or empty
     	//
-    	if (user2.getLoginId() != null && user2.getLoginId() != "") {
-    		throw new Exception("can't reset login id");
-    	}
+		if (user2.getLoginId() != null && user2.getLoginId() != "") {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorStatusViolate,
+					"can't reset login id");
+		}
     	user.setId(user2.getId());
     	user.setModified(new Long(0));
     	//
@@ -286,7 +288,17 @@ public class UserService implements IUserService {
     		throw new RentException(RentErrorCode.ErrorCanNotOverwrite, "update cnt =0, only empty login id can be update");
     	}
 	}
-
+    
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class) 
+    public void initLoginIdAndType(User user){
+    	user.setModified(new Long(0));
+    	int ret =this.userDao.initLoginIdAndType(user);
+		if (ret != 1) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorStatusViolate,
+					"update login id and type fail, maybe already initialized");
+		}
+    }
     public void nameDevice(Device device) {
     	int ret = this.deviceDao.nameDevice(device);
     	if (ret == 0 ) {
