@@ -127,8 +127,8 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 	},
 	verify_success:function(){
 		this.$el.find('#register_title').text($.i18n.prop('user.register.step3'));
+		RENT.user.dotDone(mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
 		if (this.model.get('name') == null) {
-			RENT.user.dotDone(mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
 			var view = new RENT.user.view.NameDeviceView({
 				el: '#register_content',
 				model: this.model
