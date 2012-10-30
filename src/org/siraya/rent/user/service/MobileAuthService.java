@@ -71,7 +71,7 @@ public class MobileAuthService implements IMobileAuthService {
 		if (status != DeviceStatus.Init.getStatus()
 				&& status != DeviceStatus.Authing.getStatus()) {
 			throw new RentException(RentErrorCode.ErrorStatusViolate,
-					"device status isn't init or authing");
+					"device status isn't init or authing but "+status);
 		}
 		int retryLimit = (Integer) applicationConfig.get("general").get(
 				"auth_retry_limit");
@@ -100,8 +100,12 @@ public class MobileAuthService implements IMobileAuthService {
 		// send message through gateway.
 		//
 		mobileGatewayService.sendSMS(phone, message);
+		response.setStatus(DeviceStatus.Authing.getStatus());
 		Device device = response.getDevice();
-		if (device != null && device.getStatus() == DeviceStatus.Init.getStatus()) {
+		if (request.isWebRequest() && device != null && device.getStatus() == DeviceStatus.Init.getStatus()) {
+			//
+			// if done is not null, it's web request.
+			//
 			device.setStatus(DeviceStatus.Authing.getStatus());
 			device.setModified(0);
 			int ret = this.deviceDao.updateDeviceStatus(device.getId(),
@@ -246,8 +250,9 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		String decryptToken = encodeUtility.decrypt(request.getToken(), Device.ENCRYPT_KEY);
 		if (!authCode.equals(decryptToken)) {
+			logger.error("request's token is "+decryptToken);
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
-					"token not match "+decryptToken);
+					"token not match ");
 		}
 		//
 		// update user database

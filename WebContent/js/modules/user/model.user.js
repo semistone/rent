@@ -85,6 +85,37 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 			url : this.url + 'link_facebook'
 		});
 		Backbone.sync("update",this, options);		
+	},
+	apply_sso_application:function(options){
+		logger.debug('link facebook');
+		options = $.extend(options, {
+			url : this.url + 'apply_sso_application'
+		});
+		Backbone.sync('update',this, options);		
+	},
+	get_roles:function(options){
+		logger.debug('get user roles');
+		var _this = this;
+		var _options  = {
+				url : this.url + 'get_roles',
+				success:function(model,resp){
+					logger.debug('get roles success');
+					var user = _this.get('user');
+					var roles = [];
+					var i = 0;
+					$.each(model,function(index, row){
+						roles[i] = row.roleId;
+						i++;//todo: change to push array.
+					});
+					logger.debug('add role '+roles);
+					user.roles = roles;
+					options['success'](model,resp);
+				},
+				error:function(model,resp){
+					options['error'](model,resp);
+				}	
+		};
+		Backbone.sync('fetch', this, _options);
 	}
 });
 

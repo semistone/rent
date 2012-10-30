@@ -217,4 +217,18 @@ public class TestUserService {
 
 		userService.mobileAuthRequest( request);
 	}
+	
+	@Test
+	public void testApplySSOApplication(){
+		if (isMock) {
+			context.checking(new Expectations() {
+				{
+					one(deviceDao).newDevice(device);
+				}
+			});
+
+		}
+		
+		this.userService.applySSOApplication(device);
+	}
 }

@@ -1,7 +1,9 @@
 package org.siraya.rent.pojo;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.siraya.rent.filter.UserRole.UserRoleId;
 public class Role {
 	private String userId;
+	@JsonIgnore
 	private UserRoleId role;
 	public Role (String userId, UserRoleId role) {
 		this.userId = userId;
@@ -16,6 +18,7 @@ public class Role {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
+	@JsonIgnore
 	public UserRoleId getRole() {
 		return role;
 	}

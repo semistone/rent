@@ -67,6 +67,12 @@ public interface IUserService {
 	 * @param authCode
 	 */
 	public void verifyEmail(String userId, String authCode);
+	
+	/**
+	 * 
+	 * @param user
+	 */
+	public void applySSOApplication(Device device);
 
 	/**
 	 * update other user information.

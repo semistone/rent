@@ -69,5 +69,16 @@ public class TestSessionService {
 		sessionService.newSession(session);
 	}
 	
-
+	@Test
+	public void testGetRoles(){
+		if (isMock) {
+			context.checking(new Expectations() {
+				{
+					one(roleDao).getRoleByUserId(session.getUserId());
+					will(returnValue(roles));
+				}
+			});
+		}
+		sessionService.getRoles(session.getUserId());
+	}
 }

@@ -147,4 +147,12 @@ public class MobileAuthRequest extends MobileAuthResponse{
 		this.token= String.format("%06d", r.nextInt(999999));
 		return this.token;
 	}
+	@JsonIgnore
+	public boolean isWebRequest(){
+		if (this.done == null || this.done.equals("")) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 }

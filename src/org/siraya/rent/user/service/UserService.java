@@ -1,6 +1,8 @@
 package org.siraya.rent.user.service;
 
+import org.siraya.rent.filter.UserRole;
 import org.siraya.rent.pojo.MobileAuthRequest;
+import org.siraya.rent.pojo.Role;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.VerifyEvent;
 import org.siraya.rent.pojo.MobileAuthResponse;
@@ -8,6 +10,7 @@ import org.siraya.rent.user.dao.IUserDAO;
 import org.siraya.rent.user.dao.IVerifyEventDao;
 import org.siraya.rent.user.dao.IMobileAuthRequestDao;
 import org.siraya.rent.user.dao.IMobileAuthResponseDao;
+import org.siraya.rent.user.dao.IRoleDao;
 import org.siraya.rent.utils.EncodeUtility;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.utils.RentException;
@@ -23,6 +26,9 @@ import java.util.Calendar;
 import java.util.Map;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.dao.IDeviceDao;
+
+import com.sun.research.ws.wadl.Response;
+
 import java.util.List;
 @Service("userService")
 public class UserService implements IUserService {
@@ -43,6 +49,8 @@ public class UserService implements IUserService {
 	@Autowired
     private EncodeUtility encodeUtility;    
 
+	@Autowired
+	private IRoleDao roleDao;
 	private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     
@@ -306,6 +314,26 @@ public class UserService implements IUserService {
     	}
     }
     
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class) 
+    public void applySSOApplication(Device device){
+    	device.setId(SSO_DEVICE_ID);
+		device.setStatus(DeviceStatus.ApiKeyOnly.getStatus());
+		device.setModified(0);
+		device.genToken();
+    	try{
+    		this.deviceDao.newDevice(device);
+    		//
+    		// add new role sso app
+    		//
+    		Role role = new Role();
+    		role.setUserId(device.getUserId());
+    		role.setRole(UserRole.UserRoleId.SSO_APP);
+    		this.roleDao.newRole(role);
+		}catch(org.springframework.dao.DuplicateKeyException e) {
+			throw new RentException(RentException.RentErrorCode.ErrorDuplicate,"apply sso application but duplicate error");
+		}
+    }
+        	
     /**
      * get all user devies
      * @param userId
@@ -426,13 +454,26 @@ public class UserService implements IUserService {
 		//
 		// save into database.
 		//
+		MobileAuthResponse response = null;
+		boolean isDuplicate = false;
 		try {
 			logger.debug("save request into database");
 			request.genToken();
+			request.setStatus(DeviceStatus.Init.getStatus());
 			request.setToken(encodeUtility.encrypt(request.getToken(), Device.ENCRYPT_KEY));
 			mobileAuthRequestDao.newRequest(request);
+			response = new MobileAuthResponse();
+			response.setRequestId(request.getRequestId());
+			response.setResponseTime(java.util.Calendar.getInstance().getTimeInMillis()/1000);
+
 		}catch(org.springframework.dao.DuplicateKeyException e) {
-			throw new RentException(RentException.RentErrorCode.ErrorDuplicate,"insert request but duplicate error");
+			isDuplicate = true;
+			logger.debug("duplication request "+request.getRequestId());
+			//
+			// get original response obj and set original token from original request.
+			//
+			response = this.mobileAuthRequestDao.get(request.getRequestId());
+			request.setToken(((MobileAuthRequest)response).getToken());
 		}catch(Exception e){
 			logger.error("insert request into dao error",e);
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral,"insert request into dao error");
@@ -440,20 +481,26 @@ public class UserService implements IUserService {
 		//
 		// prepare response
 		//
-		MobileAuthResponse response = new MobileAuthResponse();
 		logger.debug("prepare response");
-		response.setRequestId(request.getRequestId());
-		response.setStatus(currentDevice.getStatus());
-		response.setResponseTime(java.util.Calendar.getInstance().getTimeInMillis()/1000);
+		// only force reauth = false need to return current status
 		response.setDevice(currentDevice);
 		response.setUser(user);
 		String responseSign = EncodeUtility.sha1(response.toString(requestFrom.getToken()));
-		response.setSign(responseSign);
-	
-		if (currentDevice.getStatus() == DeviceStatus.Authed.getStatus()) {
-			logger.debug("update response into database");
-			this.mobileAuthResponsetDao.updateResponse(response);
+		if (request.isForceReauth()) {
+			response.setStatus(request.getStatus());
+		} else {  // not force reauth
+			if (isDuplicate) { // and duplicate
+				int originStatus = response.getStatus();
+				response.setStatus(currentDevice.getStatus());
+				if ((originStatus == DeviceStatus.Authing.getStatus() || originStatus == DeviceStatus.Init.getStatus()) &&
+					currentDevice.getStatus() == DeviceStatus.Authed.getStatus()) {
+					this.mobileAuthResponsetDao.updateResponse(response);	
+				}
+			} else {
+				response.setStatus(currentDevice.getStatus());				
+			}
 		}
+		response.setSign(responseSign);	
 		return response;
 	}
 	
