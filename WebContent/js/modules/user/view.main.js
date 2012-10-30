@@ -5,7 +5,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!../../../html/user/tmpl.register.html'
+  'text!../../../html/user/tmpl.main.html'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
 var $template = $('<div>').append(template);
@@ -147,7 +147,7 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		require(['modules/user/view.sso'],function(){
 			_this.rightView = new RENT.user.view.ShowSSOTokenView({
 				el : _this.$el.find('#register_right'),
-				model: new RENT.user.model.UserModel(_this.model.toJSON())
+				userModel: _this.model
 			});					
 		});
 	}

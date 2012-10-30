@@ -24,6 +24,13 @@ RENT.user.model.RequestModel = Backbone.Model.extend({
 			url : this.url + 'get_sso_application_token'
 		});
 		Backbone.sync('fetch',this, options);		
+	},
+	apply_sso_application:function(options){
+		logger.debug('link facebook');
+		options = $.extend(options, {
+			url : this.url + 'apply_sso_application'
+		});
+		Backbone.sync('update',this, options);		
 	}
 });
 });

@@ -1,0 +1,24 @@
+<script id="tmpl_register_step1" type="x-tmpl-mustache">
+<div class="span7 offset1">
+    <form id="register_form" class="form-horizontal well">
+    <fieldset>
+		<div class="control-group">
+        	<label  id="i18n_country_code" class="control-label" for="country_code"></label>
+        	<div class="controls">
+				<select name="country_code" id="country_code" class="required">
+				</select>
+        	</div>
+		</div>
+		<div class="control-group">
+			<label id="i18n_mobile_phone" class="control-label" for="mobile_phone"></label>
+        	<div class="controls">			
+				<input type="text" name="mobile_phone" class="input-xlarge focused required" maxlength="15"  id="mobile_phone" value="{{mobilePhone}}"/>
+			</div>
+		</div>
+		<div class="form-actions">
+			<button class="btn btn-primary" type="button" id="register_button"><span id="i18n_register_button"></span><i class="icon-play"></i></button>
+		</div>
+    </fieldset>
+    </form>
+</div> 
+</script>
