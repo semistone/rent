@@ -54,11 +54,18 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 	list_sessions:function(ev){
 		var deviceId = $(ev.target).parent().attr('id');
 		logger.debug("list sessions device id "+deviceId); 
-		this.undelegateEvents();
 		this.model.set({deviceId:deviceId},{silent:true});
+		var collection = new RENT.user.collection.SessionCollection();
+		var _this = this;
+		collection.on('reset',function(){
+			logger.debug('undelegate reset event');
+			_this.undelegateEvents();
+			_this.collection.off('reset', arguments.callee.caller);			
+		});
 		new RENT.user.view.ShowSessionsView({
 			el : this.$el,
-			model : this.model
+			model : this.model,
+			collection: collection
 		});
 	},
 	delete_device:function(ev){
@@ -89,18 +96,18 @@ RENT.user.view.ShowSessionsView = Backbone.View.extend({
 		this.tmpl = $template.find('#tmpl_show_sessions').html();
 		_.bindAll(this, 'render');
 		if (this.collection == null) {
-			this.collection =new RENT.user.collection.SessionCollection();
-			var limit = 10;
-			var offset = 0;
-			var deviceId = this.model.get('deviceId');
-			options = {
-				data: $.param({ deviceId:deviceId,limit: limit, offset:offset}),
-				error:function(model,resp){
-					RENT.simpleErrorDialog(resp);
-				}
-			};
-			this.collection.fetch(options);
+			this.collection = new RENT.user.collection.SessionCollection();
 		}
+		var limit = 10;
+		var offset = 0;
+		var deviceId = this.model.get('deviceId');
+		options = {
+			data: $.param({ deviceId:deviceId,limit: limit, offset:offset}),
+			error:function(model,resp){
+				RENT.simpleErrorDialog(resp);
+			}
+		};
+		this.collection.fetch(options);
 		this.collection.on('reset',this.render);
 		this.collection.on('remove',this.render);
 	},
