@@ -147,7 +147,7 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		require(['modules/user/view.sso'],function(){
 			_this.rightView = new RENT.user.view.ShowSSOTokenView({
 				el : _this.$el.find('#register_right'),
-				model: new RENT.user.model.UserModel(_this.model.toJSON())
+				userModel: _this.model
 			});					
 		});
 	}

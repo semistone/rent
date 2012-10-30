@@ -32,14 +32,21 @@ RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
 	},
 	initialize:function(){
 		logger.debug('initialize show sso token view');
+		this.userModel = this.options.userModel;
+		delete this.options.userModel;
+		if (this.userModel == null ||this.userModel == undefined) {
+			logger.error('user model not defined');
+			return;
+		}
+		this.model = new RENT.user.model.RequestModel();
 		_.bindAll(this, 'render', 'show_token','apply_token');
 		//
 		// i18n
 		//
 		var _this = this;
-		var user = this.model.get('user');
+		var user = this.userModel.get('user');
 		if (user.roles == undefined) {
-			this.model.get_roles({
+			this.userModel.get_roles({
 				success:function(){
 					if (user.roles && _.contains(user.roles,5)) {
 						logger.debug('sso role exist');
@@ -60,13 +67,12 @@ RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
 			requestId:this.GUID(),
 			requestTime:Math.ceil(new Date().getTime()/1000),
 			done:window.location.href,
-			requestFrom:this.model.get('userId')
+			requestFrom:this.userModel.get('userId')
 		});
 	},
 	show_token:function(){
-		var _this = this;
-		var model = new  RENT.user.model.RequestModel();
-		model.get_sso_application_token({
+		var _this = this;		
+		this.model.get_sso_application_token({
 			success:function(model,resp){
 				logger.debug('get sso application token success');
 				_this.model.set({token:model.token});
@@ -113,8 +119,7 @@ RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
 			formObj[item.name] = item.value;
 		});
 		var _this = this;
-		var model = new RENT.user.model.RequestModel(formObj);
-		model.get_signature_of_mobile_auth_request({
+		this.model.get_signature_of_mobile_auth_request({
 			success:function(model, resp){
 				logger.debug('success');
 				_this.$el.find('#sign').val(model.sign);
@@ -138,7 +143,7 @@ RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
 				var user = _this.model.get('user');
 				user.roles.push('5'); // push role 5 is sso application
 				_this.hasRole = true;
-				_this.render();
+				_this.show_token();
 			},
 			error:function(model,resp){
 				logger.error('apply_sso_application error');
