@@ -16,4 +16,8 @@ public interface IMemberDao {
     @Select("select * from MEMBER where ID=#{id}") 
     @ResultMap("rent.mapper.MemberResultMap")
 	public Member get(@Param("id")String id);
+    
+    @Select("select * from MEMBER where USER_ID=#{userId} and MEMBER_USER_ID=#{memberUserId}") 
+    @ResultMap("rent.mapper.MemberResultMap")
+    public Member getByMemberUserId(@Param("userId")String userId,@Param("memberUserId")String memberUserId);
 }

@@ -124,7 +124,11 @@ public class Device {
 	}
 	public void setUser(User user) {
 		this.user = user;
-		this.userId = user.getId();
+		if (user == null) {
+			this.userId = null;
+		} else {
+			this.userId = user.getId();			
+		}
 	}
 }
 

@@ -32,5 +32,8 @@ public class TestMemberDao extends AbstractJUnit4SpringContextTests{
     	
     	Member member2=this.memberDao.get(member.getId());
     	Assert.assertEquals(member.getCreated(), member2.getCreated());
+    	
+    	member2=this.memberDao.getByMemberUserId(member.getUserId(), member.getMemberUserId());
+    	Assert.assertNotNull(member2);
     }
 }

@@ -7,6 +7,11 @@ public class Member {
 	private long created;
 	private long modified;
 	private String memberId;
+	
+	public String genId(){
+		this.id = java.util.UUID.randomUUID().toString();
+		return id;
+	}
 	public String getId() {
 		return id;
 	}

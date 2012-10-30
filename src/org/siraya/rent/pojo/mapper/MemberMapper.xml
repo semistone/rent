@@ -4,6 +4,7 @@
   <resultMap id="MemberResultMap" type="org.siraya.rent.pojo.Member">
     <id column="ID" jdbcType="VARCHAR" property="id" />
     <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+    <result column="MEMBER_USER_ID" jdbcType="VARCHAR" property="memberUserId"/>
     <result column="MEMBER_ID" jdbcType="VARCHAR" property="memberId" />
     <result column="CREATED" jdbcType="DECIMAL" property="created" />
     <result column="MODIFIED" jdbcType="DECIMAL" property="modified" />

@@ -1,10 +1,11 @@
 package org.siraya.rent.user.service;
-
+import org.siraya.rent.user.dao.IMemberDao;
 import org.siraya.rent.filter.UserRole;
 import org.siraya.rent.pojo.MobileAuthRequest;
 import org.siraya.rent.pojo.Role;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.VerifyEvent;
+import org.siraya.rent.pojo.Member;
 import org.siraya.rent.pojo.MobileAuthResponse;
 import org.siraya.rent.user.dao.IUserDAO;
 import org.siraya.rent.user.dao.IVerifyEventDao;
@@ -27,7 +28,7 @@ import java.util.Map;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.user.dao.IDeviceDao;
 
-import com.sun.research.ws.wadl.Response;
+
 
 import java.util.List;
 @Service("userService")
@@ -37,7 +38,8 @@ public class UserService implements IUserService {
     private IUserDAO userDao;
     @Autowired
     private IApplicationConfig applicationConfig;
-
+	@Autowired
+    private IMemberDao memberDao;	
 	@Autowired
     private IDeviceDao deviceDao;	
     @Autowired
@@ -307,6 +309,8 @@ public class UserService implements IUserService {
 					"update login id and type fail, maybe already initialized");
 		}
     }
+    
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class) 
     public void nameDevice(Device device) {
     	int ret = this.deviceDao.nameDevice(device);
     	if (ret == 0 ) {
@@ -387,6 +391,8 @@ public class UserService implements IUserService {
 	public MobileAuthResponse mobileAuthRequest( MobileAuthRequest request){
 		Device currentDevice = request.getDevice();
 		String userId = request.getRequestFrom();
+		MobileAuthResponse response = null;
+
 	  	Map<String,Object> generalSetting = applicationConfig.get("general");
 		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(
 				SSO_DEVICE_ID, userId);
@@ -411,50 +417,75 @@ public class UserService implements IUserService {
 							+ request.getRequestTime() + " compare to " + now);
 		}
 		
+		User user = null;
+		String mobilePhone = null;
 		//
 		// get autu user from friend
 		//
-		
-		//
-		// get auth user from mobile phone
-		//
-		String mobilePhone = request.getMobilePhone();
-		User user = null;
-		if (mobilePhone != null) {
-			user = this.userDao.getUserByMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY));
-			if (user != null) {
-				logger.debug("current user exist");
-				request.setUser(user);
-			} else {
-				logger.debug("this mobile phone's user not exist yet");
-				int cc = Integer.parseInt(request.getCountryCode());
-				user = this.newUserByMobileNumber(cc, mobilePhone);
-			}
-			request.setMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY)); // encrypt mobile phone
-			currentDevice.setUserId(user.getId());
-			//
-			// get device from deviceDao
-			//
-			try{
-				currentDevice = this.getDevice(currentDevice);
-			}catch(RentException e){
-				//
-				// skip device not found error and set as staus to removed.
-				//
-				if (e.getErrorCode() != RentException.RentErrorCode.ErrorNotFound) {
-					throw e;
+		if (request.getAuthUserId() != null) {
+			Member member = this.memberDao.getByMemberUserId(request.getRequestFrom(),
+					request.getAuthUserId());
+			if (member != null) {
+				if (member.getMemberUserId() != null) {
+					user = userDao.getUserByUserId(member.getMemberUserId());
+					request.setMobilePhone(user.getMobilePhone());
+				} else {
+					logger.debug("member user id is null");
 				}
-				currentDevice.setStatus(DeviceStatus.Authing.getStatus());
+			} else {
+				logger.debug("member is null");
+				member = new Member();
+				member.setMemberId(request.getAuthUserId());
+				member.setUserId(request.getRequestFrom());
+				member.genId();
+				memberDao.newMember(member);
+				
 			}
-
+		} else if (request.getMobilePhone() != null) {
+			//
+			// get auth user from mobile phone
+			//
+			mobilePhone = request.getMobilePhone();
+			user = this.userDao.getUserByMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY));
+			logger.debug("this mobile phone's user not exist yet");
+			if (user == null){
+				int cc = Integer.parseInt(request.getCountryCode());
+				user = this.newUserByMobileNumber(cc, mobilePhone);				
+			}
+			request.setMobilePhone(this.encodeUtility.encrypt(mobilePhone,
+					User.ENCRYPT_KEY)); // encrypt mobile phone
 		} else {
-			logger.debug("requset mobile phone is empty");
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"both auth user id and mobile phone is null");
+		}
+		
+		if (user == null) {
+			logger.debug("user is null");
+			return this.handleNullUserRequest(request);
+		}
+		
+		logger.debug("current user exist");
+		request.setUser(user);
+		currentDevice.setUserId(user.getId());
+		//
+		// get device from deviceDao
+		//
+		try {
+			currentDevice = this.getDevice(currentDevice);
+		} catch (RentException e) {
+			//
+			// skip device not found error and set as staus to removed.
+			//
+			if (e.getErrorCode() != RentException.RentErrorCode.ErrorNotFound) {
+				throw e;
+			}
+			currentDevice.setStatus(DeviceStatus.Authing.getStatus());
 		}
 		
 		//
 		// save into database.
 		//
-		MobileAuthResponse response = null;
 		boolean isDuplicate = false;
 		try {
 			logger.debug("save request into database");
@@ -504,6 +535,27 @@ public class UserService implements IUserService {
 		return response;
 	}
 	
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	private MobileAuthResponse handleNullUserRequest(MobileAuthRequest request){
+		logger.debug("save request into database");
+		request.genToken();
+		request.setStatus(DeviceStatus.Init.getStatus());
+		request.setToken(encodeUtility.encrypt(request.getToken(), Device.ENCRYPT_KEY));
+		mobileAuthRequestDao.newRequest(request);
+		
+		logger.debug("user unkown yet");
+		MobileAuthResponse response = new MobileAuthResponse();
+		response.setRequestId(request.getRequestId());
+		response.setStatus(DeviceStatus.Init.getStatus());
+		Device currentDevice = request.getDevice();
+		currentDevice.setUser(null);
+		response.setDevice(currentDevice);
+		return response;
+	}
 	public List<Device> getSsoDevices(){
 		return this.deviceDao.getSsoDevices();
 	}
