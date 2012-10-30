@@ -15,8 +15,6 @@
 <div id="register_content">
 </div>
 </script>
-
-
 <script id="tmpl_register_error" type="x-tmpl-mustache">
 <div class="row">
 	<div class="span12">
@@ -27,5 +25,12 @@
 	</div>
 </div>
 </script>
-
-
+<script id="tmpl_fb_info" type="x-tmpl-mustache">
+{{#matchUser}}
+<li><a href="{{link}}">{{name}}</a></li>
+<li><img src="https://graph.facebook.com/{{id}}/picture"></li>
+{{/matchUser}}
+{{^matchUser}}
+<li id ="login_fb_link"><a id="i18n_login_to_fb"></a></li>
+{{/matchUser}}
+</script>
