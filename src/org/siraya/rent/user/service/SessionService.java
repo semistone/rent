@@ -39,6 +39,13 @@ public class SessionService implements ISessionService {
 		if (device == null) {
 			throw new RentException(RentException.RentErrorCode.ErrorDeviceNotFound,
 					"device data not found");
+		} else {
+			int ret = this.deviceDao.updateLastLoginIp(session);
+			if (ret != 1) {
+				throw new RentException(
+						RentException.RentErrorCode.ErrorNotFound,
+						"update last login ip in device fail");
+			}
 		}
 		if (device.getStatus() == DeviceStatus.Authed.getStatus()) {
 			logger.debug("add role device authed");

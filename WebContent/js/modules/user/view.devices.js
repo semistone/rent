@@ -109,9 +109,9 @@ RENT.user.view.ShowSessionsView = Backbone.View.extend({
 		logger.debug("render sessions");
 		var sessions = this.collection.toJSON();
 		$.each(sessions,function(index, row){
-     	logger.debug('created is '+row.created);
+     	//logger.debug('created is '+row.created);
      	var date = new Date(row.created * 1000);
-     	var then = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDay();
+     	var then = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
              then += ' '+date.getHours()+':'+date.getMinutes();
          row['createdDate'] = then;
      });    

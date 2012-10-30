@@ -72,10 +72,25 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
         	logger.error('form validate fail');
         	return;
         }
-		success = function(data, textStatus, jqXHR) {
+		success = function(model, resp) {
 			logger.debug("verify success ");
 			_this.undelegateEvents();
-			_this.model.trigger('verify_success');
+			logger.debug('verify success, set model and trigger success');
+			if (_this.model.get('user') == null) {
+				logger.debug('fetch user again');
+				_this.model.fetch({
+					success:function(){
+						_this.model.trigger('verify_success');
+					},
+					error:function(model,resp){
+						logger.error('fetch user error');
+						RENT.simpleErrorDialog(resp,'');
+					}
+				});
+			} else {
+				_this.model.set({status:3},{silent:true});
+				_this.model.trigger('verify_success');
+			}
 		};
 		var auth_code = this.$el.find('#auth_code').val();
 		logger.debug('click do verify button auth code is '+auth_code);

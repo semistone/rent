@@ -144,6 +144,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 				view.render();
 				_this.model.trigger('change_view','step3');
 				view.on('success',function(){
+					view.undelegateEvents();
 					_this.main_view();
 					view.off('success');
 				});			

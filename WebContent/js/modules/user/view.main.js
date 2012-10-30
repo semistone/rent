@@ -21,7 +21,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		//
 		// add fb module
 		//
-		if (this.model.get('user').loginType == 'FB') {
+		var user = this.model.get('user');
+		if (user != undefined && user.loginType == 'FB') {
 			var id = null;
 			id = this.model.get('user').loginId;
 			logger.debug('loginType is FB and user.loginId is '+id);
@@ -73,11 +74,11 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		this.rightView.undelegateEvents();
 		var _this = this;
 		require(['modules/user/view.name_device'],function(){
-			this.rightView = new RENT.user.view.NameDeviceView({
+			_this.rightView = new RENT.user.view.NameDeviceView({
 				el : _this.$el.find('#register_right'),
 				model : _this.model});
 			_this.rightView.render();
-			this.rightView.on('success',function(){
+			_this.rightView.on('success',function(){
 				_this.show_my_device();
 			});			
 		});
