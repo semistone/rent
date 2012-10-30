@@ -95,25 +95,27 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 	},
 	get_roles:function(options){
 		logger.debug('get user roles');
-		options = $.extend(options, {
-			url : this.url + 'get_roles'
-		});
-		Backbone.sync('fetch',this, options);
-	},
-	get_sso_application_token:function(options){
-		logger.debug('get user roles');
-		options = $.extend(options, {
-			url : this.url + 'get_sso_application_token'
-		});
-		Backbone.sync('fetch',this, options);		
-	},
-	get_signature_of_mobile_auth_request:function(formObj,options){
-		delete formObj['debug'];
-		this.set(formObj,{silent:true});
-		options = $.extend(options, {
-			url : this.url + 'get_signature_of_mobile_auth_request'
-		});
-		Backbone.sync("create",this, options);		
+		var _this = this;
+		var _options  = {
+				url : this.url + 'get_roles',
+				success:function(model,resp){
+					logger.debug('get roles success');
+					var user = _this.get('user');
+					var roles = [];
+					var i = 0;
+					$.each(model,function(index, row){
+						roles[i] = row.roleId;
+						i++;//todo: change to push array.
+					});
+					logger.debug('add role '+roles);
+					user.roles = roles;
+					options['success'](model,resp);
+				},
+				error:function(model,resp){
+					options['error'](model,resp);
+				}	
+		};
+		Backbone.sync('fetch', this, _options);
 	}
 });
 

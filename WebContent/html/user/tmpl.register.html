@@ -78,13 +78,7 @@
 	{{^is_fb}}
 			<li id="link_to_fb_link"><a id="i18n_link_fb"></a></li>
 	{{/is_fb}}
-	{{#is_sso}}
-			<li id="show_sso_token_link"><a id="i18n_show_sso_token"></a></li>
-	{{/is_sso}}
-	{{^is_sso}}
-			<li id="apply_sso_link"><a id="i18n_apply_sso"></a></li>
-	{{/is_sso}}
-
+			<li id="sso_application_link"><a id="i18n_sso_application"></a></li>
 {{/user}}
 
 			<li id="sign_off_link"><a id="i18n_delete_device"></a></li>
@@ -196,97 +190,4 @@
 {{^matchUser}}
 <li id ="login_fb_link"><a id="i18n_login_to_fb"></a></li>
 {{/matchUser}}
-</script>
-<script id="tmpl_show_sso_token" type="x-tmpl-mustache">
-<div class="row">
-	<div class="span6">
-
-	<div class="alert alert-info">
-		<strong>Information</strong>
-		<span id="i18n_show_token_msg"></span>
-		{{token}}	
-	</div>
-    <form id="mobile_auth_request_form" action="index.html" method="GET" class="form-horizontal well">
-    <fieldset>
-		<div class="control-group">
-			<label  class="control-label" for="requestId">Request Id:</label>
-			<div class="controls">
-				<input type="text" name="requestId" class="input-xlarge focused required" id="requestId" value="{{requestId}}"/>
-			</div>
-		</div>
-		<div class="control-group">
-        	<label class="control-label" for="countryCode">Country Code:</label>
-        	<div class="controls">
-				<select name="countryCode" id="countryCode" class="required">
-				</select>
-        	</div>
-		</div>
-		<div class="control-group">
-			<label  class="control-label" for="mobilePhone">Mobile Phone</label>
-			<div class="controls">
-				<input type="text" name="mobilePhone" class="input-xlarge focused" maxlength="15"  id="mobilePhone" value="{{mobilePhone}}"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label  class="control-label" for="authUserId">User login ID</label>
-			<div class="controls">
-				<input type="text" name="authUserId" class="input-xlarge focused" maxlength="15"  id="authUserId" value="{{authUserId}}"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label  class="control-label" for="forceReauth">Force reauth even device authed:</label>
-			<div class="controls">
-				<select class="required" name="forceReauth" id="forceReauth">
-					<option>true</option>
-					<option>false</option>
-				</select>
-			</div>
-		</div>
-		<div class="control-group">
-			<label  class="control-label" for="done">done url:</label>
-			<div class="controls">
-				<input type="text" name="done" class="input-xlarge focused required"  id="done" value="{{done}}"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label  class="control-label" for="requestFrom">Request SSO user:</label>
-			<div class="controls">
-				<input type="text" name="requestFrom" class="input-xlarge focused required"  id="done" value="{{requestFrom}}"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label  class="control-label" for="requestTime">Request time:</label>
-			<div class="controls">
-				<input type="text" name="requestTime" class="input-xlarge focused required" maxlength="15"  id="requestTime" value="{{requestTime}}"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label  class="control-label" for="callback">Callback URL:</label>
-			<div class="controls">
-				<input type="text" name="callback" class="input-xlarge focused" id="callback" value="{{callback}}"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label  class="control-label" for="sign">Signature of this form:</label>
-			<div class="controls">
-				<input type="text" name="sign" class="input-xlarge focused"  id="sign" value="{{sign}}"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label  class="control-label" for="sign">debug flag:</label>
-			<div class="controls">
-				<select name="debug">
-					<option value="1">true</option>
-					<option value="0">false</option>
-				</select>
-			</div>
-		</div>
-		<div class="form-actions">
-			<button class="btn btn-primary" type="button" id="sign_button">Sign<i class="icon-play"></i></button>
-			<button class="btn btn-primary" type="button" id="go_button">Go<i class="icon-play"></i></button>
-		</div>
-	</fieldset>
-	</form>
-	</div>
-</div>
 </script>

@@ -37,7 +37,8 @@ public class Device {
     }
 	public String genToken(){
 		Random r  = new Random();
-		return String.format("%06d", r.nextInt(999999));
+		this.token = String.format("%06d", r.nextInt(999999));
+		return this.token;
 	}
 	public static String genId(){
 		return java.util.UUID.randomUUID().toString();

@@ -298,8 +298,9 @@ public class UserRestApi {
 		//
 		// if force reauth or status is init, then sent sms auth message.
 		//
-		if (request.isForceReauth() || response.getStatus() == DeviceStatus.Init.getStatus()) {
-			this.mobileAuthService.sendAuthMessage(request,response);
+		if (response.getStatus() == DeviceStatus.Init.getStatus()
+				|| response.getStatus() == DeviceStatus.Authing.getStatus()) {
+			this.mobileAuthService.sendAuthMessage(request, response);
 		}
 		return Response.status(HttpURLConnection.HTTP_OK).entity(response)
 				.build();
@@ -359,7 +360,19 @@ public class UserRestApi {
 	@RolesAllowed({org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED})
 	public List<Role> getRoles(){
 		String userId = this.userAuthorizeData.getUserId();
-		return this.sessionService.getRoles(userId);
+		 List<Role> roles =  this.sessionService.getRoles(userId);
+		 Session session = this.userAuthorizeData.getSession();
+		 List<Integer> sessionRoles = session.getRoles();
+		 
+		 for (Role role : roles) {
+			 int roleId = role.getRoleId();
+			 if (!sessionRoles.contains(roleId)) {
+				 logger.debug("add role "+roleId + " into session");
+				 session.addRole(role.getRoleId());
+			 }
+		 }
+		 
+		 return roles;
 	}
 	
 	@PUT

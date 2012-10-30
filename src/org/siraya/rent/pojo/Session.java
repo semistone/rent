@@ -39,6 +39,7 @@ public class Session {
 	}
 	public void addRole(int role){
 		this.roles.add(role);
+		this.isChange = true;
 	}
 	
 	public Session(String cookieValue){
