@@ -1,0 +1,31 @@
+<script id="tmpl_register_step3" type="x-tmpl-mustache">
+<div class="row">
+	<div class="span4">
+		<div id="auth_success_block" style="display:none">
+			<div class="alert alert-success">
+				<span  id="i18n_auth_success"></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+<div class="span3">
+	<div class="well">
+    	<ul class="nav nav-pills nav-stacked">
+			<li id="named_my_devices_link"><a id="i18n_named_my_devices"></a></li>
+			<li id="show_my_devices_link"><a id="i18n_show_my_devices"></a></li>
+{{#user}}
+	{{^is_fb}}
+			<li id="link_to_fb_link"><a id="i18n_link_fb"></a></li>
+	{{/is_fb}}
+			<li id="sso_application_link"><a id="i18n_sso_application"></a></li>
+{{/user}}
+
+			<li id="sign_off_link"><a id="i18n_delete_device"></a></li>
+	    </ul>
+	</div> 
+</div> 
+<div id="register_right" class="span9">
+</div>
+</div>
+</script>

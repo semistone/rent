@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rent.mapper">
+  <resultMap id="MobileAuthRequestResultMap" type="org.siraya.rent.pojo.MobileAuthRequest">
+    <result column="REQUEST_ID" jdbcType="VARCHAR" property="requestId" />
+    <result column="FORCE_REAUTH" jdbcType="BOOLEAN" property="forceReauth" />
+    <result column="DONE" jdbcType="VARCHAR" property="done" />
+    <result column="MOBILE_PHONE" jdbcType="VARCHAR" property="mobilePhone" />
+    <result column="TOKEN" jdbcType="VARCHAR" property="token" />
+    <result column="AUTH_USER_ID" jdbcType="VARCHAR" property="authUserId" />
+    <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+    <result column="CALLBACK" jdbcType="VARCHAR" property="callback" />
+    <result column="REQUEST_TIME" jdbcType="DECIMAL" property="requestTime" />
+    <result column="REQUEST_FROM" jdbcType="VARCHAR" property="requestFrom" />
+    <result column="STATUS" jdbcType="INTEGER" property="status" />    
+    <result column="RESPONSE_TIME" jdbcType="DECIMAL" property="responseTime" />
+  </resultMap>
+</mapper>

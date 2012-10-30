@@ -1,0 +1,25 @@
+package org.siraya.rent.user.dao;
+
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.ResultMap;
+import org.apache.ibatis.annotations.Select;
+import org.siraya.rent.pojo.Session;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+@Repository("sessionDao")
+public interface ISessionDao {
+	
+    @Insert("insert into SESSION values(#{id},#{deviceId},#{userId},#{lastLoginIp},#{created})")
+    public void newSession(Session session);
+    
+	@Select("select * from SESSION where USER_ID=#{userId} and DEVICE_ID=#{deviceId} order by CREATED desc limit #{limit} offset #{offset}")
+    @ResultMap("rent.mapper.SessionResultMap")
+    public List<Session> getSessions(@Param("userId")String userId,@Param("deviceId")String deviceId, @Param("limit")int limit, @Param("offset")int offset);
+
+
+	@Select("select * from SESSION where ID=#{id} ")
+    @ResultMap("rent.mapper.SessionResultMap")
+	public Session getSession(@Param("id")String id);
+	
+}
