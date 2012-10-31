@@ -418,7 +418,7 @@ public class UserService implements IUserService {
 		}
 		
 		User user = null;
-		String mobilePhone = null;
+
 		//
 		// get autu user from friend
 		//
@@ -429,31 +429,22 @@ public class UserService implements IUserService {
 				if (member.getMemberUserId() != null) {
 					user = userDao.getUserByUserId(member.getMemberUserId());
 					request.setMobilePhone(user.getMobilePhone());
+					request.setUser(user);
+					if (request.getMobilePhone() != null) { // check if user match.
+						initUserByMobilePhone(request);
+					}
 				} else {
 					logger.debug("member user id is null");
 				}
 			} else {
 				logger.debug("member is null");
-				member = new Member();
-				member.setMemberId(request.getAuthUserId());
-				member.setUserId(request.getRequestFrom());
-				member.genId();
-				memberDao.newMember(member);
-				
+				member = this.createMemberFromRequest(request);
 			}
 		} else if (request.getMobilePhone() != null) {
 			//
 			// get auth user from mobile phone
 			//
-			mobilePhone = request.getMobilePhone();
-			user = this.userDao.getUserByMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY));
-			logger.debug("this mobile phone's user not exist yet");
-			if (user == null){
-				int cc = Integer.parseInt(request.getCountryCode());
-				user = this.newUserByMobileNumber(cc, mobilePhone);				
-			}
-			request.setMobilePhone(this.encodeUtility.encrypt(mobilePhone,
-					User.ENCRYPT_KEY)); // encrypt mobile phone
+			this.initUserByMobilePhone(request);
 		} else {
 			throw new RentException(
 					RentException.RentErrorCode.ErrorInvalidParameter,
@@ -466,7 +457,7 @@ public class UserService implements IUserService {
 		}
 		
 		logger.debug("current user exist");
-		request.setUser(user);
+
 		currentDevice.setUserId(user.getId());
 		//
 		// get device from deviceDao
@@ -535,6 +526,45 @@ public class UserService implements IUserService {
 		return response;
 	}
 	
+	private Member createMemberFromRequest(MobileAuthRequest request){
+		Member member = new Member();
+		if (request.getMobilePhone() != null) {
+			this.initUserByMobilePhone(request);					
+		}
+		member.setMemberId(request.getAuthUserId());
+		member.setUserId(request.getRequestFrom());
+		member.genId();
+		member.setMemberUserId(request.getUserId());
+		memberDao.newMember(member);
+		return member;
+	}
+	/**
+	 * 
+	 * @param mobilePhone
+	 * @param request
+	 */
+	private void initUserByMobilePhone(MobileAuthRequest request){
+		String mobilePhone = request.getMobilePhone();
+		User userFromAuthUserId = request.getUser();
+		User user = this.userDao.getUserByMobilePhone(this.encodeUtility.encrypt(mobilePhone,User.ENCRYPT_KEY));
+		//
+		// match auth user and mobile phone if all exist.
+		//
+		if (userFromAuthUserId != null && user != null
+				&& user.getId() != userFromAuthUserId.getId()) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"auth user id and mobile phone not match ");
+		}
+		logger.debug("this mobile phone's user not exist yet");
+		if (user == null){
+			int cc = Integer.parseInt(request.getCountryCode());
+			user = this.newUserByMobileNumber(cc, mobilePhone);				
+		}
+		request.setMobilePhone(this.encodeUtility.encrypt(mobilePhone,
+				User.ENCRYPT_KEY)); // encrypt mobile phone
+		request.setUser(user);
+	}
 	/**
 	 * 
 	 * @param request
@@ -625,5 +655,11 @@ public class UserService implements IUserService {
 	public void setEncodeUtility(EncodeUtility encodeUtility) {
 		this.encodeUtility = encodeUtility;
 	}
+	public IMemberDao getMemberDao() {
+		return memberDao;
+	}
 
+	public void setMemberDao(IMemberDao memberDao) {
+		this.memberDao = memberDao;
+	}
 }

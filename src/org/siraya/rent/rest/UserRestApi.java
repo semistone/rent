@@ -298,8 +298,10 @@ public class UserRestApi {
 		//
 		// if force reauth or status is init, then sent sms auth message.
 		//
-		if (response.getStatus() == DeviceStatus.Init.getStatus()
-				|| response.getStatus() == DeviceStatus.Authing.getStatus()) {
+		int status = response.getStatus();
+		if (response.getUser() != null
+				&& (status == DeviceStatus.Init.getStatus() 
+				|| status == DeviceStatus.Authing.getStatus())) {
 			this.mobileAuthService.sendAuthMessage(request, response);
 		}
 		return Response.status(HttpURLConnection.HTTP_OK).entity(response)

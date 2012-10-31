@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.siraya.rent.pojo.MobileAuthRequest;
 import org.siraya.rent.pojo.User;
+import org.siraya.rent.pojo.Member;
+import org.siraya.rent.pojo.MobileAuthResponse;
 import org.siraya.rent.user.dao.IMobileAuthRequestDao;
 import org.siraya.rent.user.service.IUserService;
 import org.siraya.rent.user.service.UserService;
@@ -23,7 +25,7 @@ import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.user.dao.IVerifyEventDao;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.siraya.rent.user.dao.IMemberDao;
 @ContextConfiguration(locations = { "classpath*:/applicationContext*.xml" })
 public class TestUserService {
 	User user = new User();
@@ -33,6 +35,7 @@ public class TestUserService {
 	private Mockery context;
 	private boolean isMock = true;
 	private IUserDAO userDao;
+	private IMemberDao memberDao;
 	private IDeviceDao deviceDao;
 	private String deviceId = "d123";
 	private String userId = "0b2150d3-b437-4731-91d6-70db69660dc2";
@@ -58,12 +61,14 @@ public class TestUserService {
 		if (isMock) {
 			context = new JUnit4Mockery();
 			userDao = context.mock(IUserDAO.class);
+			memberDao = context.mock(IMemberDao.class);
 			deviceDao = context.mock(IDeviceDao.class);
 			mobileAuthRequestDao = context.mock(IMobileAuthRequestDao.class);
 			verifyEventDao = context.mock(IVerifyEventDao.class);
 
 			config = context.mock(IApplicationConfig.class);
 			userService.setUserDao(userDao);
+			userService.setMemberDao(memberDao);
 			userService.setDeviceDao(deviceDao);
 			userService.setApplicationConfig(config);
 			userService.setMobileAuthRequestDao(mobileAuthRequestDao);
@@ -74,7 +79,7 @@ public class TestUserService {
 			request.setRequestFrom(this.userId);
 			request.setRequestTime(time/1000);
 			request.setCountryCode("886");
-			request.setAuthUserId("test id");
+			
 			request.setMobilePhone("8862332131313");
 			request.setDone("http://www.yahoo.com");
 			request.setDevice(device);
@@ -180,6 +185,38 @@ public class TestUserService {
 			});
 		}
 		userService.updateLoginIdAndPassowrd(user);
+	}
+
+	@Test
+	public void testMobileAuthRequestWithAuthUserId(){
+		request.setAuthUserId("test id");
+		if (isMock) {
+			context.checking(new Expectations() {
+				{
+					one(deviceDao).getDeviceByDeviceIdAndUserId(
+							IUserService.SSO_DEVICE_ID, userId);
+					device.setStatus(DeviceStatus.ApiKeyOnly.getStatus());
+					will(returnValue(device));
+					one(memberDao).getByMemberUserId(request.getRequestFrom(), request.getAuthUserId());
+
+					one(memberDao).newMember(with(any(Member.class)));
+				
+					// check mobile phone and return null
+					one(mobileAuthRequestDao).newRequest(request);
+
+					one(config).get("general");
+					will(returnValue(setting));
+	
+					one(config).get("keydb");
+					will(returnValue(setting));
+				}
+			});
+
+		}
+		MobileAuthResponse response = userService.mobileAuthRequest(request);		
+		Assert.assertEquals(DeviceStatus.Init.getStatus(), response.getStatus());
+		Assert.assertEquals(device.getId(),response.getDevice().getId());
+		Assert.assertNull(response.getUserId());
 	}
 
 	@Test

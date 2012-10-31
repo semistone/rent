@@ -17,7 +17,8 @@ var $template = $('<div>').append(template);
 //
 RENT.user.view.RegisterStep1View = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render', 'new_device_event');
+		_.bindAll(this, 'render', 'new_device_event' , 'new_device', 
+				'mobile_auth_request', 'success', 'error' ,'validate');
 		this.tmpl = $template.find('#tmpl_register_step1').html();
 	},
 	render: function(){
@@ -42,17 +43,60 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 
 
 	},
-
 	events : {
 		"click #register_button" : "new_device_event"
 	},
-	
-	new_device_event : function() {
-		logger.debug('click new device button');
+	new_device :function(){
+		if (this.model.get('responseId') == null) {
+			this.new_device_event();
+		} else {
+			this.mobile_auth_request();
+		}
+	},
+	mobile_auth_request:function(){
+		logger.debug('do mobile_auth_request');
+		var mobileAuthRequestForm = RENT.user.mobileAuthRequestForm;
+		if (!this.validate()) return;
+		var _this = this;
+		this.model.mobile_auth_request(mobileAuthRequestForm,{
+			success:function(model,response){
+				logger.debug('success');					
+				_this.model.set(model);
+			},
+			error:function(resp){
+				if (resp != null && resp.status == 409) {
+					_this.model.set({status:1});
+				} else {
+					_this.error(_this.model,resp);						
+				}
+			}
+		});
+	},
+	success : function(model, response) {
+		logger.debug('render register view step2');
+		this.undelegateEvents();
+		if (model.status == 2) {
+			logger.debug('device has authed');
+			this.model.set(model,{silent:true});
+			this.model.trigger('verify_success');
+			return;
+		}
+		require(['modules/user/view.step2'], function(){
+			new RENT.user.view.RegisterStep2View({
+				el : this.el,
+				model : this.model
+			}).render();				
+		});
+	},
+	error :function(resp) {
+		logger.error('step1 error response:' + resp.status);
+		RENT.simpleErrorDialog(resp);
+	},
+	validate :function(){
         var formvalidate = this.$el.find("#register_form").valid();
         if (!formvalidate) {
         	logger.error('form validate fail');
-        	return;
+        	return false;
         }
 		var country_code = this.$el.find('#country_code').val();
 		var mobile_phone = this.$el.find('#mobile_phone').val();
@@ -64,35 +108,18 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 		}else{
 			mobile_phone = country_code + mobile_phone;
 		}
-		var _this = this;
-
-		logger.debug('do save');
-		var success = function(model, response) {
-			logger.debug('render register view step2');
-			_this.undelegateEvents();
-			if (model.status == 2) {
-				logger.debug('device has authed');
-				_this.model.set(model,{silent:true});
-				_this.model.trigger('verify_success');
-				return;
-			}
-			require(['modules/user/view.step2'],function(){
-				new RENT.user.view.RegisterStep2View({
-					el : _this.el,
-					model : _this.model
-				}).render();				
-			});
-		};
-		var error = function(resp) {
-			logger.error('step1 error response:' + resp.status);
-			RENT.simpleErrorDialog(resp);
-		};
-		this.model.new_device({
+		this.model.set({
 			countryCode : country_code,
-			mobilePhone : mobile_phone
-		}, {
-			success : success,
-			error : error
+			mobilePhone : mobile_phone			
+		}, {silent:true});
+	},
+	new_device_event : function() {
+		logger.debug('click new device button');
+		if (!this.validate()) return;
+		logger.debug('do save');
+		this.model.new_device({
+			success : this.success,
+			error : this.error
 		});
 	}
 });
