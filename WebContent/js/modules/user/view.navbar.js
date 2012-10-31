@@ -16,16 +16,21 @@ var $template = $('<div>').append(template);
 	
 RENT.user.view.NavBarView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render', 'initFBModel','login_facebook');
+		_.bindAll(this, 'render', 'initFBModel','login_facebook','logout_facebook');
 		var _this = this;
 		this.model.on('sign_off',function(){
 			logger.debug('navbar sign off');
 			_this.$el.find('#user_info').empty();
-			_this.fbModel = null;
+			if (_this.fbModel != null) {
+				_this.fbModel.logout();
+				_this.fbModel = null;
+			}
+			
 		});
 	},
 	events : {
-		"click #login_fb_link" : "login_facebook"
+		"click #login_fb_link" : "login_facebook",
+		'click #logout_fb_link' : 'logout_facebook'
 	},
 	initFBModel:function(model){
 		this.fbModel = model;
@@ -50,6 +55,10 @@ RENT.user.view.NavBarView = Backbone.View.extend({
 			// 
 			this.$el.find('#i18n_login_to_fb').text(
 					$.i18n.prop('user.register.login_to_fb'));	
+			this.$el.find('#i18n_user_not_match').text(
+					$.i18n.prop('user.register.user_not_match'));	
+
+			
 		}
 	},
 	login_facebook:function(){
@@ -57,6 +66,11 @@ RENT.user.view.NavBarView = Backbone.View.extend({
 		require(['Facebook'],function(){
 			_this.fbModel.login();			
 		});
+	},
+	logout_facebook:function(){
+		this.fbModel.logout(function(){
+			logger.debug('logout success');
+		});		
 	}
 });
 });

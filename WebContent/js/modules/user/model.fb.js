@@ -11,22 +11,35 @@ RENT.user.model.FBModel = Backbone.Model.extend({
 		var _this = this;
 		FB.api('/me', function(response) {
 			_this.set({matchUser:_this.get('id') == response.id},{silent:true});
-			logger.debug('set fb response');
+			logger.debug('set fb response is match:' + _this.get('matchUser'));
 			_this.set(response);				
 
 		});
+	},
+	
+	logout:function(callback){
+		logger.debug('logout fb');
+		if (this.get('connected')) {
+			FB.logout(function(response) {
+				if (callback != undefined) callback();
+			});			
+		}else{
+			logger.debug('logout but not connected');
+		}
 	},
 	login: function(options) {
 		var _this = this;
 		FB.login(function(response) {
 			if (_this.get('name') != null) {
 				logger.debug('already logined');
-				_this.trigger('login_success');				
+				_this.set({connected:true},{silent:true});
+				_this.trigger('login_success');	
 				if (options != null) options.success();
 				return;
 			}
 			if (response.authResponse) {
 				logger.debug('login success');
+				_this.set({connected:true},{silent:true});
 				if (options != null) options.success();
 				_this.setResponse();
 				_this.trigger('login_success');
@@ -42,6 +55,8 @@ RENT.user.model.FBModel = Backbone.Model.extend({
 		FB.getLoginStatus(function(response) {
 			if (response.status === 'connected') {
 				// connected
+				logger.debug('fb connected');
+				_this.set({connected:true},{silent:true});
 				_this.setResponse();
 			}else {
 				logger.debug('fb not connected');
