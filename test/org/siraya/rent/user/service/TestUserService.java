@@ -1,5 +1,5 @@
 package org.siraya.rent.user.service;
-
+import org.siraya.rent.user.dao.IRoleDao;
 import junit.framework.Assert;
 
 import org.jmock.Expectations;
@@ -7,6 +7,7 @@ import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Test;
+import org.siraya.rent.pojo.Role;
 import org.siraya.rent.pojo.MobileAuthRequest;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.Member;
@@ -36,6 +37,7 @@ public class TestUserService {
 	private boolean isMock = true;
 	private IUserDAO userDao;
 	private IMemberDao memberDao;
+	private IRoleDao roleDao;
 	private IDeviceDao deviceDao;
 	private String deviceId = "d123";
 	private String userId = "0b2150d3-b437-4731-91d6-70db69660dc2";
@@ -60,6 +62,7 @@ public class TestUserService {
 		device.setId(deviceId);
 		if (isMock) {
 			context = new JUnit4Mockery();
+			roleDao = context.mock(IRoleDao.class);
 			userDao = context.mock(IUserDAO.class);
 			memberDao = context.mock(IMemberDao.class);
 			deviceDao = context.mock(IDeviceDao.class);
@@ -69,6 +72,7 @@ public class TestUserService {
 			config = context.mock(IApplicationConfig.class);
 			userService.setUserDao(userDao);
 			userService.setMemberDao(memberDao);
+			userService.setRoleDao(roleDao);
 			userService.setDeviceDao(deviceDao);
 			userService.setApplicationConfig(config);
 			userService.setMobileAuthRequestDao(mobileAuthRequestDao);
@@ -198,7 +202,8 @@ public class TestUserService {
 					device.setStatus(DeviceStatus.ApiKeyOnly.getStatus());
 					will(returnValue(device));
 					one(memberDao).getByMemberUserId(request.getRequestFrom(), request.getAuthUserId());
-
+					one(userDao).getUserByMobilePhone(with(any(String.class)));
+					will(returnValue(user));					
 					one(memberDao).newMember(with(any(Member.class)));
 				
 					// check mobile phone and return null
@@ -209,14 +214,18 @@ public class TestUserService {
 	
 					one(config).get("keydb");
 					will(returnValue(setting));
+					one(deviceDao).getDeviceByDeviceIdAndUserId(
+							with(any(String.class)),with(any(String.class)));
+					will(returnValue(device));
+
 				}
 			});
 
 		}
 		MobileAuthResponse response = userService.mobileAuthRequest(request);		
-		Assert.assertEquals(DeviceStatus.Init.getStatus(), response.getStatus());
+		Assert.assertEquals(device.getStatus(), response.getStatus());
 		Assert.assertEquals(device.getId(),response.getDevice().getId());
-		Assert.assertNull(response.getUserId());
+		Assert.assertNotNull(response.getUserId());
 	}
 
 	@Test
@@ -261,6 +270,7 @@ public class TestUserService {
 			context.checking(new Expectations() {
 				{
 					one(deviceDao).newDevice(device);
+					one(roleDao).newRole(with(any(Role.class)));
 				}
 			});
 

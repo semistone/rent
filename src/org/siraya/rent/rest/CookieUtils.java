@@ -125,12 +125,12 @@ public class CookieUtils {
     	String[] strings=deviceCookie.split(":");
 	    int len = strings.length;
 	    if (len > 0){
-	    	logger.debug("set device id as "+strings[0]);	
+	    	//logger.debug("set device id as "+strings[0]);	
 		    userAuthorizeData.setDeviceId(strings[0]);
 
 	    } 
 	    if (len > 1){
-	    	logger.debug("set user id as "+strings[1]);
+	    	//logger.debug("set user id as "+strings[1]);
 		    userAuthorizeData.setUserId(strings[1]);
 	    }
     }

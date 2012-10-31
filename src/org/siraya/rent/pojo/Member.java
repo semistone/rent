@@ -34,9 +34,16 @@ public class Member {
 		return created;
 	}
 	public void setCreated(long created) {
+		if (created == 0) {
+			created=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+			modified= created;
+		}
 		this.created = created;
 	}
 	public long getModified() {
+		if (modified == 0) {
+			modified=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+		}
 		return modified;
 	}
 	public void setModified(long modified) {

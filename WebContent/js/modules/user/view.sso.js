@@ -145,7 +145,7 @@ RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
 		this.model.apply_sso_application({
 			success:function(model,resp){
 				logger.debug('apply sso success');
-				var user = _this.model.get('user');
+				var user = _this.userModel.get('user');
 				user.roles.push('5'); // push role 5 is sso application
 				_this.hasRole = true;
 				_this.show_token();

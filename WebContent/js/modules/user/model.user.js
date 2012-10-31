@@ -10,7 +10,6 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/';
 	},
 	new_device:function(options){
-		this.set(data,{silent:true});
 		Backbone.sync("create",this, options);	
 	},
 	//

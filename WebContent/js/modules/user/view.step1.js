@@ -17,8 +17,8 @@ var $template = $('<div>').append(template);
 //
 RENT.user.view.RegisterStep1View = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render', 'new_device_event' , 'new_device', 
-				'mobile_auth_request', 'success', 'error' ,'validate');
+		_.bindAll(this, 'render', 'new_device_event' , 'new_device_event', 
+				'success', 'error' ,'validate');
 		this.tmpl = $template.find('#tmpl_register_step1').html();
 	},
 	render: function(){
@@ -46,32 +46,7 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 	events : {
 		"click #register_button" : "new_device_event"
 	},
-	new_device :function(){
-		if (this.model.get('responseId') == null) {
-			this.new_device_event();
-		} else {
-			this.mobile_auth_request();
-		}
-	},
-	mobile_auth_request:function(){
-		logger.debug('do mobile_auth_request');
-		var mobileAuthRequestForm = RENT.user.mobileAuthRequestForm;
-		if (!this.validate()) return;
-		var _this = this;
-		this.model.mobile_auth_request(mobileAuthRequestForm,{
-			success:function(model,response){
-				logger.debug('success');					
-				_this.model.set(model);
-			},
-			error:function(resp){
-				if (resp != null && resp.status == 409) {
-					_this.model.set({status:1});
-				} else {
-					_this.error(_this.model,resp);						
-				}
-			}
-		});
-	},
+
 	success : function(model, response) {
 		logger.debug('render register view step2');
 		this.undelegateEvents();
@@ -81,10 +56,11 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 			this.model.trigger('verify_success');
 			return;
 		}
+		var _this = this;
 		require(['modules/user/view.step2'], function(){
 			new RENT.user.view.RegisterStep2View({
-				el : this.el,
-				model : this.model
+				el : _this.el,
+				model : _this.model
 			}).render();				
 		});
 	},
@@ -112,6 +88,7 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 			countryCode : country_code,
 			mobilePhone : mobile_phone			
 		}, {silent:true});
+		return true;
 	},
 	new_device_event : function() {
 		logger.debug('click new device button');

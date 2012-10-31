@@ -53,6 +53,8 @@ public class UserService implements IUserService {
 
 	@Autowired
 	private IRoleDao roleDao;
+
+
 	private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     
@@ -434,7 +436,9 @@ public class UserService implements IUserService {
 						initUserByMobilePhone(request);
 					}
 				} else {
-					logger.debug("member user id is null");
+					throw new RentException(
+							RentException.RentErrorCode.ErrorGeneral,
+							"member user id can't be null");
 				}
 			} else {
 				logger.debug("member is null");
@@ -450,14 +454,8 @@ public class UserService implements IUserService {
 					RentException.RentErrorCode.ErrorInvalidParameter,
 					"both auth user id and mobile phone is null");
 		}
-		
-		if (user == null) {
-			logger.debug("user is null");
-			return this.handleNullUserRequest(request);
-		}
-		
-		logger.debug("current user exist");
-
+				
+		user = request.getUser();
 		currentDevice.setUserId(user.getId());
 		//
 		// get device from deviceDao
@@ -530,6 +528,10 @@ public class UserService implements IUserService {
 		Member member = new Member();
 		if (request.getMobilePhone() != null) {
 			this.initUserByMobilePhone(request);					
+		} else {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"mobile phone can't null");
 		}
 		member.setMemberId(request.getAuthUserId());
 		member.setUserId(request.getRequestFrom());
@@ -565,27 +567,7 @@ public class UserService implements IUserService {
 				User.ENCRYPT_KEY)); // encrypt mobile phone
 		request.setUser(user);
 	}
-	/**
-	 * 
-	 * @param request
-	 * @return
-	 */
-	private MobileAuthResponse handleNullUserRequest(MobileAuthRequest request){
-		logger.debug("save request into database");
-		request.genToken();
-		request.setStatus(DeviceStatus.Init.getStatus());
-		request.setToken(encodeUtility.encrypt(request.getToken(), Device.ENCRYPT_KEY));
-		mobileAuthRequestDao.newRequest(request);
-		
-		logger.debug("user unkown yet");
-		MobileAuthResponse response = new MobileAuthResponse();
-		response.setRequestId(request.getRequestId());
-		response.setStatus(DeviceStatus.Init.getStatus());
-		Device currentDevice = request.getDevice();
-		currentDevice.setUser(null);
-		response.setDevice(currentDevice);
-		return response;
-	}
+
 	public List<Device> getSsoDevices(){
 		return this.deviceDao.getSsoDevices();
 	}
@@ -661,5 +643,12 @@ public class UserService implements IUserService {
 
 	public void setMemberDao(IMemberDao memberDao) {
 		this.memberDao = memberDao;
+	}
+	public IRoleDao getRoleDao() {
+		return roleDao;
+	}
+
+	public void setRoleDao(IRoleDao roleDao) {
+		this.roleDao = roleDao;
 	}
 }
