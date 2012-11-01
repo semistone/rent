@@ -93,10 +93,16 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 	new_device_event : function() {
 		logger.debug('click new device button');
 		if (!this.validate()) return;
-		logger.debug('do save');
-		this.model.new_device({
-			success : this.success,
-			error : this.error
+		// change locale by country code.
+		var countryCode = this.model.get('countryCode');
+		var locale = RENT.CONSTANTS.COUNTRIES[countryCode].locale;
+		var _this = this;
+		RENT.setLangRes(locale, ['rent_user'],'', function(){
+			logger.debug('do save');
+			_this.model.new_device({
+				success : _this.success,
+				error : _this.error
+			});			
 		});
 	}
 });

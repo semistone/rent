@@ -9,10 +9,10 @@ var RENT = {
 		APIs_BASE_DIR: './',
 		AJAX_TIMEOUT : 3000,
 		COUNTRIES: {
-			"886": "general.taiwan",
-			"86": "general.china",
-			"81" : "general.japan",
-			"1"  : "general.unit_state"
+			"886": {name:"general.taiwan",locale:'zh-TW'},
+			"86": {name:"general.china", locale:'zh-CN'},
+			"81" : {name:"general.japan",locale:'ja'},
+			"1"  : {name:"general.unit_state", locale:'en-US'}
 		},
 		FACEBOOK_APP: '362616447158349',
 		FACEBOOK_CHANNEL:'http://angus-ec2.siraya.net/facebook.html', // Channel File
@@ -111,7 +111,7 @@ var RENT = {
     		return;
     	}
 		$.each(this.CONSTANTS.COUNTRIES , function(key, value) {
-			options[options.length] = new Option($.i18n.prop(value),key);
+			options[options.length] = new Option($.i18n.prop(value.name),key);
 		});
     }
     
