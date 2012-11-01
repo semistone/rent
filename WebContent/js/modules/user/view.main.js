@@ -38,7 +38,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		'click #sign_off_link' : 'sign_off',
 		'click #show_my_devices_link' : 'show_my_device',
 		'click #link_to_fb_link' : 'link_fb',
-		'click #sso_application_link':'sso_application'
+		'click #sso_application_link':'sso_application',
+		'click #import_fb_friends_link' : 'import_fb_friends'
 	},
 	render:function(){
 		this.model.trigger('change_view','main');
@@ -66,8 +67,9 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 				$.i18n.prop('user.register.link_fb'));
 		this.$el.find('#i18n_sso_application').text(
 				$.i18n.prop('user.main.sso_application'));
+		this.$el.find('#i18n_import_fb_friends').text(
+				$.i18n.prop('user.main.import_fb_friends'));
 		
-
 	},
 	name_device_popup:function(){
 		logger.debug('click name device popup');
@@ -152,6 +154,15 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 				userModel: _this.model
 			});					
 		});
+	},
+	import_fb_friends:function(){
+		logger.debug('click import_fb_friends');
+		var _this = this;
+		_this.rightView.undelegateEvents();
+		require(['modules/user/view.import_fb_friends'],function(){
+			new RENT.user.view.ImportFbFriendsView({el: _this.$el.find('#register_right')});
+		});
+
 	}
 });
 

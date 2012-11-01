@@ -12,11 +12,17 @@ RENT.user.model.FBModel = Backbone.Model.extend({
 		FB.api('/me', function(response) {
 			_this.set({matchUser:_this.get('id') == response.id},{silent:true});
 			logger.debug('set fb response is match:' + _this.get('matchUser'));
-			_this.set(response);				
+			_this.set(response);
 
 		});
 	},
-	
+	friends:function (){
+		var _this = this;
+		FB.api('/me/friends', function(response) {
+			logger.debug('get friends');
+			_this.set({friends: response.data});
+		});		
+	},
 	logout:function(callback){
 		logger.debug('logout fb');
 		if (this.get('connected')) {
