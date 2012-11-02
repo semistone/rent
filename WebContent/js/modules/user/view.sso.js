@@ -61,6 +61,11 @@ RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
 					RENT.simpleErrorDialog(resp,'');
 				}
 			});
+		} else {
+			if (user.roles && _.contains(user.roles,5)) {
+				this.hasRole = true;
+				this.show_token();
+			}
 		}
 		this.model.on('change',this.render);
 		this.model.set({

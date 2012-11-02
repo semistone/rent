@@ -38,11 +38,11 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 				logger.debug('click name device popup save error');
 				alert('error');
 			}
-		})	
+		});
 	},
 	render:function(){
 		this.model.trigger('change_view','name_device');
-		this.$el.html(this.tmpl);
+		this.$el.html(Mustache.to_html(this.tmpl,this.model.toJSON()));
 		var _this = this;
 		RENT.initValidator(function(){
 			_this.$el.find("#name_device_form").validate();

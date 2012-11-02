@@ -15,7 +15,7 @@ define([
 var $template = $('<div>').html(template);
 RENT.backyard.view.MainView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render','sso_request_form');
+		_.bindAll(this, 'render');
 		this.tmpl = $template.find('#tmpl_backyard_menu').html();
 	},
 	events : {

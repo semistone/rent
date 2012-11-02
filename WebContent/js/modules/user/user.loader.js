@@ -18,7 +18,7 @@ define([
 			RENT.user.navBar = new RENT.user.view.NavBarView({el:'#navbar',model:model});
 			RENT.user.mainView = new RegisterView({el:'#main', model:model});
 		});
-  }
+	};
   return {
     initialize: initialize
   };
