@@ -11,22 +11,23 @@ define([
 var $template = $('<div>').append(template);	
 RENT.user.view.ImportFbFriendsView = Backbone.View.extend({
 	events : {
-		"click .page_index" : 'page_index'
+		'click .page_index' : 'page_index',
+		'click .delete_friend_link' : 'delete_friend'
 	},
 	initialize : function() {
 		this.pageSize = 15;
 		this.start = 0;
 		this.end= this.pageSize;
-		this.model = new RENT.user.model.FBModel();
-		_.bindAll(this, 'render', 'page_index');
-		this.model.on('change', this.render);
+		_.bindAll(this, 'render', 'page_index', 'delete_friend');
+		this.collection = new RENT.user.collection.FriendCollection();
+		this.collection.on('reset add remove', this.render);
 		this.tmpl = $template.find('#tmpl_show_fb_friends').html();
-		this.model.friends();
-
+		this.collection.fetch();
 	},
 	render:function(){
 		logger.debug('render friends');
-		var array = this.model.toJSON();
+		var array = {};
+		array.friends = this.collection.toJSON();
 		if (array.friends == undefined) {
 			return;
 		}
@@ -52,6 +53,12 @@ RENT.user.view.ImportFbFriendsView = Backbone.View.extend({
 		this.start = setPage * this.pageSize;
 		this.end = (setPage + 1) * this.pageSize;
 		this.render();
+	},
+	delete_friend:function(ev){
+		var id = parseInt($(ev.target).parent().parent().attr('id'));
+		logger.debug("delete friend id "+id);
+		var model = this.collection.get(id);
+		this.collection.remove(model);
 	}
 });
 
