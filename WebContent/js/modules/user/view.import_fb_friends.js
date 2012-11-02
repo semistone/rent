@@ -6,7 +6,7 @@ define([
   'RentCommon',
   'logger',
   'text!../../../html/user/tmpl.import_fb_friends.html',
-  './model.fb'
+  './collection.friends'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 var $template = $('<div>').append(template);	
 RENT.user.view.ImportFbFriendsView = Backbone.View.extend({
