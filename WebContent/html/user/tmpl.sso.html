@@ -10,32 +10,32 @@
     <form id="mobile_auth_request_form" action="index.html" method="GET" class="form-horizontal well">
     <fieldset>
 		<div class="control-group">
-			<label  class="control-label" for="requestId">Request Id:</label>
+			<label  class="control-label" id="i18n_request_id" for="requestId"></label>
 			<div class="controls">
 				<input type="text" name="requestId" class="input-xlarge focused required" id="requestId" value="{{requestId}}"/>
 			</div>
 		</div>
 		<div class="control-group">
-        	<label class="control-label" for="countryCode">Country Code:</label>
+        	<label class="control-label" id="i18n_country_code" for="countryCode"></label>
         	<div class="controls">
 				<select name="countryCode" id="countryCode" class="required">
 				</select>
         	</div>
 		</div>
 		<div class="control-group">
-			<label  class="control-label" for="mobilePhone">Mobile Phone</label>
+			<label  class="control-label" for="mobilePhone" id="i18n_mobile_phone"></label>
 			<div class="controls">
 				<input type="text" name="mobilePhone" class="input-xlarge focused" maxlength="15"  id="mobilePhone" value="{{mobilePhone}}"/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label  class="control-label" for="authUserId">User login ID</label>
+			<label  class="control-label" for="authUserId" id="i18n_auth_user_id"></label>
 			<div class="controls">
 				<input type="text" name="authUserId" class="input-xlarge focused" maxlength="15"  id="authUserId" value="{{authUserId}}"/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label  class="control-label" for="forceReauth">Force reauth even device authed:</label>
+			<label  class="control-label" for="forceReauth" id="i18n_force_reauth"></label>
 			<div class="controls">
 				<select class="required" name="forceReauth" id="forceReauth">
 					<option>true</option>
@@ -44,37 +44,37 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label  class="control-label" for="done">done url:</label>
+			<label  class="control-label" for="done" id="i18n_down_url"></label>
 			<div class="controls">
 				<input type="text" name="done" class="input-xlarge focused required"  id="done" value="{{done}}"/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label  class="control-label" for="requestFrom">Request SSO user:</label>
+			<label  class="control-label" for="requestFrom" id="i18n_request_sso_user"></label>
 			<div class="controls">
 				<input type="text" name="requestFrom" class="input-xlarge focused required"  id="done" value="{{requestFrom}}"/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label  class="control-label" for="requestTime">Request time:</label>
+			<label  class="control-label" for="requestTime" id="i18n_request_time"></label>
 			<div class="controls">
 				<input type="text" name="requestTime" class="input-xlarge focused required" maxlength="15"  id="requestTime" value="{{requestTime}}"/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label  class="control-label" for="callback">Callback URL:</label>
+			<label  class="control-label" for="callback" id="i18n_callback"></label>
 			<div class="controls">
 				<input type="text" name="callback" class="input-xlarge focused" id="callback" value="{{callback}}"/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label  class="control-label" for="sign">Signature of this form:</label>
+			<label  class="control-label" for="sign" id="i18n_signature"></label>
 			<div class="controls">
 				<input type="text" name="sign" class="input-xlarge focused"  id="sign" value="{{sign}}"/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label  class="control-label" for="sign">debug flag:</label>
+			<label  class="control-label" for="sign" id="i18n_debug"></label>
 			<div class="controls">
 				<select name="debug">
 					<option value="1">true</option>
