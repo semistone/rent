@@ -1,0 +1,39 @@
+<script id="tmpl_profile_form" type="x-tmpl-mustache">
+<div class="row">
+	<div class="span6">
+    <form  id="profile_form" class="form-horizontal well">
+		<fieldset>
+{{#is_fb}}
+{{/is_fb}}
+                <div class="control-group">
+                	<label  id="i18n_name" class="control-label" for="name"></label>
+	               	<div class="controls">
+        	       		<input type="text" name="name" id="name" value="{{name}}" class="required text ui-widget-content" />
+    	           	</div>
+                </div>
+                <div class="control-group">
+                	<label  id="i18n_email" class="control-label" for="email"></label>
+	               	<div class="controls">
+        	       		<input type="text" name="email" id="email" value="{{email}}" class="required text ui-widget-content" />
+    	           	</div>
+                </div>
+				<div class="control-group">
+					<label  id="i18n_country" class="control-label" for="cc"></label>
+	                <div class="controls">
+        	        	<input type="text" name="cc" id="lang" value="{{cc}}" class="required text ui-widget-content" />
+    	            </div>
+                </div>
+				<div class="control-group">
+					<label  id="i18n_language" class="control-label" for="lang"></label>
+	                <div class="controls">
+        	        	<input type="text" name="lang" id="lang" value="{{lang}}" class="required text ui-widget-content" />
+    	            </div>
+                </div>
+                <div class="form-actions">
+                        <button class="btn btn-success" type="button" id="save_profile_link">Save</button>
+                </div>
+		</fieldset>
+	</form>
+	</div>
+</div>
+</script>

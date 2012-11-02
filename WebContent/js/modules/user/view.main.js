@@ -39,7 +39,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		'click #show_my_devices_link' : 'show_my_device',
 		'click #link_to_fb_link' : 'link_fb',
 		'click #sso_application_link':'sso_application',
-		'click #import_fb_friends_link' : 'import_fb_friends'
+		'click #import_fb_friends_link' : 'import_fb_friends',
+		'click #user_profile_link' :'show_user_profile'
 	},
 	render:function(){
 		this.model.trigger('change_view','main');
@@ -69,6 +70,9 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 				$.i18n.prop('user.main.sso_application'));
 		this.$el.find('#i18n_import_fb_friends').text(
 				$.i18n.prop('user.main.import_fb_friends'));
+		this.$el.find('#i18n_user_profile').text(
+				$.i18n.prop('user.main.user_profile'));
+		
 		
 	},
 	name_device_popup:function(){
@@ -163,6 +167,18 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			_this.rightView = new RENT.user.view.ImportFbFriendsView({el: _this.$el.find('#register_right')});
 		});
 
+	},
+	show_user_profile:function(){
+		logger.debug('click show_user_profile');
+		var _this = this;
+		this.rightView.undelegateEvents();
+		require(['modules/user/view.profile'],function(){
+			_this.rightView = new RENT.user.view.UserProfileView({
+				el: _this.$el.find('#register_right'),
+				model:_this.model
+			});
+			_this.rightView.render();
+		});		
 	}
 });
 

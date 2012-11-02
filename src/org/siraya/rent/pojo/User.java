@@ -333,7 +333,6 @@ public class User {
 	 * 
 	 * @mbggenerated Mon Sep 10 16:50:24 CST 2012
 	 */
-	@JsonIgnore
 	public String getCc() {
 		return cc;
 	}
