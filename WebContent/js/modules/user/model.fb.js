@@ -18,8 +18,18 @@ RENT.user.model.FBModel = Backbone.Model.extend({
 	},
 	friends:function (){
 		var _this = this;
+		if (this.get('friends') != undefined) {
+			logger.debug('friends already exist');
+			this.trigger('change');
+			return;
+		}
 		FB.api('/me/friends', function(response) {
 			logger.debug('get friends');
+			if (response.error != undefined) {
+				logger.error('fetch friend error');
+				_this.trigger('error');
+				return;
+			}
 			_this.set({friends: response.data});
 		});		
 	},

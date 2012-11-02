@@ -21,8 +21,8 @@ if (method.equals("GET")) {
 	"lastLoginTime" : null,
 	"user":{
 		"id": "a2f76e58-93b7-45ff-8acc-6c0a773e3bbf",
-		"loginId":null,
-		"loginType":null	
+		"loginId":"33333",
+		"loginType":"FB"	
 	}
 }
 <%	

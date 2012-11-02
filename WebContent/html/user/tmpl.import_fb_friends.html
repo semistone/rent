@@ -14,14 +14,23 @@
 				</tr>
 			</thead>
 			<tbody>
-{{#friends}}
+{{#sliceFriends}}
 				<tr id="{{id}}">
 					<td class="show_sessions_link">{{name}}</td>
 					<td><img src="https://graph.facebook.com/{{id}}/picture"></td>
 				</tr>
-{{/friends}}
+{{/sliceFriends}}
 			</tbody>
 		</table>
+	    <div class="pagination">
+    		<ul>
+			    <li><a href="#">Prev</a></li>
+				{{#pages}}
+    			<li><a class="page_index" href="#">{{.}}</a></li>
+				{{/pages}}
+			    <li><a href="#">Next</a></li>
+    		</ul>
+    	</div>
 	</div>
 </div>
 </script>

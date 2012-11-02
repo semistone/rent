@@ -158,9 +158,9 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	import_fb_friends:function(){
 		logger.debug('click import_fb_friends');
 		var _this = this;
-		_this.rightView.undelegateEvents();
+		this.rightView.undelegateEvents();
 		require(['modules/user/view.import_fb_friends'],function(){
-			new RENT.user.view.ImportFbFriendsView({el: _this.$el.find('#register_right')});
+			_this.rightView = new RENT.user.view.ImportFbFriendsView({el: _this.$el.find('#register_right')});
 		});
 
 	}
