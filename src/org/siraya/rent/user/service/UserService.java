@@ -424,7 +424,7 @@ public class UserService implements IUserService {
 		//
 		// get autu user from friend
 		//
-		if (request.getAuthUserId() != null) {
+		if (request.getAuthUserId() != null && !"".equals(request.getAuthUserId())) {
 			Member member = this.memberDao.getByMemberUserId(request.getRequestFrom(),
 					request.getAuthUserId());
 			if (member != null) {

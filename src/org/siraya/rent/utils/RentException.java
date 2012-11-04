@@ -28,7 +28,8 @@ public class RentException extends RuntimeException {
 		ErrorCookieFormat(16),
 		ErrorEncrypt(17),
 		ErrorDeviceNotFound(18),
-		ErrorDuplicate(19);
+		ErrorDuplicate(19),
+		ErrorCallback(20);
 		private int code;	
 		
 		

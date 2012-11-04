@@ -2,14 +2,17 @@ package org.siraya.rent.mobile.provider;
 
 import java.io.IOException;
 
+import javax.ws.rs.ext.Provider;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestClientException;
 
-
-
+@Provider
+@Component("mobileErrorHandler")
 public class SentlyMobileGatewayErrorHandler implements ResponseErrorHandler {
 
     public boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
