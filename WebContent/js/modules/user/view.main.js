@@ -40,7 +40,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		'click #link_to_fb_link' : 'link_fb',
 		'click #sso_application_link':'sso_application',
 		'click #import_fb_friends_link' : 'import_fb_friends',
-		'click #user_profile_link' :'show_user_profile'
+		'click #user_profile_link' :'show_user_profile',
+		'click #mobile_provider_link' : 'mobile_provider'
 	},
 	render:function(){
 		this.model.trigger('change_view','main');
@@ -53,6 +54,9 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			device.user.is_sso = true;
 		}
 		this.$el.html(Mustache.to_html(this.tmpl, device));
+		this.i18n();
+	},
+	i18n:function(){
 		//
 		// i18n
 		//
@@ -71,9 +75,10 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		this.$el.find('#i18n_import_fb_friends').text(
 				$.i18n.prop('user.main.import_fb_friends'));
 		this.$el.find('#i18n_user_profile').text(
-				$.i18n.prop('user.main.user_profile'));
-		
-		
+				$.i18n.prop('user.main.user_profile'));		
+		this.$el.find('#i18n_mobile_provider').text(
+				$.i18n.prop('user.main.mobile_provider'));
+
 	},
 	name_device_popup:function(){
 		logger.debug('click name device popup');
@@ -179,6 +184,19 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			});
 			_this.rightView.render();
 		});		
+	},
+	mobile_provider:function(){
+		logger.debug('click mobile_provider');
+		var _this = this;
+		this.rightView.undelegateEvents();
+		require(['modules/user/view.mobile_provider'],function(){
+			_this.model.trigger('change_view','mobile_provider');
+			_this.rightView = new RENT.user.view.MobileProviderView({
+				el: _this.$el.find('#register_right')
+			});
+			_this.rightView.render();
+		});		
+		
 	}
 });
 

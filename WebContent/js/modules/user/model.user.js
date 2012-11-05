@@ -43,7 +43,6 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 		});
 		Backbone.sync("update",this, options);	
 	},
-	
 	delete_device : function(id, options){
 		var url = this.url;
 		if (id != null) {
