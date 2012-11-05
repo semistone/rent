@@ -1,6 +1,7 @@
 package org.siraya.rent.mobile.provider;
 
 import org.siraya.rent.donttry.service.IDontTryService;
+import org.siraya.rent.filter.UserRole;
 import org.siraya.rent.mobile.dao.IMobileProviderDao;
 import org.siraya.rent.mobile.service.IMobileGatewayService;
 import org.siraya.rent.utils.EncodeUtility;
@@ -10,13 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Map;
+import org.siraya.rent.pojo.Role;
 import java.util.HashMap;
 import org.siraya.rent.utils.RentException.RentErrorCode;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestOperations;
 import org.siraya.rent.pojo.MobileProvider;
-
+import org.siraya.rent.user.dao.IRoleDao;
 public class SentlyMobileGatewayProvider implements IMobileGatewayService {
 	@Autowired
 	protected IApplicationConfig applicationConfig;
@@ -27,6 +29,8 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService {
 	private IMobileProviderDao mobileProviderDao;
 	@Autowired
 	private EncodeUtility encodeUtility;
+	@Autowired
+	private IRoleDao roleDao;
 	static String REQUEST_URI = "http://sent.ly/command/sendsms?username={username}&password={password}&text={text}&to={to}";
 	static String PROVIDER_TYPE = "SENTLY";
 
@@ -90,7 +94,20 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService {
 		String password = encodeUtility.encrypt(mobileProvider.getPassword(),
 				MobileProvider.ENCRYPT_KEY);
 		mobileProvider.setPassword(password);
-		mobileProviderDao.newProvider(mobileProvider);
+		try {
+			mobileProviderDao.newProvider(mobileProvider);
+			Role role = new Role();
+			role.setUserId(mobileProvider.getUser());
+			role.setRoleId(UserRole.UserRoleId.MOBILE_PROVIDER.getRoleId());
+			this.roleDao.newRole(role);
+		}catch(org.springframework.dao.DuplicateKeyException e){
+			int ret = mobileProviderDao.updateProvider(mobileProvider);			
+			if (ret != 1) {
+				throw new RentException(
+						RentException.RentErrorCode.ErrorStatusViolate,
+						"update null record");
+			}
+		}
 	}
 
 	/**

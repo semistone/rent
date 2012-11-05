@@ -5,7 +5,8 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!../../../html/user/tmpl.main.html'
+  'text!../../../html/user/tmpl.main.html',
+  './router.main'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
 var $template = $('<div>').append(template);
@@ -14,9 +15,10 @@ var $template = $('<div>').append(template);
 //
 RENT.user.view.RegisterMainView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render','sign_off','show_my_device','link_fb','sso_application');
+		_.bindAll(this, 'render','sign_off','show_my_device','link_fb','sso_application', 'init_router', 'mobile_provider');
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.rightView = new Backbone.View();
+		this.init_router();
 		var _this = this;		
 		//
 		// add fb module
@@ -32,6 +34,14 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 				RENT.user.navBar.initFBModel(fb);
 			});
 		}
+	},
+	init_router:function(){
+		this.router = new RENT.user.MainRouter();
+		this.router.on('route:name_device', this.name_device_popup);
+		this.router.on('route:show_my_device', this.show_my_device);
+		this.router.on('route:import_fb_friends', this.import_fb_friends);
+		this.router.on('route:mobile_provider', this.mobile_provider);
+		Backbone.history.start();
 	},
 	events : {
 		"click #named_my_devices_link" : 'name_device_popup',
@@ -82,6 +92,7 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	},
 	name_device_popup:function(){
 		logger.debug('click name device popup');
+		this.router.navigate('name_device', {replace: true});
 		this.rightView.undelegateEvents();
 		var _this = this;
 		require(['modules/user/view.name_device'],function(){
@@ -144,6 +155,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	},
 	show_my_device:function(){
 		logger.debug('click show my devies'); 
+		this.router.navigate('show_my_device', {replace: true});
+
 		this.rightView.undelegateEvents();
 		var _this = this;
 		require(['modules/user/view.devices'],function(){
@@ -166,6 +179,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	},
 	import_fb_friends:function(){
 		logger.debug('click import_fb_friends');
+		this.router.navigate('import_fb_friends', {replace: true});
+
 		var _this = this;
 		this.rightView.undelegateEvents();
 		require(['modules/user/view.import_fb_friends'],function(){
@@ -187,6 +202,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	},
 	mobile_provider:function(){
 		logger.debug('click mobile_provider');
+		this.router.navigate('mobile_provider', {replace: true});
+
 		var _this = this;
 		this.rightView.undelegateEvents();
 		require(['modules/user/view.mobile_provider'],function(){

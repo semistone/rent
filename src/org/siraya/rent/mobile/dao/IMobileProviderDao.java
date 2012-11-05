@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.siraya.rent.pojo.MobileProvider;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +18,7 @@ public interface IMobileProviderDao {
     @Select("select * from MOBILE_PROVIDER where ID=#{id} and TYPE=#{type}") 
     @ResultMap("rent.mapper.MobileProviderResultMap")
     public MobileProvider get(@Param("id")String id, @Param("type")String type);
+
+    @Update("update MOBILE_PROVIDER set USER = #{user}, PASSWORD = #{password}, TYPE=#{type}, MODIFIED=#{modified} where ID = #{id}")
+    public int updateProvider(MobileProvider mobileProvider);
 }

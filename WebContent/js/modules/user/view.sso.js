@@ -40,33 +40,17 @@ RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
 		}
 		this.model = new RENT.user.model.RequestModel();
 		_.bindAll(this, 'render', 'show_token','apply_token');
-		//
-		// i18n
-		//
+
 		var _this = this;
-		var user = this.userModel.get('user');
-		if (user.roles == undefined) {
-			this.userModel.get_roles({
-				success:function(){
-					if (user.roles && _.contains(user.roles,5)) {
-						logger.debug('sso role exist');
-						_this.hasRole = true;
-						_this.show_token();
-					} else {
-						_this.render();
-					}
-				},
-				error:function(model, resp){
-					logger.error('get roles fail');
-					RENT.simpleErrorDialog(resp,'');
-				}
-			});
-		} else {
-			if (user.roles && _.contains(user.roles,5)) {
-				this.hasRole = true;
-				this.show_token();
-			}
-		}
+		var inRole = function() {
+			logger.debug('sso role exist');
+			_this.hasRole = true;
+			_this.show_token();			
+		};
+		var noRole = function(){
+			_this.render();
+		};
+		RENT.user.checkRole(this.userModel,5, inRole, noRole);
 		this.model.on('change',this.render);
 		this.model.set({
 			requestId:this.GUID(),

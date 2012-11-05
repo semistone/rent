@@ -402,7 +402,7 @@ public class UserService implements IUserService {
 		String sign = this._getSignatureOfMobileAuthRequest(request, requestFrom);
 		if (!debug && !sign.equals(request.getSign())) {
 			throw new RentException(RentErrorCode.ErrorPermissionDeny,
-					"sign verify failed "+sign);
+					"sign verify failed ");
 		}
 
 		logger.debug("check verify expired");

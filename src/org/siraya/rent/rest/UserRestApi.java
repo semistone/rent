@@ -388,7 +388,7 @@ public class UserRestApi {
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/apply_sso_application")
-	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.MOBILE_PROVIDER })
 	public Device applySSOApplication() {
 		Device device = new Device(UserService.SSO_DEVICE_ID,
 				this.userAuthorizeData.getUserId());
