@@ -69,6 +69,7 @@ public class MobileAuthService implements IMobileAuthService {
 		this.sendAuthMessage(device);
     }
     
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
     public void sendAuthMessage(MobileAuthRequest request,MobileAuthResponse response){
 		//
 		// check status and limit
@@ -105,7 +106,7 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		// send message through gateway.
 		//
-		mobileGatewayService.sendSMS(phone, message);
+		mobileGatewayService.sendSMS(request.getRequestFrom(), phone, message);
 		response.setStatus(DeviceStatus.Authing.getStatus());
 		Device device = response.getDevice();
 		if (request.isWebRequest() && device != null && device.getStatus() == DeviceStatus.Init.getStatus()) {
@@ -135,6 +136,7 @@ public class MobileAuthService implements IMobileAuthService {
 	 * 2. set auth code by random from 0 - 999999
 	 * 3. send message.
 	 */
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
     void sendAuthMessage(Device device) {
     	//
 		// check status and limit
@@ -195,7 +197,7 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		// send message through gateway.
 		//
-		mobileGatewayService.sendSMS(phone, message);
+		mobileGatewayService.sendSMS(null, phone, message);
 		device.setAuthRetry(device.getAuthRetry()+1);
 		device.setStatus(DeviceStatus.Authing.getStatus());
 	}

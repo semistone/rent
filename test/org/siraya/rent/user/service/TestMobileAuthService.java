@@ -77,7 +77,7 @@ public class TestMobileAuthService {
 			setting.put("auth_retry_limit", 3);
 			setting.put("general", "thebestsecretkey");
 			setting.put("auth_verify_timeout", 1800);
-			
+			setting.put("callback_max_retry", 10);
 			encodeUtility = new EncodeUtility();
 			encodeUtility.setApplicationConfig(config);
 			mobileAuthService.setEncodeUtility(encodeUtility);
@@ -127,7 +127,7 @@ public class TestMobileAuthService {
 					one(deviceDao).getDeviceByDeviceIdAndUserId(device.getId(),device.getUserId());
 					will(returnValue(device));
 					
-					one(mobileGatewayService).sendSMS(with(any(String.class)),with(any(String.class)));
+					one(mobileGatewayService).sendSMS(with(any(String.class)), with(any(String.class)),with(any(String.class)));
 				}
 			});	
 		}
@@ -289,7 +289,7 @@ public class TestMobileAuthService {
 							IDontTryService.DontTryType.Life, 3);
 					one(config).get("keydb");
 					will(returnValue(setting));
-					one(mobileGatewayService).sendSMS(with(any(String.class)), with(any(String.class)));
+					one(mobileGatewayService).sendSMS(with(any(String.class)), with(any(String.class)), with(any(String.class)));
 					one(deviceDao).updateDeviceStatus(with(any(String.class)),with(any(String.class)), 
 							with(any(int.class)), with(any(int.class)), with(any(long.class)));
 					will(returnValue(1));

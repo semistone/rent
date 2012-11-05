@@ -21,7 +21,7 @@ public class TestConfig {
 	@Test 
 	public void testGetGeneralSetting(){
 		int retryLimit = (Integer)config.get("general").get("auth_retry_limit");
-		Assert.assertEquals(3, retryLimit);
+		Assert.assertEquals(10, retryLimit);
 	}
 	@Test 
 	public void testGetFilterExclude(){

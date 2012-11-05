@@ -21,6 +21,7 @@ public class TestSentlyMobileGatewayProvider {
     private IDontTryService dontTryService;
     private RestOperations restTemplate;
     private HashMap<String,Object> setting;
+    private String provider;
     // for test 
     class SentlyMobileGatewayProviderForTest extends SentlyMobileGatewayProvider{
     	public SentlyMobileGatewayProviderForTest(IApplicationConfig iApplicationConfig,
@@ -60,7 +61,7 @@ public class TestSentlyMobileGatewayProvider {
 				}
 			});
 		}
-    	mobileGatewayService.sendSMS("886936072281", "中文測試");
+    	mobileGatewayService.sendSMS(provider,"886936072281", "中文測試");
     }
     
     
@@ -79,6 +80,6 @@ public class TestSentlyMobileGatewayProvider {
 				}
 			});
 		}
-    	mobileGatewayService.sendSMS("886936072281", "Hello world");
+    	mobileGatewayService.sendSMS(provider, "886936072281", "Hello world");
     }
 }
