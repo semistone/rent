@@ -402,7 +402,7 @@ public class UserService implements IUserService {
 		String sign = this._getSignatureOfMobileAuthRequest(request, requestFrom);
 		if (!debug && !sign.equals(request.getSign())) {
 			throw new RentException(RentErrorCode.ErrorPermissionDeny,
-					"sign verify failed "+sign);
+					"sign verify failed ");
 		}
 
 		logger.debug("check verify expired");
@@ -424,7 +424,7 @@ public class UserService implements IUserService {
 		//
 		// get autu user from friend
 		//
-		if (request.getAuthUserId() != null) {
+		if (request.getAuthUserId() != null && !"".equals(request.getAuthUserId())) {
 			Member member = this.memberDao.getByMemberUserId(request.getRequestFrom(),
 					request.getAuthUserId());
 			if (member != null) {

@@ -21,6 +21,7 @@ import org.siraya.rent.utils.EncodeUtility;
 //@ContextConfiguration(locations = {"classpath*:/applicationContext*.xml"})
 import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.mobile.service.IMobileGatewayService;
+import org.springframework.web.client.RestOperations;
 public class TestMobileAuthService {
 
 	private MobileAuthService mobileAuthService;
@@ -34,6 +35,7 @@ public class TestMobileAuthService {
 	private String authCode = "809FFECF2869157CA16B50F1A3E6B75C";	
 	private IDeviceDao deviceDao;
 	private EncodeUtility encodeUtility;
+    private RestOperations restTemplate;
 	private IUserDAO userDao;
 	private IDontTryService dontTryService;
 	private Map<String, Object> setting;
@@ -47,7 +49,8 @@ public class TestMobileAuthService {
 	public void setUp(){
 		if (isMock){
 			context = new JUnit4Mockery();
-			mobileAuthService = new MobileAuthService();
+			restTemplate = context.mock(RestOperations.class);	
+			mobileAuthService = new MobileAuthService(restTemplate);
 		}
 		user.setId(userId);
 		user.setCc("TW");
@@ -74,7 +77,7 @@ public class TestMobileAuthService {
 			setting.put("auth_retry_limit", 3);
 			setting.put("general", "thebestsecretkey");
 			setting.put("auth_verify_timeout", 1800);
-			
+			setting.put("callback_max_retry", 10);
 			encodeUtility = new EncodeUtility();
 			encodeUtility.setApplicationConfig(config);
 			mobileAuthService.setEncodeUtility(encodeUtility);
@@ -90,6 +93,7 @@ public class TestMobileAuthService {
 		mobileAuthRequest.setDevice(device);
 		mobileAuthRequest.setRequestTime(0);
 		mobileAuthRequest.setAuthCode("886911826844");
+		mobileAuthRequest.setCallback("http://www.yahoo.com");
 		mobileAuthRequest.setRequestFrom("test user");
 		mobileAuthRequest.setAuthUserId(user.getId());
 		mobileAuthRequest.setUser(user);
@@ -123,7 +127,7 @@ public class TestMobileAuthService {
 					one(deviceDao).getDeviceByDeviceIdAndUserId(device.getId(),device.getUserId());
 					will(returnValue(device));
 					
-					one(mobileGatewayService).sendSMS(with(any(String.class)),with(any(String.class)));
+					one(mobileGatewayService).sendSMS(with(any(String.class)), with(any(String.class)),with(any(String.class)));
 				}
 			});	
 		}
@@ -285,7 +289,7 @@ public class TestMobileAuthService {
 							IDontTryService.DontTryType.Life, 3);
 					one(config).get("keydb");
 					will(returnValue(setting));
-					one(mobileGatewayService).sendSMS(with(any(String.class)), with(any(String.class)));
+					one(mobileGatewayService).sendSMS(with(any(String.class)), with(any(String.class)), with(any(String.class)));
 					one(deviceDao).updateDeviceStatus(with(any(String.class)),with(any(String.class)), 
 							with(any(int.class)), with(any(int.class)), with(any(long.class)));
 					will(returnValue(1));
@@ -322,6 +326,7 @@ public class TestMobileAuthService {
 					will(returnValue(user));
 					one(deviceDao).getDeviceByDeviceIdAndUserId("SSO", mobileAuthRequest.getRequestFrom());
 					will(returnValue(device));
+					one(restTemplate).getForObject(with(any(String.class)), with(any(Class.class)), with(any(java.util.Map.class)));
 
 				}
 			});	

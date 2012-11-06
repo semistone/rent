@@ -5,7 +5,8 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!../../../html/user/tmpl.main.html'
+  'text!../../../html/user/tmpl.main.html',
+  './router.main'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
 var $template = $('<div>').append(template);
@@ -14,9 +15,10 @@ var $template = $('<div>').append(template);
 //
 RENT.user.view.RegisterMainView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render','sign_off','show_my_device','link_fb','sso_application');
+		_.bindAll(this, 'render','sign_off','show_my_device','link_fb','sso_application', 'init_router', 'mobile_provider');
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.rightView = new Backbone.View();
+		this.init_router();
 		var _this = this;		
 		//
 		// add fb module
@@ -33,13 +35,23 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			});
 		}
 	},
+	init_router:function(){
+		this.router = new RENT.user.MainRouter();
+		this.router.on('route:name_device', this.name_device_popup);
+		this.router.on('route:show_my_device', this.show_my_device);
+		this.router.on('route:import_fb_friends', this.import_fb_friends);
+		this.router.on('route:mobile_provider', this.mobile_provider);
+		Backbone.history.start();
+	},
 	events : {
 		"click #named_my_devices_link" : 'name_device_popup',
 		'click #sign_off_link' : 'sign_off',
 		'click #show_my_devices_link' : 'show_my_device',
 		'click #link_to_fb_link' : 'link_fb',
 		'click #sso_application_link':'sso_application',
-		'click #import_fb_friends_link' : 'import_fb_friends'
+		'click #import_fb_friends_link' : 'import_fb_friends',
+		'click #user_profile_link' :'show_user_profile',
+		'click #mobile_provider_link' : 'mobile_provider'
 	},
 	render:function(){
 		this.model.trigger('change_view','main');
@@ -52,6 +64,9 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			device.user.is_sso = true;
 		}
 		this.$el.html(Mustache.to_html(this.tmpl, device));
+		this.i18n();
+	},
+	i18n:function(){
 		//
 		// i18n
 		//
@@ -69,10 +84,15 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 				$.i18n.prop('user.main.sso_application'));
 		this.$el.find('#i18n_import_fb_friends').text(
 				$.i18n.prop('user.main.import_fb_friends'));
-		
+		this.$el.find('#i18n_user_profile').text(
+				$.i18n.prop('user.main.user_profile'));		
+		this.$el.find('#i18n_mobile_provider').text(
+				$.i18n.prop('user.main.mobile_provider'));
+
 	},
 	name_device_popup:function(){
 		logger.debug('click name device popup');
+		this.router.navigate('name_device', {replace: true});
 		this.rightView.undelegateEvents();
 		var _this = this;
 		require(['modules/user/view.name_device'],function(){
@@ -135,6 +155,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	},
 	show_my_device:function(){
 		logger.debug('click show my devies'); 
+		this.router.navigate('show_my_device', {replace: true});
+
 		this.rightView.undelegateEvents();
 		var _this = this;
 		require(['modules/user/view.devices'],function(){
@@ -157,12 +179,41 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	},
 	import_fb_friends:function(){
 		logger.debug('click import_fb_friends');
+		this.router.navigate('import_fb_friends', {replace: true});
+
 		var _this = this;
 		this.rightView.undelegateEvents();
 		require(['modules/user/view.import_fb_friends'],function(){
 			_this.rightView = new RENT.user.view.ImportFbFriendsView({el: _this.$el.find('#register_right')});
 		});
 
+	},
+	show_user_profile:function(){
+		logger.debug('click show_user_profile');
+		var _this = this;
+		this.rightView.undelegateEvents();
+		require(['modules/user/view.profile'],function(){
+			_this.rightView = new RENT.user.view.UserProfileView({
+				el: _this.$el.find('#register_right'),
+				model:_this.model
+			});
+			_this.rightView.render();
+		});		
+	},
+	mobile_provider:function(){
+		logger.debug('click mobile_provider');
+		this.router.navigate('mobile_provider', {replace: true});
+
+		var _this = this;
+		this.rightView.undelegateEvents();
+		require(['modules/user/view.mobile_provider'],function(){
+			_this.model.trigger('change_view','mobile_provider');
+			_this.rightView = new RENT.user.view.MobileProviderView({
+				el: _this.$el.find('#register_right')
+			});
+			_this.rightView.render();
+		});		
+		
 	}
 });
 

@@ -40,33 +40,17 @@ RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
 		}
 		this.model = new RENT.user.model.RequestModel();
 		_.bindAll(this, 'render', 'show_token','apply_token');
-		//
-		// i18n
-		//
+
 		var _this = this;
-		var user = this.userModel.get('user');
-		if (user.roles == undefined) {
-			this.userModel.get_roles({
-				success:function(){
-					if (user.roles && _.contains(user.roles,5)) {
-						logger.debug('sso role exist');
-						_this.hasRole = true;
-						_this.show_token();
-					} else {
-						_this.render();
-					}
-				},
-				error:function(model, resp){
-					logger.error('get roles fail');
-					RENT.simpleErrorDialog(resp,'');
-				}
-			});
-		} else {
-			if (user.roles && _.contains(user.roles,5)) {
-				this.hasRole = true;
-				this.show_token();
-			}
-		}
+		var inRole = function() {
+			logger.debug('sso role exist');
+			_this.hasRole = true;
+			_this.show_token();			
+		};
+		var noRole = function(){
+			_this.render();
+		};
+		RENT.user.checkRole(this.userModel,5, inRole, noRole);
 		this.model.on('change',this.render);
 		this.model.set({
 			requestId:this.GUID(),
@@ -88,13 +72,37 @@ RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
 			}
 		});
 	},
-
+	i18n:function(){
+		this.$el.find('#i18n_request_id').text(
+				$.i18n.prop('user.sso.request_id'));
+		this.$el.find('#i18n_country_code').text(
+				$.i18n.prop('user.sso.country_code'));
+		this.$el.find('#i18n_mobile_phone').text(
+				$.i18n.prop('user.register.mobile_phone'));
+		this.$el.find('#i18n_auth_user_id').text(
+				$.i18n.prop('user.sso.auth_user_id'));
+		this.$el.find('#i18n_force_reauth').text(
+				$.i18n.prop('user.sso.force_reauth'));
+		this.$el.find('#i18n_down_url').text(
+				$.i18n.prop('user.sso.done_url'));
+		this.$el.find('#i18n_request_sso_user').text(
+				$.i18n.prop('user.sso.request_sso_user'));
+		this.$el.find('#i18n_request_time').text(
+				$.i18n.prop('user.sso.request_time'));
+		this.$el.find('#i18n_callback').text(
+				$.i18n.prop('user.sso.callback'));
+		this.$el.find('#i18n_signature').text(
+				$.i18n.prop('user.sso.signature'));
+		this.$el.find('#i18n_debug').text(
+				$.i18n.prop('general.debug'));
+	},
 	render:function(){
 		logger.debug('render get sso application token');
 		var _this = this;
 		if (this.hasRole) {
 			this.tmpl = $template.find('#tmpl_show_sso_token').html();
 			this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
+			this.i18n();
 			RENT.generateCountryOptions(this.$el.find('#countryCode'));
 
 			RENT.initValidator(function(){

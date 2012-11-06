@@ -2,8 +2,9 @@
 define([
   'jQuery',
   'RentCommon',
-  'logger'
-], function($,RENT,logger) {
+  'logger',
+  'Underscore'
+], function($, RENT, logger, _) {
 	$.extend(RENT, {
 		user : {
 			model : {},
@@ -25,7 +26,32 @@ define([
 					window.location.replace(mobileAuthRequestForm['done']+ params);
 					return;
 				}		
-			}			
+			},
+			checkRole:function(userModel, roleId, inRole, noRole){
+				var user = userModel.get('user');
+				if (user.roles == undefined) {
+					userModel.get_roles({
+						success:function(){
+							if (user.roles && _.contains(user.roles,roleId)) {
+								inRole();
+							} else {
+								noRole();
+							}
+						},
+						error:function(model, resp){
+							logger.error('get roles fail');
+							RENT.simpleErrorDialog(resp,'');
+						}
+					});
+				} else {
+					if (user.roles && _.contains(user.roles,roleId)) {
+						inRole();
+					} else {
+						noRole();
+					}
+				}
+
+			}
 		}
 	});	
 	return RENT;

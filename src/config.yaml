@@ -15,6 +15,7 @@ general:
     auth_retry_limit: 10
     auth_verify_timeout : 1800
     admin_user: 00000000
+    callback_max_retry : 10
     debug: true 
 sently:
     username: semistone

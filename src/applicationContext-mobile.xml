@@ -44,7 +44,6 @@
     <bean id="httpClientFactory" class="org.springframework.http.client.CommonsClientHttpRequestFactory">
         <constructor-arg ref="httpClient"/>
     </bean>
-   <bean id="mobileErrorHandler" class="org.siraya.rent.mobile.provider.SentlyMobileGatewayErrorHandler"></bean> 
     
    <bean id="mobileGatewayService" class="org.siraya.rent.mobile.provider.SentlyMobileGatewayProvider">
         <constructor-arg type="org.springframework.web.client.RestOperations">
@@ -54,5 +53,13 @@
             </bean>
         </constructor-arg>
     </bean>  
-    <bean id="sentlyCallback" class="org.siraya.rent.rest.SentlyCallback" />                    
+                  
+   <bean id="mobileAuthService" class="org.siraya.rent.user.service.MobileAuthService">
+        <constructor-arg type="org.springframework.web.client.RestOperations">
+            <bean class="org.springframework.web.client.RestTemplate">
+                <constructor-arg ref="httpClientFactory" type="org.springframework.http.client.ClientHttpRequestFactory"/>
+                <property name="errorHandler" ref="callbackErrorHandler"/>
+            </bean>
+        </constructor-arg>
+    </bean> 
 </beans>

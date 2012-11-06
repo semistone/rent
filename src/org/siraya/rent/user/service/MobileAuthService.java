@@ -1,33 +1,36 @@
 package org.siraya.rent.user.service;
-import org.apache.ibatis.annotations.Param;
+
 import org.siraya.rent.donttry.service.IDontTryService;
 import org.siraya.rent.donttry.service.IDontTryService.DontTryType;
 import org.siraya.rent.mobile.service.IMobileGatewayService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestOperations;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.pojo.MobileAuthResponse;
+import org.siraya.rent.pojo.HttpRetryQueue;
 import org.siraya.rent.pojo.MobileAuthRequest;
 import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.utils.EncodeUtility;
 import org.siraya.rent.utils.IApplicationConfig;
+import org.siraya.rent.utils.RentException;
 import org.siraya.rent.pojo.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.Map;
+
+import org.siraya.rent.user.dao.IHttpRetryQueueDao;
 import org.siraya.rent.user.dao.IMobileAuthRequestDao;
 import org.siraya.rent.user.dao.IMobileAuthResponseDao;
 import junit.framework.Assert;
 import org.siraya.rent.user.dao.IUserDAO;
-import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
-@Service("mobileAuthService")
-public class MobileAuthService implements IMobileAuthService {
 
+public class MobileAuthService implements IMobileAuthService {
+	RestOperations restTemplate;
 	@Autowired
     private IMobileGatewayService mobileGatewayService;
     @Autowired
@@ -47,10 +50,13 @@ public class MobileAuthService implements IMobileAuthService {
     private IUserDAO userDao;
 	@Autowired
     private EncodeUtility encodeUtility; 
-
+    @Autowired
+    private IHttpRetryQueueDao httpRetryQueueDao; 
 	private static Logger logger = LoggerFactory.getLogger(MobileAuthService.class);
 	
-    
+    public MobileAuthService(RestOperations restTemplate){
+    	this.restTemplate=restTemplate;
+    }
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
     public void sendAuthMessage(String deviceId,String userId){
     	logger.debug("device id is "+deviceId+" user id is "+userId);
@@ -63,6 +69,7 @@ public class MobileAuthService implements IMobileAuthService {
 		this.sendAuthMessage(device);
     }
     
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
     public void sendAuthMessage(MobileAuthRequest request,MobileAuthResponse response){
 		//
 		// check status and limit
@@ -99,7 +106,7 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		// send message through gateway.
 		//
-		mobileGatewayService.sendSMS(phone, message);
+		mobileGatewayService.sendSMS(request.getRequestFrom(), phone, message);
 		response.setStatus(DeviceStatus.Authing.getStatus());
 		Device device = response.getDevice();
 		if (request.isWebRequest() && device != null && device.getStatus() == DeviceStatus.Init.getStatus()) {
@@ -129,6 +136,7 @@ public class MobileAuthService implements IMobileAuthService {
 	 * 2. set auth code by random from 0 - 999999
 	 * 3. send message.
 	 */
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
     void sendAuthMessage(Device device) {
     	//
 		// check status and limit
@@ -189,7 +197,7 @@ public class MobileAuthService implements IMobileAuthService {
 		//
 		// send message through gateway.
 		//
-		mobileGatewayService.sendSMS(phone, message);
+		mobileGatewayService.sendSMS(null, phone, message);
 		device.setAuthRetry(device.getAuthRetry()+1);
 		device.setStatus(DeviceStatus.Authing.getStatus());
 	}
@@ -268,6 +276,7 @@ public class MobileAuthService implements IMobileAuthService {
 			userDao.updateUserStatus(user.getId(), UserStatus.Authed.getStatus()
 					,  UserStatus.Init.getStatus(), user.getModified());
 		}
+
 		//
 		// prepare response
 		//
@@ -291,8 +300,36 @@ public class MobileAuthService implements IMobileAuthService {
 		// update mobile auth response into database.
 		//
 		this.mobileAuthResponseDao.updateResponse(response);
+		String callback = request.getCallback();
+		if (callback != null) {
+			logger.debug("callback to "+callback);
+			int callbackMaxRetry = (Integer)setting.get("callback_max_retry");
+			this.callback(callback,response, callbackMaxRetry);
+		}
 		return response;
 	}
+	
+	private void callback(String url, MobileAuthResponse response, int callbackMaxRetry) {
+		Map<String, String> vars = new java.util.HashMap<String, String>();
+		vars.put("requestId", response.getRequestId());
+		vars.put("status", Integer.toString(response.getStatus()));
+		vars.put("sign", response.getSign());
+		vars.put("userId", response.getUserId());
+		try{
+			restTemplate.getForObject(url, String.class,vars);
+		}catch(Exception e){
+			logger.error("callback fail, insert into retry queue");
+			HttpRetryQueue queue = new HttpRetryQueue();
+			queue.setId(response.getRequestId());
+			queue.setStatus(0);
+			queue.setUrl(url);
+			queue.setCreated(response.getResponseTime());
+			queue.setModified(response.getResponseTime());
+			queue.setMaxRetry(callbackMaxRetry);
+			httpRetryQueueDao.newEntity(queue);	
+		}
+	}
+	
 	/**
 	 * 
 	 */
