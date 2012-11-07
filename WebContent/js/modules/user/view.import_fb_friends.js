@@ -6,19 +6,21 @@ define([
   'RentCommon',
   'logger',
   'text!../../../html/user/tmpl.import_fb_friends.html',
+  '../general/view.pagination',
   './collection.friends'
-  ], function($, _, Backbone, Mustache, RENT, logger,template) {
+  ], function($, _, Backbone, Mustache, RENT, logger,template,Pagniation) {
 var $template = $('<div>').append(template);	
 RENT.user.view.ImportFbFriendsView = Backbone.View.extend({
 	events : {
-		'click .page_index' : 'page_index',
 		'click .delete_friend_link' : 'delete_friend'
 	},
 	initialize : function() {
-		this.pageSize = 15;
-		this.start = 0;
-		this.end= this.pageSize;
-		_.bindAll(this, 'render', 'page_index', 'delete_friend');
+		this.paginationModel = new Backbone.Model();
+		this.pagniation =new Pagniation({
+			tagName: 'div',
+			model:this.paginationModel});
+		_.bindAll(this, 'render',  'delete_friend', 'undelegateEvents');
+		this.pagniation.on('change_page',this.render);
 		this.collection = new RENT.user.collection.FriendCollection();
 		this.collection.on('reset add remove', this.render);
 		this.tmpl = $template.find('#tmpl_show_fb_friends').html();
@@ -35,24 +37,20 @@ RENT.user.view.ImportFbFriendsView = Backbone.View.extend({
 			logger.info('total friends size is 0');
 			return;
 		}
-		array.sliceFriends = array.friends.slice(this.start, this.end);
-		array.totalPage = Math.ceil(array.friends.length / this.pageSize);
-		logger.debug('total is '+array.friends.length+' total page is '+array.totalPage+' start:'+this.start+' end '+this.end);
-		array.pages = _.range(1, array.totalPage);
+		this.paginationModel.set({total:array.friends.length});
+		var pageSize = this.paginationModel.get('pageSize');
+		var setPage = this.paginationModel.get('currentPage');
+		var start = (setPage - 1) * pageSize;
+		var end = setPage * pageSize;
+		array.sliceFriends = array.friends.slice(start, end);
 		this.$el.html(Mustache.to_html(this.tmpl ,array));
-		
+		this.$el.find('#friend_table').append(this.pagniation.$el);
+		this.pagniation.delegateEvents();
 		//
 		// i18n
 		//
 		this.$el.find('#i18n_import_fb_friends').text(
 				$.i18n.prop('user.main.import_fb_friends'));
-	},
-	page_index:function(ev){
-		var setPage = parseInt($(ev.target).text());
-		logger.debug('set page '+setPage);
-		this.start = setPage * this.pageSize;
-		this.end = (setPage + 1) * this.pageSize;
-		this.render();
 	},
 	delete_friend:function(ev){
 		var id = parseInt($(ev.target).parent().parent().attr('id'));

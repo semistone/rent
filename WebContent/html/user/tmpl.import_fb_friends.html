@@ -6,7 +6,7 @@
 </div>
 <div class="row">
 	<div class="span6">
-		<table class="table table-striped">
+		<table id="friend_table" class="table table-striped">
 			<thead>
 				<tr>
 					<td><span class="i18n_name"></span></td>
@@ -24,15 +24,7 @@
 {{/sliceFriends}}
 			</tbody>
 		</table>
-	    <div class="pagination">
-    		<ul>
-			    <li><a href="#">Prev</a></li>
-				{{#pages}}
-    			<li><a class="page_index" href="#">{{.}}</a></li>
-				{{/pages}}
-			    <li><a href="#">Next</a></li>
-    		</ul>
-    	</div>
+
 	</div>
 </div>
 </script>

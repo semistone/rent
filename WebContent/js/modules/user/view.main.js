@@ -15,7 +15,8 @@ var $template = $('<div>').append(template);
 //
 RENT.user.view.RegisterMainView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render','sign_off','show_my_device','link_fb','sso_application', 'init_router', 'mobile_provider');
+		_.bindAll(this, 'render','sign_off','show_my_device','link_fb','sso_application',
+				'init_router', 'mobile_provider','import_fb_friends');
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.rightView = new Backbone.View();
 		this.init_router();
