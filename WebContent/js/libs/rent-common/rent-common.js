@@ -58,7 +58,7 @@ var RENT = {
 	},
 	simpleErrorDialog:function(resp,msg){
 		var title;
-		if (resp == null) {
+		if (resp == null || resp == 'error') {
 			title = $.i18n.prop("rent.error_msg.server");
 		} else {
 			resp = $.parseJSON(resp.responseText);

@@ -180,7 +180,7 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		});
 	},
 	sso_application:function(){
-		logger.debug('click show my token'); 
+		logger.debug('click show sso application'); 
 		this.router.navigate('main/sso_application', {replace: true});
 		this.rightView.undelegateEvents();
 		var _this = this;
