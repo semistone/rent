@@ -10,13 +10,13 @@ define([
 	$(function(){
 		RENT.bindLoadingPage("#supersized-loader");
 	});	
-	var initialize = function(){
+	var initialize = function(subroute){
 		RENT.setLangRes(RENT.getLang(), ['rent_user']);
 		var model = new RENT.user.model.UserModel();
 		$(function(){
 			logger.debug('new register view');
 			RENT.user.navBar = new RENT.user.view.NavBarView({el:'#navbar',model:model});
-			RENT.user.mainView = new RegisterView({el:'#main', model:model});
+			RENT.user.mainView = new RegisterView({el:'#main', model:model,subroute:subroute});
 		});
 	};
   return {

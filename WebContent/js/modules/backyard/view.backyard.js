@@ -16,7 +16,7 @@ var $template = $('<div>').html(template);
 RENT.backyard.view.MainView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render');
-		this.tmpl = $template.find('#tmpl_backyard_menu').html();
+		this.tmpl = $template.find('#tmpl_backyard').html();
 	},
 	events : {
 		'click #show_token_link' : 'show_token',

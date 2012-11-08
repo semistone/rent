@@ -44,13 +44,41 @@ require.config({
 		
 	}
 });
+require(['order!jQuery','order!Underscore','order!Backbone'],function($, _, Backbone){
+	var current = null;
 
-require([
-// Load our app module and pass it to our definition function
-'modules/user/user.loader', 'order!jQuery',
-		'order!Underscore', 'order!Backbone', 'order!i18N'], function(User) {
-	// The "app" dependency is passed in as "App"
-	// Again, the other dependencies passed in are not "AMD" therefore don't pass a parameter to this function
-	User.initialize();
+	var backyard  = function(){
+		if (current == 'backyard') {
+			return;
+		}
+		current = 'backyard';
+		require(['modules/backyard/backyard.loader'], function(Backyard) {
+			Backyard.initialize();
+		});
+	};
+	var main= function(subroute){
+		if (current == 'defaultRoute') {
+			return;
+		}
+		current = 'defaultRoute';
+		require(['modules/user/user.loader'], function(User) {
+			User.initialize(subroute);
+		});
+	};
+	var defaultRoute = function(subroute){
+		main('');
+	};	
+	var MainRoute =  Backbone.Router.extend({
+		routes: {
+			'main/*subroute': 'main',
+			'backyard':'backyard',
+			'*path':  'defaultRoute'
+		}
+	});
+	var router = new MainRoute();
+	router.on('route:defaultRoute', defaultRoute);
+	router.on('route:backyard', backyard);
+	router.on('route:main', main);
+	Backbone.history.start();
 });
 
