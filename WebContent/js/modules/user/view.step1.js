@@ -20,6 +20,9 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 		_.bindAll(this, 'render', 'new_device_event' , 'new_device_event', 
 				'success', 'error' ,'validate');
 		this.tmpl = $template.find('#tmpl_register_step1').html();
+		if (this.model == null) {
+			this.model = new RENT.user.model.UserModel();
+		}
 	},
 	render: function(){
 		this.model.trigger('change_view','step1');
@@ -78,11 +81,11 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 		var mobile_phone = this.$el.find('#mobile_phone').val();
 		// simple verify
 		if (mobile_phone.substring(0, 1) == '0') {
-			mobile_phone = country_code + mobile_phone.substring(1);
+			mobile_phone = '+'+country_code + mobile_phone.substring(1);
 		}else if (mobile_phone.substring(0, 1) == '+'){			
-			mobile_phone = mobile_phone.substring(1);
+			// do nothing
 		}else{
-			mobile_phone = country_code + mobile_phone;
+			mobile_phone = '+'+country_code + mobile_phone;
 		}
 		this.model.set({
 			countryCode : country_code,

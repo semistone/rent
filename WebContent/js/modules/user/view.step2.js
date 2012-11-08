@@ -107,7 +107,7 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 	go_back_step1 : function() {
 		this.undelegateEvents();
 		var _this = this;
-		requre(['modules/user/view.step1'],function(){
+		require(['modules/user/view.step1'],function(){
 			new RENT.user.view.RegisterStep1View({
 				el : _this.el,
 				model : _this.model

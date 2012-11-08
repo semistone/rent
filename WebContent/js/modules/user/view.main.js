@@ -154,7 +154,7 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 				_this.rightView.undelegateEvents();
 				_this.undelegateEvents();
 				require(['modules/user/view.step1'],function(){
-					new RENT.user.view.RegisterStep1View({el:_this.el,model:_this.model}).render();
+					new RENT.user.view.RegisterStep1View({el:_this.el}).render();
 					logger.debug('trigger sign off event on '+_this.model.cid);
 					_this.model.trigger('sign_off');					
 				});
