@@ -96,10 +96,7 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService {
 		mobileProvider.setPassword(password);
 		try {
 			mobileProviderDao.newProvider(mobileProvider);
-			Role role = new Role();
-			role.setUserId(mobileProvider.getUser());
-			role.setRoleId(UserRole.UserRoleId.MOBILE_PROVIDER.getRoleId());
-			this.roleDao.newRole(role);
+			logger.debug("add new role mobile provider");
 		}catch(org.springframework.dao.DuplicateKeyException e){
 			int ret = mobileProviderDao.updateProvider(mobileProvider);			
 			if (ret != 1) {
@@ -108,6 +105,11 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService {
 						"update null record");
 			}
 		}
+		Role role = new Role();
+		role.setUserId(mobileProvider.getId());
+		role.setRoleId(UserRole.UserRoleId.MOBILE_PROVIDER.getRoleId());
+		this.roleDao.newRole(role);
+
 	}
 
 	/**
