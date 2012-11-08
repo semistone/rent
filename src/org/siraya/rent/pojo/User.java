@@ -24,7 +24,7 @@ public class User {
 	 * @mbggenerated Mon Sep 10 16:50:24 CST 2012
 	 */
 
-	@Pattern(regexp = "^\\d{10,13}$")
+	@Pattern(regexp = "^\\+\\d{10,13}$")
 	@NotNull
 	private String mobilePhone;
 

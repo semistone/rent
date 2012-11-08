@@ -135,6 +135,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		this.$el.find('#register_title').text($.i18n.prop('user.register.step3'));
 		RENT.user.dotDone(RENT.user.mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
 		if (this.model.get('name') == null) {
+			logger.debug('device name not exist');
 			var _this = this;
 			require(['modules/user/view.name_device'],function(){
 				var view = new RENT.user.view.NameDeviceView({
@@ -144,12 +145,14 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 				view.render();
 				_this.model.trigger('change_view','step3');
 				view.on('success',function(){
+					logger.debug('name device success');
 					view.undelegateEvents();
 					_this.main_view();
 					view.off('success');
 				});			
 			});
 		} else {
+			logger.debug('device name  exist');
 			this.main_view();
 		}
 	},
@@ -161,8 +164,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 				el : '#register_content',
 				model: _this.model,
 				subroute: _this.options['subroute']
-			});
-			view.render();			
+			});			
 		});
 	}
 });

@@ -36,12 +36,14 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 				RENT.user.navBar.initFBModel(fb);
 			});
 		};
+		this.render();
 		var subroute = this.options['subroute'];
 		if (subroute == null) {
 			this.router.navigate('name_device', {trigger: true});			
 		} else {
 			this.router.navigate(subroute, {trigger: true});						
-		}
+		};
+
 	},
 	init_router:function(){
 		this.router = new RENT.user.MainRouter();
@@ -153,8 +155,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			success:function(model,resp){
 				_this.rightView.undelegateEvents();
 				_this.undelegateEvents();
-				require(['modules/user/view.step1'],function(){
-					new RENT.user.view.RegisterStep1View({el:_this.el}).render();
+				require(['modules/user/view.user'],function(RegisterView){
+					new RegisterView({el:_this.el});
 					logger.debug('trigger sign off event on '+_this.model.cid);
 					_this.model.trigger('sign_off');					
 				});
