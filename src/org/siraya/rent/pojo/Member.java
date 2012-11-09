@@ -2,6 +2,9 @@ package org.siraya.rent.pojo;
 
 public class Member {
 	private String id;
+
+	private String name;
+	private String fbAccount;
 	private String userId;
 	private String memberUserId;
 	private long created;
@@ -55,5 +58,16 @@ public class Member {
 	public void setMemberId(String memberId) {
 		this.memberId = memberId;
 	}
-
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getFbAccount() {
+		return fbAccount;
+	}
+	public void setFbAccount(String fbAccount) {
+		this.fbAccount = fbAccount;
+	}
 }

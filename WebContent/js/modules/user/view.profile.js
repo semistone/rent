@@ -40,6 +40,9 @@ RENT.user.view.UserProfileView = Backbone.View.extend({
 				$.i18n.prop('general.language'));
 		this.$el.find('#i18n_country').text(
 				$.i18n.prop('general.country'));
+		this.$el.find('#save_profile_link').text(
+				$.i18n.prop('general.save'));
+		
 	}
 });	
 });

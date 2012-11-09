@@ -15,6 +15,7 @@
     <result column="PASSWORD" jdbcType="VARCHAR" property="password" />
     <result column="TIMEZONE" jdbcType="VARCHAR" property="timezone" />
     <result column="NATIONAL_ID" jdbcType="VARCHAR" property="nationalId" />
+    <result column="NAME" jdbcType="VARCHAR" property="NAME" />
     <result column="CC" jdbcType="VARCHAR" property="cc" />
     <result column="LANG" jdbcType="VARCHAR" property="lang" />
     <result column="STATUS" jdbcType="INTEGER" property="status" />
