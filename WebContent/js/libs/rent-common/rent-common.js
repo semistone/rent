@@ -63,8 +63,8 @@ var RENT = {
 		} else {
 			resp = $.parseJSON(resp.responseText);
 			title = $.i18n.prop('rent.error_msg.' + resp.errorCode);			
+			logger.error('ajax response error message:' + resp.errorMsg);
 		}
-		logger.error('ajax response error message:' + resp.errorMsg);
 		this.simpleDialog(title, msg);
 	},
     getLang:function(){
