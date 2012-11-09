@@ -42,8 +42,6 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 				$.i18n.prop('user.register.show_devices'));
 		this.$el.find('.i18n_name').text(
 				$.i18n.prop('general.name'));
-		this.$el.find('.i18n_id').text(
-				$.i18n.prop('general.id'));
 		this.$el.find('#i18n_last_login_ip').text(
 				$.i18n.prop('user.register.last_login_ip'));
 		this.$el.find('#i18n_last_login_time').text(
