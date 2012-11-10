@@ -9,10 +9,10 @@ var RENT = {
 		APIs_BASE_DIR: './',
 		AJAX_TIMEOUT : 3000,
 		COUNTRIES: {
-			"886": {name:"general.taiwan",locale:'zh-TW'},
-			"86": {name:"general.china", locale:'zh-CN'},
-			"81" : {name:"general.japan",locale:'ja'},
-			"1"  : {name:"general.unit_state", locale:'en-US'}
+			"886": {name:"general.taiwan",locale:'zh-TW', country:"TW"},
+			"86": {name:"general.china", locale:'zh-CN', country:"CN"},
+			"81" : {name:"general.japan",locale:'ja', country:"JA"},
+			"1"  : {name:"general.unit_state", locale:'en-US', country:"US"}
 		},
 		FACEBOOK_APP: '362616447158349',
 		FACEBOOK_CHANNEL:'http://angus-ec2.siraya.net/facebook.html', // Channel File
@@ -63,8 +63,8 @@ var RENT = {
 		} else {
 			resp = $.parseJSON(resp.responseText);
 			title = $.i18n.prop('rent.error_msg.' + resp.errorCode);			
+			logger.error('ajax response error message:' + resp.errorMsg);
 		}
-		logger.error('ajax response error message:' + resp.errorMsg);
 		this.simpleDialog(title, msg);
 	},
     getLang:function(){

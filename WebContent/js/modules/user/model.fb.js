@@ -67,17 +67,19 @@ RENT.user.model.FBModel = Backbone.Model.extend({
 		var _this = this;
 		_.bindAll(this, 'login','setResponse','check_status');
 		window.fbAsyncInit = function() {
-			FB.init({
-				appId : RENT.CONSTANTS.FACEBOOK_APP, // App ID
-				channelUrl : RENT.CONSTANTS.FACEBOOK_CHANNEL,
-				status : true, // check login status
-				cookie : true, // enable cookies to allow the server to access the session
-				xfbml : true
-			// parse XFBML
-			});
+			_this.init();
 			_this.check_status();
 		};
-		this.check_status();
+	},
+	init: function(){
+		FB.init({
+			appId : RENT.CONSTANTS.FACEBOOK_APP, // App ID
+			channelUrl : RENT.CONSTANTS.FACEBOOK_CHANNEL,
+			status : true, // check login status
+			cookie : true, // enable cookies to allow the server to access the session
+			xfbml : true
+		// parse XFBML
+		});
 	}
 });
 });

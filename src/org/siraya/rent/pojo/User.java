@@ -86,7 +86,6 @@ public class User {
 	 */
 	@NotNull
 	@Pattern(regexp = "^[\\d]{1,3}$")
-	@JsonIgnore
 	private String cc;
 
 	/**

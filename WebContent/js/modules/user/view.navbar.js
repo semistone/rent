@@ -63,9 +63,7 @@ RENT.user.view.NavBarView = Backbone.View.extend({
 	},
 	login_facebook:function(){
 		var _this = this;
-		require(['Facebook'],function(){
-			_this.fbModel.login();			
-		});
+		_this.fbModel.login();			
 	},
 	logout_facebook:function(){
 		this.fbModel.logout(function(){

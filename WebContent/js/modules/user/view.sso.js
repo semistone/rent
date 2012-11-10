@@ -95,6 +95,13 @@ RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
 				$.i18n.prop('user.sso.signature'));
 		this.$el.find('#i18n_debug').text(
 				$.i18n.prop('general.debug'));
+		this.$el.find('#sign_button').text(
+				$.i18n.prop('general.sign'));
+		this.$el.find('#i18n_information').text(
+				$.i18n.prop('general.information'));
+		this.$el.find('#go_button').text(
+				$.i18n.prop('general.execute'));
+		
 	},
 	render:function(){
 		logger.debug('render get sso application token');

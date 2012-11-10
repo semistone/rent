@@ -49,7 +49,10 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 			_this.$el.find('#device_name').rules('add', {
 				regex : /^[^\<\(\)]*$/
 			});
-		});				
+		});	
+		this.i18n();
+	},
+	i18n:function(){
 		//
 		// i18n
 		//
@@ -57,6 +60,8 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 				$.i18n.prop('general.name'));
 		this.$el.find('#dialog_form_block').attr('title',
 				$.i18n.prop('user.register.name_device_title'));
+		this.$el.find('#save_name_link').text(
+				$.i18n.prop('general.save'));		
 	}
 	
 });
