@@ -34,7 +34,19 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 		this.model.trigger('change_view','show_devices');
 		logger.debug("render devices");
 		var obj = {devices:this.collection.toJSON() };
+		$.each(obj.devices ,function(index, row){
+	     	//logger.debug('created is '+row.created);
+	     	var date = new Date(row.lastLoginTime * 1000);
+	     	var then = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+	             then += ' '+date.getHours()+':'+date.getMinutes();
+	        row['lastLoginTime'] = then;
+		});
+
 		this.$el.html(Mustache.to_html(this.tmpl,obj ));
+		this.i18n();
+		
+	},
+	i18n:function(){
 		//
 		// i18n
 		//
@@ -46,8 +58,6 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 				$.i18n.prop('user.register.last_login_ip'));
 		this.$el.find('#i18n_last_login_time').text(
 				$.i18n.prop('user.register.last_login_time'));
-		
-		
 	},
 	list_sessions:function(ev){
 		var deviceId = $(ev.target).parent().attr('id');
@@ -118,18 +128,21 @@ RENT.user.view.ShowSessionsView = Backbone.View.extend({
      	var date = new Date(row.created * 1000);
      	var then = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
              then += ' '+date.getHours()+':'+date.getMinutes();
-         row['createdDate'] = then;
-     });    
-     this.$el.html(Mustache.to_html(this.tmpl,{sessions:sessions} ));
-     //
-     // i18n
- 	//
-     this.$el.find('.i18n_created').text(
- 				$.i18n.prop('general.created'));
-     this.$el.find('#i18n_last_login_ip').text(
- 				$.i18n.prop('user.register.last_login_ip'));
-     this.$el.find('#i18n_sessions').text(
- 				$.i18n.prop('user.register.show_sessions'));
+             row['createdDate'] = then;
+		});
+		this.$el.html(Mustache.to_html(this.tmpl,{sessions:sessions} ));
+		this.i18n();
+	},
+	i18n:function(){
+	     //
+	     // i18n
+	     //
+	     this.$el.find('.i18n_created').text(
+	 				$.i18n.prop('general.created'));
+	     this.$el.find('#i18n_last_login_ip').text(
+	 				$.i18n.prop('user.register.last_login_ip'));
+	     this.$el.find('#i18n_sessions').text(
+	 				$.i18n.prop('user.register.show_sessions'));
 	}
 });
 });

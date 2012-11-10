@@ -21,6 +21,7 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 import org.siraya.rent.pojo.*;
 import org.siraya.rent.filter.UserAuthorizeData;
+import org.siraya.rent.filter.UserRole;
 import org.siraya.rent.filter.UserRole.UserRoleId;
 import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
@@ -345,7 +346,7 @@ public class UserRestApi {
 	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public Response linkFacebook(Device device) {
 		User user = device.getUser();
-		if (user == null) {
+		if (user == null || user.getLoginId() == null) {
 			throw new RentException(
 					RentException.RentErrorCode.ErrorInvalidParameter,
 					"user not exist");
@@ -462,6 +463,7 @@ public class UserRestApi {
 		// new mobile provider
 		//
 		mobileGatewayService.newProvider(mobileProvider);
+		this.userAuthorizeData.getSession().addRole(UserRole.UserRoleId.MOBILE_PROVIDER.getRoleId());
 		return Response.status(HttpURLConnection.HTTP_OK)
 				.entity(UserRestApi.OK).build();
 	}

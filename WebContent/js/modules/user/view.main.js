@@ -123,7 +123,7 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		var _this = this;
 
 		var do_link_fb = function(){
-			_this.model.link_facebook(_this.fb.get('id'), {
+			_this.model.link_facebook(_this.fb.get('id'), _this.fb.get('name'),{
 				success:function(model,resp){
 					logger.debug('link fb success');	
 					_this.$el.find('#link_to_fb_link').hide();

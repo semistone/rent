@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 @Repository("userDao")
 public interface IUserDAO {
     static final String INSERT_USER_SQL = "INSERT INTO USER (ID,MOBILE_PHONE,EMAIL,LOGIN_ID,LOGIN_TYPE,PASSWORD"+
-            " ,TIMEZONE,NATIONAL_ID, CC, LANG,STATUS,CREATED, MODIFIED) " +   
+            " ,TIMEZONE,NATIONAL_ID, CC, LANG, STATUS,NAME, CREATED, MODIFIED) " +   
             " VALUES (#{id}, #{mobilePhone}, #{email}, #{loginId}, #{loginType}, #{password}, " +
             "#{timezone}, #{nationalId}, #{cc}, #{lang}, #{status}, " +
-            "#{created}, #{modified})";
+            "#{name}, #{created}, #{modified})";
 
     @Insert(INSERT_USER_SQL)
     public void newUser(User user);
@@ -40,6 +40,6 @@ public interface IUserDAO {
     @Update("update USER set LOGIN_ID=#{loginId}, PASSWORD=#{password}, MODIFIED=#{modified} where ID = #{id} and LOGIN_ID is null")    
     public int updateUserLoginIdAndPassword(User user);
     
-    @Update("update USER set LOGIN_ID=#{loginId}, LOGIN_TYPE=#{loginType}, MODIFIED=#{modified} where ID = #{id} and LOGIN_TYPE is null and LOGIN_ID is null")
+    @Update("update USER set LOGIN_ID=#{loginId}, LOGIN_TYPE=#{loginType}, NAME=#{name}, MODIFIED=#{modified} where ID = #{id} and LOGIN_TYPE is null and LOGIN_ID is null")
     public int initLoginIdAndType(User user);
 }

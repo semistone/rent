@@ -64,7 +64,7 @@ public interface IDeviceDao {
     @Update("update DEVICE set NAME = #{name}, MODIFIED=#{modified} where ID = #{id} and USER_ID=#{userId} and STATUS='2'")
     public int nameDevice(Device device);
     
-    @Select("select * from DEVICE where USER_ID=#{userId} and STATUS !='3' order by MODIFIED desc limit #{limit} offset #{offset}")     
+    @Select("select * from DEVICE where USER_ID=#{userId} and STATUS !='3' and STATUS != '5' order by MODIFIED desc limit #{limit} offset #{offset}")     
     @ResultMap("rent.mapper.DeviceResultMap")
     public List<Device> getUserDevices(@Param("userId")String userId, @Param("limit")int limit, @Param("offset")int offset);
 

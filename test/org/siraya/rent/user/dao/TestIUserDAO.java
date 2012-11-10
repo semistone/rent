@@ -28,6 +28,9 @@ public class TestIUserDAO extends AbstractJUnit4SpringContextTests{
     	user.setMobilePhone(mobilePhone);
     	user.setCreated(time/1000);
     	user.setStatus(0);
+    	user.setCc("TW");
+    	user.setName("name");
+    	user.setLang("zh");
     	user.setModified(time/1000);
     	userDao.newUser(user);
     	

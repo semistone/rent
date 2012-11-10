@@ -29,7 +29,7 @@ RENT.user.view.UserProfileView = Backbone.View.extend({
 		}
 		var tmpl = $template.find('#tmpl_profile_form').html();
 		this.$el.html(Mustache.to_html(tmpl, user));
-		this.generateCountryOptions(this.$el.find('#cc'), user.cc);
+		this.generateCountryOptions(this.$el.find('#lang'), user.lang+'-'+user.cc);
 		this.i18n();
 	},
 	i18n:function(){
@@ -39,20 +39,18 @@ RENT.user.view.UserProfileView = Backbone.View.extend({
 				$.i18n.prop('general.email'));
 		this.$el.find('#i18n_language').text(
 				$.i18n.prop('general.language'));
-		this.$el.find('#i18n_country').text(
-				$.i18n.prop('general.country'));
 		this.$el.find('#save_profile_link').text(
 				$.i18n.prop('general.save'));
-		
+	
 	},
-    generateCountryOptions:function(selectElement, cc){
+    generateCountryOptions:function(selectElement, lang){
     	var options = selectElement.prop('options');
     	if (options.length > 0) {
     		return;
     	}
 		$.each(RENT.CONSTANTS.COUNTRIES , function(key, value) {
-			var option = new Option($.i18n.prop(value.name),value.country);
-			if (value.country == cc) {
+			var option = new Option($.i18n.prop(value.name),value.locale);
+			if (value.locale == lang) {
 				option.selected = true;
 			}
 			options[options.length] = option;

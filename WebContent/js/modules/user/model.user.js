@@ -74,11 +74,12 @@ RENT.user.model.UserModel = Backbone.Model.extend({
 		});
 		Backbone.sync("fetch",this, options);	
 	},
-	link_facebook:function(id, options){
+	link_facebook:function(id, name,options){
 		logger.debug('link facebook');
 		var user = this.get('user');
 		user.loginType = 'FB';
 		user.loginId = id;
+		user.name = name;
 		options = $.extend(options, {
 			url : this.url + 'link_facebook'
 		});
