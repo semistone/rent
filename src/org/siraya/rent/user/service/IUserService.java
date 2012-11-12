@@ -8,6 +8,7 @@ import java.util.List;
 import org.siraya.rent.pojo.MobileAuthResponse;
 import org.siraya.rent.pojo.User;
 import org.siraya.rent.pojo.Device;
+import org.siraya.rent.pojo.Member;
 import org.siraya.rent.pojo.MobileAuthRequest;
 public interface IUserService {
     public final static String SSO_DEVICE_ID = "SSO";
@@ -84,4 +85,5 @@ public interface IUserService {
 	
 	public void nameDevice(Device device);
 	
+	public void createMembers(String userId, List<Member> members);
 }

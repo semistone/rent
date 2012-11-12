@@ -345,6 +345,7 @@ public class UserService implements IUserService {
      * @param userId
      * @return
      */
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true) 
     public List<Device> getUserDevices(String userId, int limit, int offset){
     	List<Device> ret =  this.deviceDao.getUserDevices(userId, limit ,offset);
     	if (ret.size() == 0){
@@ -352,7 +353,8 @@ public class UserService implements IUserService {
     	}
     	return ret;
     }
-
+    
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true) 
     public List<User> getDeviceUsers(String deviceId, int limit, int offset){
     	List<User> ret =  this.deviceDao.getDeviceUsers(deviceId, limit ,offset);
     	if (ret.size() == 0){
@@ -360,7 +362,21 @@ public class UserService implements IUserService {
     	}
     	return ret;
     }
-
+    
+    
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class) 
+    public void createMembers(String userId, List<Member> members){
+    	for(Member member : members){
+    		try{
+    			member.setUserId(userId);
+    			member.genId();
+    			this.memberDao.newMember(member);
+    		}catch(org.springframework.dao.DuplicateKeyException e){
+    			// skip duplicate member
+    		}
+    	}
+    }
+    
     public String getSignatureOfMobileAuthRequest(MobileAuthRequest request){
 		String userId = request.getRequestFrom();
 		Device requestFrom = this.deviceDao.getDeviceByDeviceIdAndUserId(

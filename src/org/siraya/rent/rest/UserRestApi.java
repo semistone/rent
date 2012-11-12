@@ -1,6 +1,7 @@
 package org.siraya.rent.rest;
 
 import org.siraya.rent.mobile.service.IMobileGatewayService;
+import org.siraya.rent.pojo.Member;
 import org.siraya.rent.pojo.Session;
 
 import javax.annotation.security.RolesAllowed;
@@ -468,6 +469,21 @@ public class UserRestApi {
 				.entity(UserRestApi.OK).build();
 	}
 
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/create_members_from_fb")
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
+	public Response createMembers (List<Member> members) {
+    	for(Member member : members){
+    		// use fb account id as member id
+    		member.setMemberId(member.getId());
+    		member.setFbAccount(member.getId());
+    	}
+		this.userService.createMembers(this.userAuthorizeData.getUserId(), members);
+		return Response.status(HttpURLConnection.HTTP_OK)
+				.entity(UserRestApi.OK).build();		
+	}
+	
 	void setUserService(IUserService userService) {
 		this.userService = userService;
 	}

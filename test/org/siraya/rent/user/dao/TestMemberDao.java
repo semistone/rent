@@ -24,6 +24,7 @@ public class TestMemberDao extends AbstractJUnit4SpringContextTests{
     	member.setMemberId("m"+time);
     	member.setModified(time/1000);
     	member.setUserId("u"+time);
+    	member.setName("test");
     	member.setMemberUserId("mu"+time);
     }
     @Test   
@@ -35,5 +36,7 @@ public class TestMemberDao extends AbstractJUnit4SpringContextTests{
     	
     	member2=this.memberDao.getByMemberUserId(member.getUserId(), member.getMemberUserId());
     	Assert.assertNotNull(member2);
+    	Assert.assertEquals("test", member2.getName());
+    
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository("memberDao")
 public interface IMemberDao {
 
-	@Insert("insert into MEMBER values (#{id},#{memberId},#{memberUserId},#{userId},#{created},#{modified})")
+	@Insert("insert into MEMBER (ID, MEMBER_ID, MEMBER_USER_ID, USER_ID,NAME, FB_ACCOUNT,CREATED,MODIFIED) values (#{id},#{memberId},#{memberUserId},#{userId},#{name},#{fbAccount},#{created},#{modified})")
     public void newMember(Member member);
 	
     @Select("select * from MEMBER where ID=#{id}") 

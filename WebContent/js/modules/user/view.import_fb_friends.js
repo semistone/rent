@@ -12,14 +12,16 @@ define([
 var $template = $('<div>').append(template);	
 RENT.user.view.ImportFbFriendsView = Backbone.View.extend({
 	events : {
-		'click .delete_friend_link' : 'delete_friend'
+		'click .delete_friend_link' : 'delete_friend',
+		'click #create_members_link' : 'create_members'
 	},
 	initialize : function() {
 		this.paginationModel = new Backbone.Model();
 		this.pagniation =new Pagniation({
 			tagName: 'div',
 			model:this.paginationModel});
-		_.bindAll(this, 'render',  'delete_friend', 'undelegateEvents');
+		_.bindAll(this, 'render',  'delete_friend', 'undelegateEvents',
+				'create_members');
 		this.pagniation.on('change_page',this.render);
 		this.collection = new RENT.user.collection.FriendCollection();
 		this.collection.on('reset add remove', this.render);
@@ -46,17 +48,33 @@ RENT.user.view.ImportFbFriendsView = Backbone.View.extend({
 		this.$el.html(Mustache.to_html(this.tmpl ,array));
 		this.$el.find('#friend_table').append(this.pagniation.$el);
 		this.pagniation.delegateEvents();
+		this.i18n();
+	},
+	i18n:function(){
 		//
 		// i18n
 		//
 		this.$el.find('#i18n_import_fb_friends').text(
 				$.i18n.prop('user.main.import_fb_friends'));
+		this.$el.find('#create_members_link').text(
+				$.i18n.prop('general.save'));
+
 	},
 	delete_friend:function(ev){
 		var id = parseInt($(ev.target).parent().parent().attr('id'));
 		logger.debug("delete friend id "+id);
 		var model = this.collection.get(id);
 		this.collection.remove(model);
+	},
+	create_members: function(){
+		this.collection.create_members({
+			success:function(model,resp){
+				logger.info('success');
+			},
+			error:function(model,resp){
+				RENT.simpleErrorDialog(resp,'');
+			}
+		});
 	}
 });
 

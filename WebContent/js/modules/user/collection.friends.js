@@ -1,12 +1,16 @@
 define([
+  'jQuery',
   'Facebook',
   'Underscore',
   'Backbone',
   'RentCommon',
   'logger',
   './namespace.user'
-], function(FB, _, Backbone, RENT, logger) {
+], function($,FB, _, Backbone, RENT, logger) {
 RENT.user.collection.FriendCollection = Backbone.Collection.extend({
+	initialize:function(){
+		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/';
+	},
 	fetch:function(){
 		if (this.length != 0) {
 			logger.debug('friends already exist');
@@ -23,6 +27,12 @@ RENT.user.collection.FriendCollection = Backbone.Collection.extend({
 			}
 			_this.reset(response.data);
 		});				
+	},
+	create_members: function(options){		
+		options = $.extend(options, {
+			url : this.url + 'create_members_from_fb'
+		});
+		Backbone.sync("create",this, options);		
 	}
 });
 });

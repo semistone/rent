@@ -7,6 +7,9 @@ public class Member {
 	private String fbAccount;
 	private String userId;
 	private String memberUserId;
+	private String mobilePhone;
+	private String email;
+
 	private long created;
 	private long modified;
 	private String memberId;
@@ -34,13 +37,13 @@ public class Member {
 		this.memberUserId = memberUserId;
 	}
 	public long getCreated() {
-		return created;
-	}
-	public void setCreated(long created) {
 		if (created == 0) {
 			created=java.util.Calendar.getInstance().getTimeInMillis()/1000;
 			modified= created;
 		}
+		return created;
+	}
+	public void setCreated(long created) {
 		this.created = created;
 	}
 	public long getModified() {
@@ -69,5 +72,17 @@ public class Member {
 	}
 	public void setFbAccount(String fbAccount) {
 		this.fbAccount = fbAccount;
+	}
+	public String getMobilePhone() {
+		return mobilePhone;
+	}
+	public void setMobilePhone(String mobilePhone) {
+		this.mobilePhone = mobilePhone;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 }
