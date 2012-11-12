@@ -85,5 +85,6 @@ public interface IUserService {
 	
 	public void nameDevice(Device device);
 	
-	public void createMembers(String userId, List<Member> members);
+
+
 }
