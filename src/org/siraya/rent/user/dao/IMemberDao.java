@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.annotations.Delete;
 import org.siraya.rent.pojo.Member;
 import org.springframework.stereotype.Repository;
-
+import java.util.List;
 @Repository("memberDao")
 public interface IMemberDao {
 
@@ -29,4 +29,10 @@ public interface IMemberDao {
     @Delete("delete from MEMBER where USER_ID=#{userId} and ID=#{id}")
     public int deleteMember(@Param("userId")String userId, @Param("id")String id);
 
+    @Select("select * from MEMBER where USER_ID=#{userId} and NAME like #{name} order by NAME asc limit #{limit} offset #{offset}") 
+    @ResultMap("rent.mapper.MemberResultMap")    
+    public List<Member> search(@Param("userId")String userId, @Param("name")String name, @Param("limit")int limit, @Param("offset")int offset);
+
+    @Select("select count(*) from MEMBER where USER_ID=#{userId} and NAME like #{name}") 
+    public int searchCount(@Param("userId")String userId, @Param("name")String name);
 }

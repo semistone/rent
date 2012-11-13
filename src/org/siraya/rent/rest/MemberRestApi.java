@@ -13,10 +13,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import javax.ws.rs.DefaultValue;
 import org.siraya.rent.filter.UserAuthorizeData;
 import org.siraya.rent.pojo.Member;
 import org.siraya.rent.user.service.IMemberService;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 @Component("memberRestApi")
 @Path("/member")
+@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 public class MemberRestApi {
 	@Autowired
 	private IMemberService memberService;
@@ -43,7 +45,6 @@ public class MemberRestApi {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public Member post(Member member){
 		member.setUserId(this.userAuthorizeData.getUserId());
 		memberService.newMember(member);
@@ -53,7 +54,6 @@ public class MemberRestApi {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public Response put(Member member){
 		member.setUserId(this.userAuthorizeData.getUserId());
 		memberService.updateMember(member);
@@ -64,7 +64,6 @@ public class MemberRestApi {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{id}")
-	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public Response delete(@PathParam("id") String id) {
 		memberService.deleteMember(this.userAuthorizeData.getUserId(), id);
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
@@ -74,7 +73,6 @@ public class MemberRestApi {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{id}")
-	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public Member get(@PathParam("id") String id) {
 		return memberService.getMember(this.userAuthorizeData.getUserId(), id);
 	}
@@ -82,7 +80,6 @@ public class MemberRestApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/create_members_from_fb")
-	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public Response createMembers (List<Member> members) {
     	for(Member member : members){
     		// use fb account id as member id
@@ -92,6 +89,26 @@ public class MemberRestApi {
 		this.memberService.createMembers(this.userAuthorizeData.getUserId(), members);
 		return Response.status(HttpURLConnection.HTTP_OK)
 				.entity(MemberRestApi.OK).build();		
+	}
+	
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/search")
+	public Map<String, Object> search(
+			@DefaultValue("%") @QueryParam("name") String name,
+			@DefaultValue("20") @QueryParam("limit") int limit,
+			@DefaultValue("0") @QueryParam("offset") int offset) {
+		String userId = this.userAuthorizeData.getUserId();
+		System.out.println("limit is "+limit+ " offset is "+offset);
+		
+		List<Member> members = memberService
+				.search(userId, name, limit, offset);
+		Integer count = memberService.searchCount(userId, name);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("members", members);
+		map.put("count", count);
+		return map;
 	}
 	
 	public IMemberService getMemberService() {

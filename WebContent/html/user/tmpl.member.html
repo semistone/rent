@@ -1,0 +1,30 @@
+<script id="tmpl_list_members" type="x-tmpl-mustache">
+<div class="row">
+	<div class="span6">
+    	<h4 id="i18n_show_members"></h4>
+	</div>
+</div>
+<div class="row">
+	<div class="span6">
+		<table id="friend_table" class="table table-striped">
+			<thead>
+				<tr>
+					<td><span class="i18n_name"></span></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody>
+{{#members}}
+				<tr id="{{id}}">
+					<td>{{name}}</td>
+					<td><img src="https://graph.facebook.com/{{fbAccount}}/picture"></td>
+					<td><a href="#" class="close delete_member_link">x</a></td>
+				</tr>
+{{/members}}
+			</tbody>
+		</table>
+
+	</div>
+</div>
+</script>

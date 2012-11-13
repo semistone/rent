@@ -64,7 +64,23 @@ public class MemberService implements IMemberService {
 		}
 		return member;
 	}
+	
+	@Transactional(value = "rentTxManager", readOnly = true)
+	public List<Member> search(String userId, String name, int limit, int offset) {
+		List<Member> list = this.memberDao.search(userId, name, limit, offset);
+		if (list.size() == 0) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
+					"get member fail");
+		} else {
+			return list;
+		}
+	}
 
+	@Transactional(value = "rentTxManager", readOnly = true)
+	public int searchCount(String userId, String name) {
+		return this.memberDao.searchCount(userId, name);
+	}
+	
 	public IMemberDao getMemberDao() {
 		return memberDao;
 	}

@@ -16,7 +16,7 @@ var $template = $('<div>').append(template);
 RENT.user.view.RegisterMainView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render','sign_off','show_my_device','link_fb','sso_application',
-				'init_router', 'mobile_provider','import_fb_friends', 'name_device_popup',
+				'init_router', 'mobile_provider','list_members', 'name_device_popup',
 				'show_user_profile');
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.rightView = new Backbone.View();
@@ -49,7 +49,7 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		this.router = new RENT.user.MainRouter();
 		this.router.on('route:name_device', this.name_device_popup);
 		this.router.on('route:show_my_device', this.show_my_device);
-		this.router.on('route:import_fb_friends', this.import_fb_friends);
+		this.router.on('route:list_members', this.list_members);
 		this.router.on('route:mobile_provider', this.mobile_provider);
 		this.router.on('route:show_user_profile', this.show_user_profile);
 		this.router.on('route:sso_application', this.sso_application);
@@ -62,7 +62,7 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		'click #show_my_devices_link' : 'show_my_device',
 		'click #link_to_fb_link' : 'link_fb',
 		'click #sso_application_link':'sso_application',
-		'click #import_fb_friends_link' : 'import_fb_friends',
+		'click #list_members_link' : 'list_members',
 		'click #user_profile_link' :'show_user_profile',
 		'click #mobile_provider_link' : 'mobile_provider'
 	},
@@ -95,8 +95,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 				$.i18n.prop('user.register.link_fb'));
 		this.$el.find('#i18n_sso_application').text(
 				$.i18n.prop('user.main.sso_application'));
-		this.$el.find('#i18n_import_fb_friends').text(
-				$.i18n.prop('user.main.import_fb_friends'));
+		this.$el.find('#i18n_list_members').text(
+				$.i18n.prop('user.main.list_members'));
 		this.$el.find('#i18n_user_profile').text(
 				$.i18n.prop('user.main.user_profile'));		
 		this.$el.find('#i18n_mobile_provider').text(
@@ -191,14 +191,14 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 			});					
 		});
 	},
-	import_fb_friends:function(){
-		logger.debug('click import_fb_friends');
-		this.router.navigate('main/import_fb_friends', {replace: true});
+	list_members:function(){
+		logger.debug('click list_members');
+		this.router.navigate('main/list_members', {replace: true});
 
 		var _this = this;
 		this.rightView.undelegateEvents();
-		require(['modules/user/view.import_fb_friends'],function(){
-			_this.rightView = new RENT.user.view.ImportFbFriendsView({el: _this.$el.find('#register_right')});
+		require(['modules/user/view.list_members'],function(ListMemberView){
+			_this.rightView = new ListMemberView({el: _this.$el.find('#register_right')});
 		});
 
 	},
