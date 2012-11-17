@@ -3,10 +3,14 @@
 	<div class="span6">
     	<h4 id="i18n_show_members"></h4>
 	</div>
-	<form class="form-search">
-  		<input type="text" id="member_search_input" value="{{member_search_input}}" class="input-medium search-query">
-  		<button type="button" id="search_link" class="btn">Search</button>
-	</form>
+	<div class="well well-small span6">
+		<button type="button" class="btn btn-info btn-small">Add <i class="icon-plus"></i></button>
+
+		<form class="pull-right form-search">
+  			<input type="text" id="member_search_input" value="{{member_search_input}}" class="input-medium search-query">
+  			<button type="button" id="search_link" class="btn">Search<i class="icon-search"></i></button>
+		</form>
+	</div>
 </div>
 
 <div class="row">
@@ -14,17 +18,22 @@
 		<table id="friend_table" class="table table-striped">
 			<thead>
 				<tr>
-					<td><span class="i18n_name"></span></td>
 					<td></td>
+					<td><span class="i18n_name"></span></td>
 					<td></td>
 				</tr>
 			</thead>
 			<tbody>
 {{#members}}
 				<tr id="{{id}}">
+					<td class="media"><img class="img-rounded media-object"  src="https://graph.facebook.com/{{fbAccount}}/picture"></td>
 					<td>{{name}}</td>
-					<td><img src="https://graph.facebook.com/{{fbAccount}}/picture"></td>
-					<td><a href="#" class="close delete_member_link">x</a></td>
+					<td >
+						<div class="pull-right">
+							<a  class="edit_member_link btn-mini"><i class="icon-edit"></i></a>
+							<a  class="delete_member_link btn-mini"><i class="icon-remove"></i></a>
+						</div>
+					</td>
 				</tr>
 {{/members}}
 			</tbody>

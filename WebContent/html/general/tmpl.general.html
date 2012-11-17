@@ -16,11 +16,11 @@
 <script id="tmpl_pagination" type="x-tmpl-mustache">
 <div class="pagination">
 	<ul>
-		<li {{^isPrev}}class="disabled"{{/isPrev}}><a>Prev</a></li>
+		<li {{^isPrev}}class="disabled"{{/isPrev}}><a id="prev_page_link">Prev</a></li>
 		{{#pages}}
 		<li class="page_index {{#current}}active{{/current}}"><a>{{index}}</a></li>
 		{{/pages}}
-		<li {{^isNext}}class="disabled"{{/isNext}}><a>Next</a></li>
+		<li {{^isNext}}class="disabled"{{/isNext}}><a id="next_page_link">Next</a></li>
 	</ul>
 </div>
 </script>    	

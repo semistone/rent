@@ -13,7 +13,9 @@ var $template = $('<div>').append(template);
 //
 var PaginationView = Backbone.View.extend({
 	events : {
-		'click .page_index' : 'page_index'
+		'click .page_index' : 'page_index',
+		'clilck #prev_page_link': 'prev_page_link',
+		'click #next_page_link': 'next_page_link'
 	},
 	initialize : function() {
 		logger.debug('init pagination');
@@ -27,7 +29,8 @@ var PaginationView = Backbone.View.extend({
 			maxPagination: 5,
 			currentPage: 1
 		},{silent:true});
-		_.bindAll(this, 'render', 'page_index');
+		_.bindAll(this, 'render', 'page_index','prev_page_link',
+				'next_page_link');
 		this.tmpl = $template.find('#tmpl_pagination').html();
 		this.model.on('change',this.render);
 	},
@@ -69,7 +72,7 @@ var PaginationView = Backbone.View.extend({
 				pages[i]['current'] = false;				
 			};
 		}
-		this.model.set({startPage: startPage, endPage: endPage,pages:pages},{silent:true});			
+		this.model.set({isNext: isNext, isPrev: isPrev,pages:pages},{silent:true});			
 		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
 	},
 	page_index:function(ev){
@@ -77,6 +80,16 @@ var PaginationView = Backbone.View.extend({
 		var setPage = parseInt($(ev.target).text());
 		this.model.set({currentPage: setPage},{silent:true});
 		this.trigger('change_page');
+	},
+	prev_page_link:function(){
+		var current_page = this.model.get('currentPage');
+		this.model.set({currentPage: current_page - 1}, {silent:true});
+		this.trigger('change_page');
+	},
+	next_page_link:function(){
+		var current_page = this.model.get('currentPage');
+		this.model.set({currentPage: current_page + 1 }, {silent:true});
+		this.trigger('change_page');		
 	}
 });
 return PaginationView;
