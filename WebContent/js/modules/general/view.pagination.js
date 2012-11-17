@@ -38,7 +38,7 @@ var PaginationView = Backbone.View.extend({
 		var pages = [];
 		var maxPagination = this.model.get('maxPagination');
 		var startPage, endPage, isPrev = false, isNext = false;
-		logger.debug('total page is '+totalPage+ 'max pagination is '+maxPagination);
+		logger.debug('total page is '+totalPage+ 'max pagination is '+maxPagination+ 'current page is '+currentPage);
 		if (totalPage > maxPagination) {
 			startPage = currentPage - (maxPagination-1)/2;
 			endPage = currentPage + (maxPagination-1)/2;

@@ -15,6 +15,7 @@ MemberCollection = Backbone.Collection.extend({
 		options = {
 			url : this.url + 'search?name='+name+'&limit='+limit+'&offset='+offset,
 			success:function(model,resp){
+				_this.total = model.count;
 				_this.reset(model.members);
 			}
 			

@@ -9,18 +9,18 @@
 		<p>{{msg}}</p>
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="btn" data-dismiss="modal">Close</a> 
+		<a  class="btn" data-dismiss="modal">Close</a> 
 	</div>
 </div>
 </script>
 <script id="tmpl_pagination" type="x-tmpl-mustache">
 <div class="pagination">
 	<ul>
-		<li {{^isPrev}}class="disabled"{{/isPrev}}><a href="#">Prev</a></li>
+		<li {{^isPrev}}class="disabled"{{/isPrev}}><a>Prev</a></li>
 		{{#pages}}
-		<li class="page_index {{#current}}active{{/current}}"  ><a href="#">{{index}}</a></li>
+		<li class="page_index {{#current}}active{{/current}}"><a>{{index}}</a></li>
 		{{/pages}}
-		<li {{^isNext}}class="active"{{/isNext}}><a href="#">Next</a></li>
+		<li {{^isNext}}class="disabled"{{/isNext}}><a>Next</a></li>
 	</ul>
 </div>
 </script>    	
