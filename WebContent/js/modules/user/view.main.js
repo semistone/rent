@@ -38,8 +38,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		};
 		this.render();
 		var subroute = this.options['subroute'];
-		if (subroute == null) {
-			this.router.navigate('name_device', {trigger: true});			
+		if (subroute == null || subroute == '' ) {
+			this.router.navigate('main/name_device', {trigger: true});			
 		} else {
 			this.router.navigate(subroute, {trigger: true});						
 		};

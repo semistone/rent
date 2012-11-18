@@ -57,15 +57,19 @@ require(['order!jQuery','order!Underscore','order!Backbone'],function($, _, Back
 		});
 	};
 	var main= function(subroute){
-		if (current == 'defaultRoute') {
+		if (current == 'main') {
 			return;
 		}
-		current = 'defaultRoute';
+		current = 'main';
 		require(['modules/user/user.loader'], function(User) {
 			User.initialize(subroute);
 		});
 	};
 	var defaultRoute = function(subroute){
+		if (current == 'home') {
+			return;
+		}
+		current = 'home';
 		require(['modules/home/home.loader'], function(Home) {
 			Home.initialize();
 		});	
