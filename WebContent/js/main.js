@@ -66,7 +66,9 @@ require(['order!jQuery','order!Underscore','order!Backbone'],function($, _, Back
 		});
 	};
 	var defaultRoute = function(subroute){
-		main('');
+		require(['modules/home/home.loader'], function(Home) {
+			Home.initialize();
+		});	
 	};	
 	var MainRoute =  Backbone.Router.extend({
 		routes: {

@@ -14,7 +14,7 @@ define([
 
 var $template = $('<div>').append(template);
 	
-RENT.user.view.NavBarView = Backbone.View.extend({
+NavBarView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'initFBModel','login_facebook','logout_facebook');
 		var _this = this;
@@ -71,4 +71,6 @@ RENT.user.view.NavBarView = Backbone.View.extend({
 		});		
 	}
 });
+
+return NavBarView;
 });

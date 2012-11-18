@@ -5,7 +5,7 @@ define([
   './view.user',
   'RentCommon',
   './view.navbar'
-], function($, logger, RegisterView, RENT){
+], function($, logger, RegisterView, RENT, NavBarView){
 	RENT.user.mainView, RENT.user.navBar = null;
 	$(function(){
 		RENT.bindLoadingPage("#supersized-loader");
@@ -15,7 +15,7 @@ define([
 		var model = new RENT.user.model.UserModel();
 		$(function(){
 			logger.debug('new register view');
-			RENT.user.navBar = new RENT.user.view.NavBarView({el:'#navbar',model:model});
+			RENT.user.navBar = new NavBarView({el:'#navbar',model:model});
 			RENT.user.mainView = new RegisterView({el:'#main', model:model,subroute:subroute});
 		});
 	};
