@@ -61,11 +61,18 @@ var RENT = {
 		if (resp == null || resp == 'error') {
 			title = $.i18n.prop("rent.error_msg.server");
 		} else {
-			resp = $.parseJSON(resp.responseText);
-			title = $.i18n.prop('rent.error_msg.' + resp.errorCode);			
-			logger.error('ajax response error message:' + resp.errorMsg);
+			try{
+				resp = $.parseJSON(resp.responseText);	
+				title = $.i18n.prop('rent.error_msg.' + resp.errorCode);
+				logger.error('ajax response error message:' + resp.errorMsg);
+			}catch(e){
+				title = $.i18n.prop("rent.error_msg.server");				
+			}				
 		}
-		this.simpleDialog(title, msg);
+		RENT.simpleDialog(title, msg);
+	},
+	simpleErrorDialogForCollectionError:function(collection, resp, options){
+		RENT.simpleErrorDialog(resp,'');
 	},
     getLang:function(){
     	//

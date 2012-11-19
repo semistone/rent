@@ -13,14 +13,19 @@ MemberCollection = Backbone.Collection.extend({
 		logger.debug('search name:'+name+' limit:'+limit+' offset:'+offset);
 		var _this = this;
 		options = {
-			url : this.url + 'search?name='+name+'&limit='+limit+'&offset='+offset,
+			url: this.url+'search',
 			success:function(model,resp){
 				_this.total = model.count;
 				_this.reset(model.members);
-			}
-			
+			},
+			error:function(resp,msg){
+				_this.trigger('error', this, resp);
+			},
+			data: { name:name, limit:limit,offset:offset},
+			processData:true
 		};
-		Backbone.sync("fetch",this, options);	
+		Backbone.sync("fetch",this, options);
+
 	}
 });
 return MemberCollection;

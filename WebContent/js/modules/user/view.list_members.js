@@ -19,6 +19,7 @@ ListMembersView = Backbone.View.extend({
 		_.bindAll(this, 'render', 'i18n', 'search_link', 'change_page');
 		this.collection = new MemberCollection();
 		this.collection.on('reset add remove', this.render);
+		this.collection.on('error', RENT.simpleErrorDialogForCollectionError);
 		this.tmpl = $template.find('#tmpl_list_members').html();
 		this.collection.search('%', '10', '0');
 		this.paginationModel = new Backbone.Model();
