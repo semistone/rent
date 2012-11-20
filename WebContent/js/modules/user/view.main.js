@@ -57,14 +57,7 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		
 	},
 	events : {
-		"click #named_my_devices_link" : 'name_device_popup',
-		'click #sign_off_link' : 'sign_off',
-		'click #show_my_devices_link' : 'show_my_device',
-		'click #link_to_fb_link' : 'link_fb',
-		'click #sso_application_link':'sso_application',
-		'click #list_members_link' : 'list_members',
-		'click #user_profile_link' :'show_user_profile',
-		'click #mobile_provider_link' : 'mobile_provider'
+		'click #sign_off_link' : 'sign_off'
 	},
 	render:function(){
 		this.model.trigger('change_view','main');

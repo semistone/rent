@@ -7,16 +7,23 @@ define([
   'logger',
   'text!../../../html/user/tmpl.member.html',
   '../general/view.pagination',
-  './collection.member'
-  ], function($, _, Backbone, Mustache, RENT, logger,template,Pagniation,MemberCollection) {
+  './collection.member',
+  './model.member',
+  'Bootstrap'
+  ], function($, _, Backbone, Mustache, RENT, logger,template,Pagniation,MemberCollection, MemberModel) {
 var $template = $('<div>').append(template);	
 ListMembersView = Backbone.View.extend({
+	model: MemberModel,
 	events:{
-		'click #search_link': 'search_link'
+		'click #search_link': 'search_link',
+		'click .edit_member_link' : 'edit_member',
+		'click .delete_member_link' : 'delete_member',
+		'click #save_member_link': 'save_edit_member'
 	},
 	initialize : function() {
 		this.searchModel = new Backbone.Model();
-		_.bindAll(this, 'render', 'i18n', 'search_link', 'change_page');
+		_.bindAll(this, 'render', 'i18n', 'search_link', 'change_page',
+				'edit_member', 'delete_member', 'save_edit_member');
 		this.collection = new MemberCollection();
 		this.collection.on('reset add remove', this.render);
 		this.collection.on('error', RENT.simpleErrorDialogForCollectionError);
@@ -60,6 +67,30 @@ ListMembersView = Backbone.View.extend({
 		this.searchModel.set({'member_search_input':search}, {silent:true});
 		this.paginationModel.set({currentPage:1},{silent:true});
 		this.change_page();
+	},
+	edit_member:function(ev){
+		var id = $(ev.target).parent().parent().parent().parent().attr('id');
+		logger.debug('edit member '+id);
+		var model = this.collection.get(id);
+		var tmpl = $template.find('#tmpl_edit_member').html();
+		this.$el.find('#edit_member').html(Mustache.to_html(tmpl ,model.toJSON()));
+		this.$el.find('#myModal').modal('show');		
+	},
+	save_edit_member:function(){
+		var id = this.$el.find('#id').val();
+		logger.debug('save id '+id);
+		var model = this.collection.get(id);
+		model.set({
+			name: this.$el.find('#name').val(),
+			email:  this.$el.find('#email').val(),
+			mobilePhone:  this.$el.find('#mobilePhone').val()
+		},{slient:true});
+		model.save();
+	},
+	delete_member:function(){
+		var id = $(ev.target).parent().parent().parent().parent().attr('id');
+		logger.debug('delete member '+id);
+		
 	}
 });
 

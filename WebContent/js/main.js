@@ -48,28 +48,16 @@ require(['order!jQuery','order!Underscore','order!Backbone'],function($, _, Back
 	var current = null;
 
 	var backyard  = function(){
-		if (current == 'backyard') {
-			return;
-		}
-		current = 'backyard';
 		require(['modules/backyard/backyard.loader'], function(Backyard) {
 			Backyard.initialize();
 		});
 	};
 	var main= function(subroute){
-		if (current == 'main') {
-			return;
-		}
-		current = 'main';
 		require(['modules/user/user.loader'], function(User) {
 			User.initialize(subroute);
 		});
 	};
 	var defaultRoute = function(subroute){
-		if (current == 'home') {
-			return;
-		}
-		current = 'home';
 		require(['modules/home/home.loader'], function(Home) {
 			Home.initialize();
 		});	
