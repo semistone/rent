@@ -21,6 +21,7 @@ import javax.ws.rs.DefaultValue;
 import org.siraya.rent.filter.UserAuthorizeData;
 import org.siraya.rent.pojo.Member;
 import org.siraya.rent.user.service.IMemberService;
+import org.siraya.rent.utils.RentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,8 +55,14 @@ public class MemberRestApi {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response put(Member member){
+	@Path("/{id}")
+	public Response put(@PathParam("id") String id,Member member){
 		member.setUserId(this.userAuthorizeData.getUserId());
+		if (!id.equals(member.getId())) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"id not match");
+		}
 		memberService.updateMember(member);
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
 	}

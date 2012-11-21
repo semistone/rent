@@ -20,13 +20,14 @@ ListMembersView = Backbone.View.extend({
 		'click .delete_member_link' : 'delete_member',
 		'click #save_member_link': 'save_edit_member',
 		'click #add_member_link': 'add_member',
-		'click #save_add_member_link' : 'save_add_member'
+		'click #save_add_member_link' : 'save_add_member',
+		'click #save_delete_member_link' : 'save_delete_member'
 	},
 	initialize : function() {
 		this.searchModel = new Backbone.Model();
 		_.bindAll(this, 'render', 'i18n', 'search_link', 'change_page',
 				'edit_member', 'delete_member', 'save_edit_member',
-				'add_member', 'save_add_member');
+				'add_member', 'save_add_member','save_delete_member');
 		this.collection = new MemberCollection();
 		this.collection.on('reset add remove', this.render);
 		this.collection.on('error', RENT.simpleErrorDialogForCollectionError);
@@ -65,17 +66,20 @@ ListMembersView = Backbone.View.extend({
 		this.collection.search('%'+search+'%', pageSize, start);		
 	},
 	search_link:function(){
-		logger.debug('search '+search);
 		var search = this.$el.find('#member_search_input').val();
+		logger.debug('search '+search);
 		this.searchModel.set({'member_search_input':search}, {silent:true});
 		this.paginationModel.set({currentPage:1},{silent:true});
 		this.change_page();
 	},
-	show_member_form:function(model, template_id){
+	show_member_form:function(model, template_id, is_need_validate){
 		var tmpl = $template.find(template_id).html();
 		this.$el.find('#edit_member').html(Mustache.to_html(tmpl ,model.toJSON()));
 		this.$el.find('#myModal').modal('show');
 		var _this = this;
+		if (is_need_validate == false) {
+			return;
+		}
 		RENT.initValidator(function(){
 			_this.$el.find("#edit_member_form").validate();			
 			_this.$el.find('#mobile-phone').rules('add', {
@@ -109,10 +113,18 @@ ListMembersView = Backbone.View.extend({
 		model.save();
 		this.$el.find('#myModal').modal('hide');
 	},
-	delete_member:function(){
+	delete_member:function(ev){
 		var id = $(ev.target).parent().parent().parent().parent().attr('id');
 		logger.debug('delete member '+id);
-		
+		var model = this.collection.get(id);
+		this.show_member_form(model,'#tmpl_delete_member', false);
+	},
+	save_delete_member:function(){
+		var id = this.$el.find('#id').val();
+		logger.debug("delete member "+id);
+		var model = this.collection.get(id);
+		model.destroy({wait: true});
+		this.$el.find('#myModal').modal('hide');
 	},
 	add_member:function(){
 		this.show_member_form(new MemberModel(),'#tmpl_new_member');	

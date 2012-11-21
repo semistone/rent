@@ -11,7 +11,7 @@
     <result column="FB_ACCOUNT" jdbcType="VARCHAR" property="fbAccount" />
     <result column="NAME" jdbcType="VARCHAR" property="name" />
     <result column="EMAIL" jdbcType="VARCHAR" property="email" />
-    <result column="MOBILE_PHONE" jdbcType="VARCHAR" property="moibilePhone" />
+    <result column="MOBILE_PHONE" jdbcType="VARCHAR" property="mobilePhone" />
     
   </resultMap>
 </mapper>
