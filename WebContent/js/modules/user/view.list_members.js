@@ -18,12 +18,15 @@ ListMembersView = Backbone.View.extend({
 		'click #search_link': 'search_link',
 		'click .edit_member_link' : 'edit_member',
 		'click .delete_member_link' : 'delete_member',
-		'click #save_member_link': 'save_edit_member'
+		'click #save_member_link': 'save_edit_member',
+		'click #add_member_link': 'add_member',
+		'click #save_add_member_link' : 'save_add_member'
 	},
 	initialize : function() {
 		this.searchModel = new Backbone.Model();
 		_.bindAll(this, 'render', 'i18n', 'search_link', 'change_page',
-				'edit_member', 'delete_member', 'save_edit_member');
+				'edit_member', 'delete_member', 'save_edit_member',
+				'add_member', 'save_add_member');
 		this.collection = new MemberCollection();
 		this.collection.on('reset add remove', this.render);
 		this.collection.on('error', RENT.simpleErrorDialogForCollectionError);
@@ -68,11 +71,8 @@ ListMembersView = Backbone.View.extend({
 		this.paginationModel.set({currentPage:1},{silent:true});
 		this.change_page();
 	},
-	edit_member:function(ev){
-		var id = $(ev.target).parent().parent().parent().parent().attr('id');
-		logger.debug('edit member '+id);
-		var model = this.collection.get(id);
-		var tmpl = $template.find('#tmpl_edit_member').html();
+	show_member_form:function(model, template_id){
+		var tmpl = $template.find(template_id).html();
 		this.$el.find('#edit_member').html(Mustache.to_html(tmpl ,model.toJSON()));
 		this.$el.find('#myModal').modal('show');
 		var _this = this;
@@ -84,7 +84,13 @@ ListMembersView = Backbone.View.extend({
 			_this.$el.find('#email').rules('add', {
 				regex : /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
 			});
-		});
+		});		
+	},
+	edit_member:function(ev){
+		var id = $(ev.target).parent().parent().parent().parent().attr('id');
+		logger.debug('edit member '+id);
+		var model = this.collection.get(id);
+		this.show_member_form(model,'#tmpl_edit_member');
 	},
 	save_edit_member:function(){
         var formvalidate = this.$el.find("#edit_member_form").valid();
@@ -107,6 +113,25 @@ ListMembersView = Backbone.View.extend({
 		var id = $(ev.target).parent().parent().parent().parent().attr('id');
 		logger.debug('delete member '+id);
 		
+	},
+	add_member:function(){
+		this.show_member_form(new MemberModel(),'#tmpl_new_member');	
+	},
+	save_add_member:function(){
+        var formvalidate = this.$el.find("#edit_member_form").valid();
+        if (!formvalidate) {
+        	logger.error('form validate fail');
+        	return false;
+        }	
+		logger.debug('save id '+id);
+		var model = new MemberModel();
+		model.set({
+			name: this.$el.find('#name').val(),
+			email:  this.$el.find('#email').val(),
+			mobilePhone:  this.$el.find('#mobile-phone').val()
+		},{slient:true});
+		model.save();
+		this.$el.find('#myModal').modal('hide');        
 	}
 });
 
