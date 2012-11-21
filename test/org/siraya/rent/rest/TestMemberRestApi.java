@@ -50,7 +50,7 @@ public class TestMemberRestApi {
 				one(memberService).updateMember(with(any(Member.class)));
 			}
 		});
-		memberRestApi.put(member);
+		memberRestApi.put(member.getId(), member);
 	}
 
 	@Test
