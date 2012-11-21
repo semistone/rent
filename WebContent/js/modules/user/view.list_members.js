@@ -74,18 +74,34 @@ ListMembersView = Backbone.View.extend({
 		var model = this.collection.get(id);
 		var tmpl = $template.find('#tmpl_edit_member').html();
 		this.$el.find('#edit_member').html(Mustache.to_html(tmpl ,model.toJSON()));
-		this.$el.find('#myModal').modal('show');		
+		this.$el.find('#myModal').modal('show');
+		var _this = this;
+		RENT.initValidator(function(){
+			_this.$el.find("#edit_member_form").validate();			
+			_this.$el.find('#mobile-phone').rules('add', {
+				regex : /^\+?\d{10,15}$/
+			});
+			_this.$el.find('#email').rules('add', {
+				regex : /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+			});
+		});
 	},
 	save_edit_member:function(){
+        var formvalidate = this.$el.find("#edit_member_form").valid();
+        if (!formvalidate) {
+        	logger.error('form validate fail');
+        	return false;
+        }
 		var id = this.$el.find('#id').val();
 		logger.debug('save id '+id);
 		var model = this.collection.get(id);
 		model.set({
 			name: this.$el.find('#name').val(),
 			email:  this.$el.find('#email').val(),
-			mobilePhone:  this.$el.find('#mobilePhone').val()
+			mobilePhone:  this.$el.find('#mobile-phone').val()
 		},{slient:true});
 		model.save();
+		this.$el.find('#myModal').modal('hide');
 	},
 	delete_member:function(){
 		var id = $(ev.target).parent().parent().parent().parent().attr('id');
