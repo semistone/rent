@@ -3,7 +3,6 @@
 	<!-- project-specific variables -->
 	<property name="app.name" value="rent" />
 	<property name="package.name" value="${app.name}.war" />
-
 	<property name="web.dir" value="." />
 	<property name="src.dir" value="${web.dir}/src" />
 	<property name="test.dir" value="${web.dir}/test" />
@@ -12,9 +11,13 @@
 	<property name="class.dir" value="${dest.dir}/classes" />
 	<property name="lib.dir" value="${webroot.dir}/WEB-INF/lib" />
 	<property name="webroot.class.dir" value="${webroot.dir}/WEB-INF/" />
-
+    <property name="yuicompressor" value="${web.dir}/tools/yuicompressor-2.4.7.jar" />
+	<property name="src.dir.css" value="${webroot.dir}/css" />
+    <property name="dist.dir.css" value="${dest.dir}/css" />
 	<property name="reports.tests" value="build" />
-
+	<property name="src.dir.js" value="${webroot.dir}/js" />
+    <property name="dist.dir.js" value="${dest.dir}/js" />
+	
 
 	<path id="build.lib.path">
 		<fileset dir="${lib.dir}">
@@ -34,6 +37,30 @@
 		<mkdir dir="${dest.dir}" />
 		<mkdir dir="${class.dir}"/>
 		<mkdir dir="${lib.dir}"/>
+		<mkdir dir="${dest.dir.css}"/>
+		<mkdir dir="${dist.dir.js}"/>
+		<mkdir dir="${dist.dir.js}/libs/backbone"/>
+		<mkdir dir="${dist.dir.js}/libs/bootstrap"/>
+		<mkdir dir="${dist.dir.js}/libs/facebook"/>
+		<mkdir dir="${dist.dir.js}/libs/facebook"/>
+		<mkdir dir="${dist.dir.js}/libs/jquery"/>
+		<mkdir dir="${dist.dir.js}/libs/jquery-cookie"/>
+		<mkdir dir="${dist.dir.js}/libs/jquery-datepicker"/>
+		<mkdir dir="${dist.dir.js}/libs/jquery-i18n"/>
+		<mkdir dir="${dist.dir.js}/libs/jquery-ui"/>
+		<mkdir dir="${dist.dir.js}/libs/jquery-validate"/>
+		<mkdir dir="${dist.dir.js}/libs/log4javascript"/>
+		<mkdir dir="${dist.dir.js}/libs/mustache"/>
+		<mkdir dir="${dist.dir.js}/libs/rent-common"/>
+		<mkdir dir="${dist.dir.js}/libs/require"/>
+		<mkdir dir="${dist.dir.js}/libs/underscore"/>
+		<mkdir dir="${dist.dir.js}/modules/backyard"/>
+		<mkdir dir="${dist.dir.js}/modules/general"/>
+		<mkdir dir="${dist.dir.js}/modules/home"/>
+		<mkdir dir="${dist.dir.js}/modules/user"/>
+		
+		
+		
 	</target>
 
 	<!-- COMPILE -->
@@ -95,5 +122,38 @@
 			</batchtest>
 		</junit>
 	</target>
-
+    <target name="css.compress" depends="prepare">
+        <echo>=== Compressing CSS... ===</echo>
+        <apply executable="java" verbose="true" failonerror="true" dest="${dist.dir.css}">
+            <fileset dir="${src.dir.css}" includes="**/*.css" />
+            <arg value="-jar" />
+            <arg value="${yuicompressor}" />
+            <arg value="--type" />
+            <arg value="css" />
+            <arg value="-v" />
+            <arg value="-o" />
+            <targetfile />
+            <mapper type="glob" from="*.css" to="*.css" />
+            <srcfile />
+        </apply>
+    </target>
+	
+    <target name="js.compress" depends="prepare">
+        <echo>=== Compressing JS... ===</echo>
+        <apply executable="java" verbose="true" failonerror="true" dest="${dist.dir.js}">
+            <fileset dir="${src.dir.js}" includes="**/*.js">
+                <include name="**/*.js" />
+                <exclude name="libs/*/*min*.js" />
+            </fileset>
+            <arg value="-jar" />
+            <arg value="${yuicompressor}" />
+            <arg value="--type" />
+            <arg value="js" />
+            <arg value="-v" />
+            <arg value="-o" />
+            <targetfile />
+            <mapper type="glob" from="*.js" to="*.js" />
+            <srcfile />
+        </apply>
+    </target>	
 </project>
