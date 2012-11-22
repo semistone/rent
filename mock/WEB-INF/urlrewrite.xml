@@ -8,19 +8,20 @@
     http://tuckey.org/urlrewrite/
 
 -->
-<urlrewrite>   
+<urlrewrite>
         <rule>
-            <from>/rest/member/([^\/]*)$</from>
-            <to type="forward">/member/index.jsp</to>
+            <from>/rest/([^\/]*)/([^\/\-]*)$</from>
+            <to type="forward">/$1/$2.jsp</to>
+        </rule>   
+        <rule>
+            <from>/rest/([^\/]*)/([^\/]*)$</from>
+            <to type="forward">/$1/index.jsp</to>
         </rule>   
         <rule>
             <from>/rest/([^\/]*)/$</from>
             <to type="forward">/$1/index.jsp</to>
         </rule>
-        <rule>
-            <from>/rest/([^\/]*)/([^\/]*)$</from>
-            <to type="forward">/$1/$2.jsp</to>
-        </rule>
+
 
         <rule>
             <from>/rest/([^\/]*)/?(.*)$</from>
