@@ -12,12 +12,17 @@ var $template = $('<div>').append(template);
 
 var MainView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render');
+		_.bindAll(this, 'render', 'init_router', 'edit');
 		this.tmpl = $template.find('#tmpl_home').html();
 		this.model = new PageModel();
 		this.model.on('change', this.render);
 		this.model.set({id:'home'}, {silent:true});
 		this.model.fetch();
+		this.init_router();
+		var subroute = this.options['subroute'];
+		if (subroute != null && subroute != '' ) {
+			this.router.navigate('home/'+subroute, {trigger: true});						
+		};
 	},
 	render:function(){
 		logger.debug('render');
@@ -29,6 +34,14 @@ var MainView = Backbone.View.extend({
 		logger.debug('render navibar');
 		var tmpl = $template.find('#tmpl_navi').html();
 		$(el).find('#nav-menu').html(tmpl);
+	},
+	init_router:function(){
+		this.router = new Backbone.Router();
+		this.router.route('edit', this.edit);		
+	},
+	edit:function(){
+		logger.debug('edit mode');
+		this.router.navigate('home/edit', {replace: true});
 	}
 });
 return MainView;

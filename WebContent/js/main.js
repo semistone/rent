@@ -45,7 +45,6 @@ require.config({
 	}
 });
 require(['order!jQuery','order!Underscore','order!Backbone'],function($, _, Backbone){
-	var current = null;
 
 	var backyard  = function(){
 		require(['modules/backyard/backyard.loader'], function(Backyard) {
@@ -57,15 +56,25 @@ require(['order!jQuery','order!Underscore','order!Backbone'],function($, _, Back
 			User.initialize(subroute);
 		});
 	};
-	var defaultRoute = function(subroute){
-		require(['modules/home/home.loader'], function(Home) {
-			Home.initialize();
+	var defaultRoute = function(){
+		var module , subroute = null;
+		if (arguments.length == 2) {
+			module = arguments[0];
+			subroute = arguments[1];
+		} else if (arguments.length == 1 && arguments[0] != '' ){
+			module = arguments[0];
+		} else {
+			module = 'home';
+		}
+		require(['modules/'+module+'/'+module+'.loader'], function(Home) {
+			Home.initialize(subroute);
 		});	
 	};	
 	var MainRoute =  Backbone.Router.extend({
 		routes: {
 			'main/*subroute': 'main',
 			'backyard':'backyard',
+			'*path/*subroute': 'defaultRoute',
 			'*path':  'defaultRoute'
 		}
 	});
