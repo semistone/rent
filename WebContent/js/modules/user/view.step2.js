@@ -8,7 +8,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!../../../html/user/tmpl.step2.html'
+  'text!'+RENT.CONSTANTS.TEMPLATE_PATH+'/html/user/tmpl.step2.html'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
 var $template = $('<div>').append(template);

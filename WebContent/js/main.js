@@ -16,6 +16,7 @@ require.config({
 		Bootstrap : 'libs/bootstrap/bootstrap',
 		Facebook : 'libs/facebook/fb'
 	},
+	baseUrl:'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com/js/',
 	shim : {
 		jQuery : {
 			exports : "$"
@@ -44,9 +45,7 @@ require.config({
 		
 	}
 });
-require(['order!jQuery','order!Underscore','order!Backbone'],function($, _, Backbone){
-	var current = null;
-
+require(['order!jQuery','order!Underscore','order!Backbone','order!RentCommon'],function($, _, Backbone){
 	var backyard  = function(){
 		require(['modules/backyard/backyard.loader'], function(Backyard) {
 			Backyard.initialize();

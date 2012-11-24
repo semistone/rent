@@ -14,17 +14,19 @@ var RENT = {
 			"81" : {name:"general.japan",locale:'ja', country:"JA"},
 			"1"  : {name:"general.unit_state", locale:'en-US', country:"US"}
 		},
+		STATICS_FILE_SERVER : 'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com',
+		TEMPLATE_PATH : '/rent/html',
 		FACEBOOK_APP: '362616447158349',
 		FACEBOOK_CHANNEL:'http://angus-ec2.siraya.net/facebook.html', // Channel File
 	},
 
     // set language and resource file and css for locale
 	setLangRes: function (lang, resFiles, extraPath,callback) { // extraPath maybe '../'
-		var extra_path = (extraPath ? extraPath : '');
+		var extra_path = RENT.CONSTANTS.STATICS_FILE_SERVER;
     	if (callback == undefined) callback=function(){};
     	$.i18n.properties({
             name: resFiles, //['xxx','yy']
-            path: extra_path + 'i18n/',
+            path: extra_path + '/i18n/',
             mode:'map', // "map" option is mandatory if your bundle keys contain Javascript Reserved Words, such as ' in string resource
             cache:true,
             language:lang,
@@ -122,6 +124,7 @@ var RENT = {
 		});
     }
     
-}
+};
+window.RENT = RENT;
 return RENT;
 });

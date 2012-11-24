@@ -8,7 +8,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!../../../html/user/tmpl.register.html',
+  'text!'+RENT.CONSTANTS.TEMPLATE_PATH+'/html/user/tmpl.register.html',
   './namespace.user',
   './model.user'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
