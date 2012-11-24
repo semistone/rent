@@ -5,7 +5,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!'+RENT.CONSTANTS.TEMPLATE_PATH+'/html/user/tmpl.sso.html',
+  'text!'+RENT.CONSTANTS.DOCUMENT_ROOT+'/html/user/tmpl.sso.html',
   './namespace.user',
   './model.sso'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
