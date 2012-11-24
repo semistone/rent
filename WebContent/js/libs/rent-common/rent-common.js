@@ -46,7 +46,7 @@ var RENT = {
     	    $(this).hide();
     	});  
     	
-    	$.ajaxSetup({timeout: RENT.CONSTANTS.AJAX_TIMEOUT, cache:false});
+    	$.ajaxSetup({timeout: RENT.CONSTANTS.AJAX_TIMEOUT});
     },
 
     simpleDialog : function(title, msg) {
