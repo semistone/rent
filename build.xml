@@ -11,12 +11,12 @@
 	<property name="class.dir" value="${dest.dir}/classes" />
 	<property name="lib.dir" value="${webroot.dir}/WEB-INF/lib" />
 	<property name="webroot.class.dir" value="${webroot.dir}/WEB-INF/" />
-    <property name="yuicompressor" value="${web.dir}/tools/yuicompressor-2.4.7.jar" />
+	<property name="yuicompressor" value="${web.dir}/tools/yuicompressor-2.4.7.jar" />
 	<property name="src.dir.css" value="${webroot.dir}/css" />
-    <property name="dist.dir.css" value="${dest.dir}/css" />
+	<property name="dist.dir.css" value="${dest.dir}/css" />
 	<property name="reports.tests" value="build" />
 	<property name="src.dir.js" value="${webroot.dir}/js" />
-    <property name="dist.dir.js" value="${dest.dir}/js" />
+	<property name="dist.dir.js" value="${dest.dir}/js" />
 	
 
 	<path id="build.lib.path">
@@ -37,7 +37,7 @@
 		<mkdir dir="${dest.dir}" />
 		<mkdir dir="${class.dir}"/>
 		<mkdir dir="${lib.dir}"/>
-		<mkdir dir="${dest.dir.css}"/>
+		<mkdir dir="${dist.dir.css}"/>
 		<mkdir dir="${dist.dir.js}"/>
 		<mkdir dir="${dist.dir.js}/libs/backbone"/>
 		<mkdir dir="${dist.dir.js}/libs/bootstrap"/>
@@ -138,7 +138,7 @@
         </apply>
     </target>
 	
-    <target name="js.compress" depends="prepare">
+    <target name="js.compress" depends="css.compress">
         <echo>=== Compressing JS... ===</echo>
         <apply executable="java" verbose="true" failonerror="true" dest="${dist.dir.js}">
             <fileset dir="${src.dir.js}" includes="**/*.js">
