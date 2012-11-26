@@ -21,7 +21,7 @@ var MainView = Backbone.View.extend({
 		this.init_router();
 		var subroute = this.options['subroute'];
 		if (subroute != null && subroute != '' ) {
-			this.router.navigate('home/'+subroute, {trigger: true});						
+			this.router.navigate(subroute, {trigger: true});						
 		};
 	},
 	render:function(){
@@ -37,7 +37,8 @@ var MainView = Backbone.View.extend({
 	},
 	init_router:function(){
 		this.router = new Backbone.Router();
-		this.router.route('edit', this.edit);		
+		this.router.route('edit', 'edit');	
+		this.router.on('route:edit', this.edit);
 	},
 	edit:function(){
 		logger.debug('edit mode');

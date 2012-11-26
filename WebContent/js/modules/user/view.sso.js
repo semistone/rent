@@ -11,7 +11,7 @@ define([
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 var $template = $('<div>').append(template);
 
-RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
+ShowSSOTokenView = Backbone.View.extend({
 	hasRole : false,
 	events:{
 		'click #sign_button':'fill_form',
@@ -173,4 +173,5 @@ RENT.user.view.ShowSSOTokenView = Backbone.View.extend({
 		});
 	}
 });
+return ShowSSOTokenView;
 });

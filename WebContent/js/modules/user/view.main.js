@@ -15,12 +15,11 @@ var $template = $('<div>').append(template);
 //
 RENT.user.view.RegisterMainView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render','sign_off','show_my_device','link_fb','sso_application',
-				'init_router', 'mobile_provider','list_members', 'name_device_popup',
-				'show_user_profile');
+		_.bindAll(this, 'render','sign_off','link_fb');
+		this.path = 'main';
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.rightView = new Backbone.View();
-		this.init_router();
+		this.router = new RENT.user.MainRouter({'$el' : this.$el, model: this.model, path: this.path});
 		var _this = this;		
 		//
 		// add fb module
@@ -39,23 +38,13 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 		this.render();
 		var subroute = this.options['subroute'];
 		if (subroute == null || subroute == '' ) {
-			this.router.navigate('main/name_device', {trigger: true});			
+			this.router.navigate('name_device', {trigger: true, replace: true});			
 		} else {
-			this.router.navigate(subroute, {trigger: true});						
+			this.router.navigate( subroute, {trigger: true, replace: true});						
 		};
 
 	},
-	init_router:function(){
-		this.router = new RENT.user.MainRouter();
-		this.router.on('route:name_device', this.name_device_popup);
-		this.router.on('route:show_my_device', this.show_my_device);
-		this.router.on('route:list_members', this.list_members);
-		this.router.on('route:mobile_provider', this.mobile_provider);
-		this.router.on('route:show_user_profile', this.show_user_profile);
-		this.router.on('route:sso_application', this.sso_application);
 
-		
-	},
 	events : {
 		'click #sign_off_link' : 'sign_off'
 	},
@@ -96,21 +85,7 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 				$.i18n.prop('user.main.mobile_provider'));
 
 	},
-	name_device_popup:function(){
-		logger.debug('click name device popup');
-		this.router.navigate('main/name_device', {replace: true});
-		this.rightView.undelegateEvents();
-		var _this = this;
-		require(['modules/user/view.name_device'],function(){
-			_this.rightView = new RENT.user.view.NameDeviceView({
-				el : _this.$el.find('#register_right'),
-				model : _this.model});
-			_this.rightView.render();
-			_this.rightView.on('success',function(){
-				_this.show_my_device();
-			});			
-		});
-	},
+
 	link_fb : function(){
 		logger.debug('link to fb');
 		var _this = this;
@@ -158,71 +133,8 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 				RENT.simpleErrorDialog(resp,'');
 			}
 		});	
-	},
-	show_my_device:function(){
-		logger.debug('click show my devies'); 
-		this.router.navigate('main/show_my_device', {replace: true});
-
-		this.rightView.undelegateEvents();
-		var _this = this;
-		require(['modules/user/view.devices'],function(){
-			_this.rightView = new RENT.user.view.ShowDevicesView({
-				el : _this.$el.find('#register_right'),
-				model : _this.model
-			});			
-		});
-	},
-	sso_application:function(){
-		logger.debug('click show sso application'); 
-		this.router.navigate('main/sso_application', {replace: true});
-		this.rightView.undelegateEvents();
-		var _this = this;
-		require(['modules/user/view.sso'],function(){
-			_this.rightView = new RENT.user.view.ShowSSOTokenView({
-				el : _this.$el.find('#register_right'),
-				userModel: _this.model
-			});					
-		});
-	},
-	list_members:function(){
-		logger.debug('click list_members');
-		this.router.navigate('main/list_members', {replace: true});
-
-		var _this = this;
-		this.rightView.undelegateEvents();
-		require(['modules/user/view.list_members'],function(ListMemberView){
-			_this.rightView = new ListMemberView({el: _this.$el.find('#register_right')});
-		});
-
-	},
-	show_user_profile:function(){
-		logger.debug('click show_user_profile');
-		this.router.navigate('main/show_user_profile', {replace: true});
-		var _this = this;
-		this.rightView.undelegateEvents();
-		require(['modules/user/view.profile'],function(){
-			_this.rightView = new RENT.user.view.UserProfileView({
-				el: _this.$el.find('#register_right'),
-				model:_this.model
-			});
-			_this.rightView.render();
-		});		
-	},
-	mobile_provider:function(){
-		logger.debug('click mobile_provider');
-		this.router.navigate('main/mobile_provider', {replace: true});
-
-		var _this = this;
-		this.rightView.undelegateEvents();
-		require(['modules/user/view.mobile_provider'],function(){
-			_this.model.trigger('change_view','mobile_provider');
-			_this.rightView = new RENT.user.view.MobileProviderView({
-				el: _this.$el.find('#register_right')
-			});
-			_this.rightView.render();
-		});		
-		
 	}
+
 });
 
 });
