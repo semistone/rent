@@ -11,7 +11,7 @@ var $template = $('<div>').append(template);
 //
 // name device form
 //
-RENT.user.view.NameDeviceView = Backbone.View.extend({
+var NameDeviceView = Backbone.View.extend({
 	events : {
 		"click #save_name_link" : 'save_name'
 	},
@@ -65,4 +65,5 @@ RENT.user.view.NameDeviceView = Backbone.View.extend({
 	}
 	
 });
+return NameDeviceView;
 });
