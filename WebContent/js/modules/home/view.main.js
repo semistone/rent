@@ -16,7 +16,7 @@ var MainView = Backbone.View.extend({
 		this.tmpl = $template.find('#tmpl_home').html();
 		this.model = new PageModel();
 		this.model.on('change', this.render);
-		this.model.set({id:'home'}, {silent:true});
+		this.model.set({id:'home.json'}, {silent:true});
 		this.model.fetch();
 	},
 	render:function(){

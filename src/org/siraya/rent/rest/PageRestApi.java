@@ -28,7 +28,7 @@ public class PageRestApi {
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/{id}")
+	@Path("/{id}.json")
 	public Response get(@PathParam("id") String id){
 		logger.debug("get page space "+id);
 		java.util.List<Space> ret=pageService.getSpaces(id);
