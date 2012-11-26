@@ -159,8 +159,8 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 	main_view:function(){
 		logger.debug('show main view');
 		var _this = this;
-		require(['modules/user/view.main'],function(){
-			var view = new RENT.user.view.RegisterMainView({
+		require(['modules/main/view.main'],function(RegisterMainView){
+			var view = new RegisterMainView({
 				el : '#register_content',
 				model: _this.model,
 				subroute: _this.options['subroute']

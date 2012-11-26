@@ -7,19 +7,19 @@ define([
   'logger',
   'text!'+RENT.CONSTANTS.DOCUMENT_ROOT+'/html/user/tmpl.main.html',
   './router.main'
-  ], function($, _, Backbone, Mustache, RENT, logger,template) {
+  ], function($, _, Backbone, Mustache, RENT, logger,template, MainRouter) {
 
 var $template = $('<div>').append(template);
 //
 // Register main view
 //
-RENT.user.view.RegisterMainView = Backbone.View.extend({
+var RegisterMainView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render','sign_off','link_fb');
 		this.path = 'main';
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.rightView = new Backbone.View();
-		this.router = new RENT.user.MainRouter({'$el' : this.$el, model: this.model, path: this.path});
+		this.router = new MainRouter({'$el' : this.$el, model: this.model, path: this.path});
 		var _this = this;		
 		//
 		// add fb module
@@ -136,5 +136,5 @@ RENT.user.view.RegisterMainView = Backbone.View.extend({
 	}
 
 });
-
+return RegisterMainView;
 });

@@ -16,7 +16,8 @@ require.config({
 		Bootstrap : 'libs/bootstrap/bootstrap',
 		Facebook : 'libs/facebook/fb'
 	},
-	baseUrl:'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com/js/',
+	//baseUrl:'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com/js/',
+	baseUrl:'/rent/js/',
 	shim : {
 		jQuery : {
 			exports : "$"

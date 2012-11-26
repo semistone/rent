@@ -3,11 +3,10 @@ define([
   'Underscore',
   'Backbone',
   'RentCommon',
-  'logger',
-  './namespace.user'
+  'logger'
 ], function($, _, Backbone, RENT,logger) {
 
-RENT.user.MainRouter = Backbone.Router.extend({
+var MainRouter = Backbone.Router.extend({
 	initialize :function(options){
 		this.$el = options['$el'];
 		this.model = options['model'];
@@ -32,7 +31,7 @@ RENT.user.MainRouter = Backbone.Router.extend({
 		logger.debug('click name device popup');
 		this.navigate(this.path + '/name_device', {replace: true});
 		var _this = this;
-		require(['modules/user/view.name_device'],function(NameDeviceView){
+		require(['modules/main/view.name_device'],function(NameDeviceView){
 			var view = new NameDeviceView({
 				el : _this.$el.find('#register_right'),
 				model : _this.model});
@@ -46,7 +45,7 @@ RENT.user.MainRouter = Backbone.Router.extend({
 		logger.debug('click show my devies'); 
 		this.navigate(this.path + '/show_my_device', {replace: true});
 		var _this = this;
-		require(['modules/user/view.devices'],function(){
+		require(['modules/main/view.devices'],function(){
 			new RENT.user.view.ShowDevicesView({
 				el : _this.$el.find('#register_right'),
 				model : _this.model
@@ -57,7 +56,7 @@ RENT.user.MainRouter = Backbone.Router.extend({
 		logger.debug('click list_members');
 		this.navigate(this.path + '/list_members', {replace: true});
 		var _this = this;
-		require(['modules/user/view.list_members'],function(ListMemberView){
+		require(['modules/main/view.list_members'],function(ListMemberView){
 			new ListMemberView({el: _this.$el.find('#register_right')});
 		});
 
@@ -67,7 +66,7 @@ RENT.user.MainRouter = Backbone.Router.extend({
 		this.navigate(this.path + '/mobile_provider', {replace: true});
 
 		var _this = this;
-		require(['modules/user/view.mobile_provider'],function(){
+		require(['modules/main/view.mobile_provider'],function(){
 			var view = new RENT.user.view.MobileProviderView({
 				el: _this.$el.find('#register_right')
 			});
@@ -79,8 +78,8 @@ RENT.user.MainRouter = Backbone.Router.extend({
 		logger.debug('click show_user_profile');
 		this.navigate(this.path + '/show_user_profile', {replace: true});
 		var _this = this;
-		require(['modules/user/view.profile'],function(){
-			var view = new RENT.user.view.UserProfileView({
+		require(['modules/main/view.profile'],function(UserProfileView){
+			var view = new UserProfileView({
 				el: _this.$el.find('#register_right'),
 				model:_this.model
 			});
@@ -92,7 +91,7 @@ RENT.user.MainRouter = Backbone.Router.extend({
 		logger.debug('click show sso application'); 
 		this.navigate(this.path + '/sso_application', {replace: true});
 		var _this = this;
-		require(['modules/user/view.sso'],function(ShowSSOTokenView){
+		require(['modules/main/view.sso'],function(ShowSSOTokenView){
 			new ShowSSOTokenView({
 				el : _this.$el.find('#register_right'),
 				userModel: _this.model
@@ -100,4 +99,5 @@ RENT.user.MainRouter = Backbone.Router.extend({
 		});
 	}	
 });
+return MainRouter;
 });

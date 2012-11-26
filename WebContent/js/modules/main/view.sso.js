@@ -6,9 +6,8 @@ define([
   'RentCommon',
   'logger',
   'text!'+RENT.CONSTANTS.DOCUMENT_ROOT+'/html/user/tmpl.sso.html',
-  './namespace.user',
   './model.sso'
-  ], function($, _, Backbone, Mustache, RENT, logger,template) {
+  ], function($, _, Backbone, Mustache, RENT, logger,template, RequestModel) {
 var $template = $('<div>').append(template);
 
 ShowSSOTokenView = Backbone.View.extend({
@@ -38,7 +37,7 @@ ShowSSOTokenView = Backbone.View.extend({
 			logger.error('user model not defined');
 			return;
 		}
-		this.model = new RENT.user.model.RequestModel();
+		this.model = new RequestModel();
 		_.bindAll(this, 'render', 'show_token','apply_token');
 
 		var _this = this;

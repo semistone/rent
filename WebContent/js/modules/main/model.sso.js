@@ -2,11 +2,10 @@ define([
   'jQuery',
   'Backbone',
   'RentCommon',
-  'logger',
-  './namespace.user'
+  'logger'
 ], function($, Backbone, RENT, logger) {
 	
-RENT.user.model.RequestModel = Backbone.Model.extend({
+var RequestModel = Backbone.Model.extend({
 	initialize:function(){
 		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/';
 	},
@@ -33,4 +32,5 @@ RENT.user.model.RequestModel = Backbone.Model.extend({
 		Backbone.sync('update',this, options);		
 	}
 });
+return RequestModel;
 });
