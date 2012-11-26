@@ -5,7 +5,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!'+RENT.CONSTANTS.TEMPLATE_PATH+'/html/user/tmpl.member.html',
+  'text!'+RENT.CONSTANTS.DOCUMENT_ROOT+'/html/user/tmpl.member.html',
   '../general/view.pagination',
   './collection.member',
   './model.member',
