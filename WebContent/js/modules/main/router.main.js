@@ -11,12 +11,7 @@ var MainRouter = Backbone.Router.extend({
 		this.$el = options['$el'];
 		this.model = options['model'];
 		this.path = options['path'];
-		this.on('route:name_device', this.name_device_popup);
-		this.on('route:show_my_device', this.show_my_device);
-		this.on('route:list_members', this.list_members);
-		this.on('route:mobile_provider', this.mobile_provider);
-		this.on('route:show_user_profile', this.show_user_profile);
-		this.on('route:sso_application', this.sso_application);
+
 
 	},
 	routes: {
