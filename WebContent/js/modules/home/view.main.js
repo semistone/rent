@@ -43,6 +43,10 @@ var MainView = Backbone.View.extend({
 	edit:function(){
 		logger.debug('edit mode');
 		this.router.navigate('home/edit', {replace: true});
+		require(['Bootstrap'],function(){
+			var tmpl = $template.find('#tmpl_edit_menu').html();
+			$('#nav-menu').append(tmpl);
+		});	
 	}
 });
 return MainView;
