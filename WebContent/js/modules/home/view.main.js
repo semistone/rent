@@ -9,10 +9,43 @@ define([
   './model.page'
   ], function($, _, Backbone, Mustache, RENT, logger,template, PageModel) {
 var $template = $('<div>').append(template);	
-
+var Menu = Backbone.View.extend({
+	events :{
+		'click #edit_mode': 'edit_mode',
+		'click #preview' : 'preview',
+		'click #save' : 'save'
+	},
+	initialize:function(){
+		this.render();
+	},
+	render:function(){
+		logger.debug('render menu');
+		var tmpl = $template.find('#tmpl_navi').html();
+		this.$el.find('#nav-menu').html(tmpl);
+	},
+	edit_mode:function(){
+		this.trigger('edit_mode');
+	},
+	preview:function(){
+		this.trigger('preview');
+	},
+	save:function(){
+		this.trigger('save');		
+	},
+	append_menu:function(){
+		var _this = this;
+		require(['Bootstrap'],function(){
+			var tmpl = $template.find('#tmpl_edit_menu').html();
+			_this.$el.find('#nav-menu').append(tmpl);
+			_this.delegateEvents();
+		});	
+	}
+});
 var MainView = Backbone.View.extend({
+
 	initialize : function() {
-		_.bindAll(this, 'render', 'init_router', 'edit');
+		_.bindAll(this, 'render', 'init_router', 'edit', 'edit_mode', 'navibar',
+				'preview', 'save');
 		this.tmpl = $template.find('#tmpl_home').html();
 		this.model = new PageModel();
 		this.model.on('change', this.render);
@@ -26,14 +59,25 @@ var MainView = Backbone.View.extend({
 	},
 	render:function(){
 		logger.debug('render');
-		var s = this.model.toJSON();
-		logger.debug(s);
+		var  _this = this, s = this.model.toJSON();
+		//logger.debug(s);
 		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
+		$.each(s, function(key, value){
+			_this.$el.find('#'+key).addClass('editable');
+		});		
+		this.navibar();
+		this.preview = true;
 	},
-	navibar:function(el){
-		logger.debug('render navibar');
-		var tmpl = $template.find('#tmpl_navi').html();
-		$(el).find('#nav-menu').html(tmpl);
+	navibar:function(){
+		if (this.menu != undefined){
+			return;
+		}
+		var el = this.options['menu_el'];
+		logger.debug('render navibar el '+el);
+		this.menu = new Menu({el:el});
+		this.menu.on('edit_mode',  this.edit_mode);
+		this.menu.on('preview',  this.preview);
+		this.menu.on('save',  this.save);
 	},
 	init_router:function(){
 		this.router = new Backbone.Router();
@@ -41,12 +85,49 @@ var MainView = Backbone.View.extend({
 		this.router.on('route:edit', this.edit);
 	},
 	edit:function(){
-		logger.debug('edit mode');
+		logger.debug('add edit menu');
 		this.router.navigate('home/edit', {replace: true});
-		require(['Bootstrap'],function(){
-			var tmpl = $template.find('#tmpl_edit_menu').html();
-			$('#nav-menu').append(tmpl);
-		});	
+		this.navibar();
+		this.menu.append_menu();
+	},
+	edit_mode:function(){
+		this.preview =false;
+		logger.debug('edit mode');
+		this.$el.find('.editable').each(function(index){
+			var height, width,textarea, html, element = $(this);
+			width = element.width();
+			height = element.height();
+			html = element.html();
+			textarea = $('<textarea>');
+			textarea.val(html);
+			element.html(textarea);
+			//logger.debug('width is '+width);
+			textarea.width(width);
+			textarea.height(height);
+		});
+	},
+	preview:function(){
+		this.preview =true;
+		logger.debug('preview');
+		this.$el.find('.editable').each(function(index){
+			var html, element = $(this);
+			html = element.find('textarea').val();
+			element.html(html);
+		});
+	},
+	save:function(){
+		var obj = {};
+		if (this.preview == false) {
+			this.preview();
+		}
+		logger.debug('save');
+		this.$el.find('.editable').each(function(index){
+			var id,element = $(this);
+			id = element.attr('id');
+			obj[id] = element.html();
+		});
+		this.model.set(obj,{silent:true});
+		this.model.save();
 	}
 });
 return MainView;

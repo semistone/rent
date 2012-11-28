@@ -38,9 +38,9 @@ var RegisterMainView = Backbone.View.extend({
 		this.render();
 		var subroute = this.options['subroute'];
 		if (subroute == null || subroute == '' ) {
-			this.router.navigate('name_device', {trigger: true, replace: true});			
+			this.router.navigate('name_device', {trigger: true});			
 		} else {
-			this.router.navigate( subroute, {trigger: true, replace: true});						
+			this.router.navigate( subroute, {trigger:true});						
 		};
 
 	},
