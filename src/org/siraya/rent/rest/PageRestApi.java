@@ -3,12 +3,13 @@ package org.siraya.rent.rest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import java.util.List;
 import java.net.HttpURLConnection;
 import java.util.Map;
 import org.siraya.rent.page.service.IPageService;
@@ -38,5 +39,21 @@ public class PageRestApi {
 		}
 		java.util.Date expirationDate = new java.util.Date(System.currentTimeMillis() + 3600000 * 24);
 		return Response.status(HttpURLConnection.HTTP_OK).entity(ret2).expires(expirationDate).build();
+	}
+	
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/{id}.json")
+	public void put(@PathParam("id") String id, Map<String,String> data){
+		java.util.List<Space> ret=pageService.getSpaces(id);
+		for (Space space : ret) {
+			String content = data.get(space.getName());
+			if (content.equals(space.getContent())) {
+				continue;
+			}
+			space.setContent(content);
+			pageService.update(space);
+		}
 	}
 }

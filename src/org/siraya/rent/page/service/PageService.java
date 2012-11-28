@@ -24,4 +24,9 @@ public class PageService implements IPageService{
 		}
 		return ret;
 	}
+	
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false)
+	public void update(Space space){
+		this.spaceDao.update(space);
+	}
 }

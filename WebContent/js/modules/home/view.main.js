@@ -66,7 +66,7 @@ var MainView = Backbone.View.extend({
 			_this.$el.find('#'+key).addClass('editable');
 		});		
 		this.navibar();
-		this.preview = true;
+		this.preview_mode = true;
 	},
 	navibar:function(){
 		if (this.menu != undefined){
@@ -91,7 +91,7 @@ var MainView = Backbone.View.extend({
 		this.menu.append_menu();
 	},
 	edit_mode:function(){
-		this.preview =false;
+		this.preview_mode =false;
 		logger.debug('edit mode');
 		this.$el.find('.editable').each(function(index){
 			var height, width,textarea, html, element = $(this);
@@ -107,7 +107,7 @@ var MainView = Backbone.View.extend({
 		});
 	},
 	preview:function(){
-		this.preview =true;
+		this.preview_mode =true;
 		logger.debug('preview');
 		this.$el.find('.editable').each(function(index){
 			var html, element = $(this);
@@ -117,7 +117,7 @@ var MainView = Backbone.View.extend({
 	},
 	save:function(){
 		var obj = {};
-		if (this.preview == false) {
+		if (this.preview_mode == false) {
 			this.preview();
 		}
 		logger.debug('save');
