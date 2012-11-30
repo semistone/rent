@@ -17,7 +17,10 @@ body {
   background-repeat: repeat-x;
   background-position: 0 40px;
 }
-
+.hero-unit {
+  background-repeat:no-repeat;
+  background-image:url(../img/8171651233_073967e49a_h.jpg);
+}
 /* Jumbotrons
 -------------------------------------------------- */
 .jumbotron {
