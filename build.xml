@@ -57,6 +57,7 @@
 		<mkdir dir="${dist.dir.js}/modules/backyard"/>
 		<mkdir dir="${dist.dir.js}/modules/general"/>
 		<mkdir dir="${dist.dir.js}/modules/home"/>
+		<mkdir dir="${dist.dir.js}/modules/main"/>
 		<mkdir dir="${dist.dir.js}/modules/user"/>
 		
 		
