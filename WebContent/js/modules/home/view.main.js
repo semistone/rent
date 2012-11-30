@@ -37,7 +37,6 @@ var Menu = Backbone.View.extend({
 		require(['Bootstrap'],function(){
 			var tmpl = $template.find('#tmpl_edit_menu').html();
 			_this.$el.find('#nav-menu').append(tmpl);
-			_this.delegateEvents();
 		});	
 	}
 });
@@ -97,7 +96,7 @@ var MainView = Backbone.View.extend({
 			var height, width,textarea, html, element = $(this);
 			width = element.width();
 			height = element.height();
-			html = element.html();
+			html = element.html().trim();
 			textarea = $('<textarea>');
 			textarea.val(html);
 			element.html(textarea);
