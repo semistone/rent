@@ -22,7 +22,7 @@ var MainRouter = Backbone.Router.extend({
 		'sso_application' : 'sso_application',
 		'list_members' : 'list_members'
 	},
-	name_device_popup:function(){
+	name_device:function(){
 		logger.debug('click name device popup');
 		this.navigate(this.path + '/name_device', {replace: true});
 		var _this = this;
