@@ -1,6 +1,4 @@
-define([
-  'Backbone'
-  ], function(google) {
+define([], function() {
 
 var initialLocation;
 var siberia = new google.maps.LatLng(60, 105);
@@ -9,7 +7,7 @@ var browserSupportFlag =  new Boolean();
 
 	function initialize() {
 	  var myOptions = {
-	    zoom: 6,
+	    zoom: 13,
 	    mapTypeId: google.maps.MapTypeId.ROADMAP
 	  };
 	  var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);

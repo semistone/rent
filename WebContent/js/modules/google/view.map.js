@@ -7,7 +7,8 @@ define([
 var Map = Backbone.View.extend({
 	whereami:function(){
 		this.$el.attr('id', 'map_canvas');
-		require('modules/google/whereami',function(func){
+		this.$el.attr('style','width:50%; height:500px');
+		require(['modules/google/whereami'],function(func){
 			func.initialize();
 		});
 	}	
