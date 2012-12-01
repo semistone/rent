@@ -24,6 +24,7 @@ public class TestSessionDao  extends AbstractJUnit4SpringContextTests{
     	session.setUserId("u"+time);
     	session.setLastLoginIp("192.168.0.1");
     	session.setCreated(time/1000);
+    	session.setCity("Taipei");
 	}
 	
     @Test   

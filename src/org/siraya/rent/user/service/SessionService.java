@@ -4,6 +4,7 @@ import org.siraya.rent.pojo.Device;
 import org.siraya.rent.pojo.Session;
 import org.siraya.rent.user.dao.ISessionDao;
 import org.siraya.rent.user.dao.IDeviceDao;
+import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.utils.RentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import org.siraya.rent.pojo.Role;
 import org.siraya.rent.pojo.Device;
+
+import com.maxmind.geoip.Location;
+import com.maxmind.geoip.LookupService;
 @Service("sessionService")
 public class SessionService implements ISessionService {
 
 	@Autowired
     private ISessionDao sessionDao;
 
+    @Autowired
+    private IApplicationConfig applicationConfig;
 
 	@Autowired
     private IDeviceDao deviceDao;
@@ -31,6 +37,16 @@ public class SessionService implements ISessionService {
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
 	public void newSession(Session session) {
 		logger.debug("new session");
+		
+		try{
+			String data = (String)applicationConfig.get("general").get("geoip_data");
+			LookupService cl = new LookupService(data,
+					LookupService.GEOIP_MEMORY_CACHE );
+			Location l1 = cl.getLocation(session.getLastLoginIp());
+			session.setCity(l1.city);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		this.sessionDao.newSession(session);
 		String deviceId = session.getDeviceId();
 		String userId = session.getUserId();
@@ -93,5 +109,11 @@ public class SessionService implements ISessionService {
 	public void setRoleDao(IRoleDao roleDao) {
 		this.roleDao = roleDao;
 	}
+	public IApplicationConfig getApplicationConfig() {
+		return applicationConfig;
+	}
 
+	public void setApplicationConfig(IApplicationConfig applicationConfig) {
+		this.applicationConfig = applicationConfig;
+	}
 }

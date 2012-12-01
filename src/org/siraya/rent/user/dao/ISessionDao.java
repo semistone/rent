@@ -10,7 +10,7 @@ import java.util.List;
 @Repository("sessionDao")
 public interface ISessionDao {
 	
-    @Insert("insert into SESSION values(#{id},#{deviceId},#{userId},#{lastLoginIp},#{created})")
+    @Insert("insert into SESSION (ID, DEVICE_ID, USER_ID, LAST_LOGIN_IP, CITY, CREATED) values(#{id},#{deviceId},#{userId},#{lastLoginIp},#{city}, #{created})")
     public void newSession(Session session);
     
 	@Select("select * from SESSION where USER_ID=#{userId} and DEVICE_ID=#{deviceId} order by CREATED desc limit #{limit} offset #{offset}")

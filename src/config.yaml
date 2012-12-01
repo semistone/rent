@@ -16,7 +16,8 @@ general:
     auth_verify_timeout : 1800
     admin_user: 00000000
     callback_max_retry : 10
-    debug: true 
+    debug: true
+    geoip_data: 'C:/Users/Chen/Downloads/GeoLiteCity_20100201/GeoLiteCity.dat'
 sently:
     username: semistone
     password: semistone

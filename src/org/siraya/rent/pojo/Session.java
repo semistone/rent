@@ -15,6 +15,9 @@ public class Session {
 	private String lastLoginIp;
 	private List<Integer> roles;
 	private long created;
+	private String city;
+
+
 	@JsonIgnore
 	private boolean isChange = false;
 	private boolean isNew = false;
@@ -132,5 +135,12 @@ public class Session {
     		rolesString+=roles.get(i)+" ";
     	}
     	return this.id + ":" + this.deviceId +":"+this.userId+":"+ this.lastLoginIp+":"+rolesString.trim();
+	}
+	
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
 	}
 }
