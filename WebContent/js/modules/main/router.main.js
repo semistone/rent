@@ -20,7 +20,8 @@ var MainRouter = Backbone.Router.extend({
 		'mobile_provider' : 'mobile_provider',
 		'show_user_profile' : 'show_user_profile',
 		'sso_application' : 'sso_application',
-		'list_members' : 'list_members'
+		'list_members' : 'list_members',
+		'whereami': 'whereami'
 	},
 	name_device:function(){
 		logger.debug('click name device popup');
@@ -92,7 +93,18 @@ var MainRouter = Backbone.Router.extend({
 				userModel: _this.model
 			});					
 		});
-	}	
+	},
+	whereami:function(){
+		logger.debug('click where am i'); 
+		this.navigate(this.path + '/whereami', {replace: true});
+		var _this = this;
+		require(['modules/google/view.map'],function(Map){
+			var map = new Map({
+				el : _this.$el.find('#register_right')
+			});
+			map.whereami();
+		});	
+	}
 });
 return MainRouter;
 });
