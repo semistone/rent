@@ -142,6 +142,8 @@ RENT.user.view.ShowSessionsView = Backbone.View.extend({
 	 				$.i18n.prop('user.register.last_login_ip'));
 	     this.$el.find('#i18n_sessions').text(
 	 				$.i18n.prop('user.register.show_sessions'));
+	     this.$el.find('#i18n_city').text(
+	 				$.i18n.prop('general.city'));
 	}
 });
 });
