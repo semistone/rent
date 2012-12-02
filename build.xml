@@ -54,11 +54,13 @@
 		<mkdir dir="${dist.dir.js}/libs/rent-common"/>
 		<mkdir dir="${dist.dir.js}/libs/require"/>
 		<mkdir dir="${dist.dir.js}/libs/underscore"/>
+		<mkdir dir="${dist.dir.js}/libs/google"/>
 		<mkdir dir="${dist.dir.js}/modules/backyard"/>
 		<mkdir dir="${dist.dir.js}/modules/general"/>
 		<mkdir dir="${dist.dir.js}/modules/home"/>
 		<mkdir dir="${dist.dir.js}/modules/main"/>
 		<mkdir dir="${dist.dir.js}/modules/user"/>
+		<mkdir dir="${dist.dir.js}/modules/google"/>
 		
 		
 		

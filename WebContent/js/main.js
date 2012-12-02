@@ -14,7 +14,7 @@ require.config({
 		Validator : 'libs/jquery-validate/jquery-validate',
 		i18N: 'libs/jquery-i18n/jquery.i18n.properties',
 		Bootstrap : 'libs/bootstrap/bootstrap.2.1.1',
-		Facebook : '//connect.facebook.net/en_US/all.js',
+		Facebook : '//connect.facebook.net/en_US/all',
 		GoogleMap: 'libs/google/map',
 		template: '../html'
 	},
