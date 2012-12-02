@@ -9,7 +9,7 @@ require.config({
 		Backbone : 'libs/backbone/backbone-0.9.2',
 		jQueryUI : 'libs/jquery-ui/jquery-ui',
 		Mustache : 'libs/mustache/mustache-1.0.0',
-		logger : 'libs/log4javascript/log4javascript-1.0.0',
+		logger : 'libs/log4javascript/log4javascript',
 		RentCommon : 'libs/rent-common/rent-common',
 		Validator : 'libs/jquery-validate/jquery-validate',
 		i18N: 'libs/jquery-i18n/jquery.i18n.properties',
