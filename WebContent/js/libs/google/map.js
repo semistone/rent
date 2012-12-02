@@ -1,3 +1,3 @@
-define(['order!//maps.google.com/maps/api/js?sensor=true'], function(){
+define([ "async!http://maps.google.com/maps/api/js?sensor=true" ],function() {
 	return google;
 });

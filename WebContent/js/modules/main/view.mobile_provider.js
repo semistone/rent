@@ -5,7 +5,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!'+RENT.CONSTANTS.DOCUMENT_ROOT+'/html/user/tmpl.mobile_provider.html',
+  'text!template/user/tmpl.mobile_provider.html',
   './model.mobile_provider'
   ], function($, _, Backbone, Mustache, RENT, logger,template, MobileProviderModel) {
 var $template = $('<div>').append(template);	

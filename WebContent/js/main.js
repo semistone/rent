@@ -15,7 +15,8 @@ require.config({
 		i18N : 'libs/jquery-i18n/jquery-i18n',
 		Bootstrap : 'libs/bootstrap/bootstrap',
 		Facebook : 'libs/facebook/fb',
-		GoogleMap: 'libs/google/map'
+		GoogleMap: 'libs/google/map',
+		template: '../html'
 	},
 	//baseUrl:'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com/js/',
 	baseUrl:'/rent/js/',
