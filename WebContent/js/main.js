@@ -4,17 +4,17 @@
 // There usage will become more apparent futher along in the tutorial.
 require.config({
 	paths : {
-		jQuery : 'libs/jquery/jquery',
-		Underscore : 'libs/underscore/underscore',
-		Backbone : 'libs/backbone/backbone',
+		jQuery : 'libs/jquery/jquery-1.8.2',
+		Underscore : 'libs/underscore/underscore-1.4.1',
+		Backbone : 'libs/backbone/backbone-0.9.2',
 		jQueryUI : 'libs/jquery-ui/jquery-ui',
-		Mustache : 'libs/mustache/mustache',
-		logger : 'libs/log4javascript/log4javascript',
+		Mustache : 'libs/mustache/mustache-1.0.0',
+		logger : 'libs/log4javascript/log4javascript-1.0.0',
 		RentCommon : 'libs/rent-common/rent-common',
 		Validator : 'libs/jquery-validate/jquery-validate',
-		i18N : 'libs/jquery-i18n/jquery-i18n',
-		Bootstrap : 'libs/bootstrap/bootstrap',
-		Facebook : 'libs/facebook/fb',
+		i18N: 'libs/jquery-i18n/jquery.i18n.properties',
+		Bootstrap : 'libs/bootstrap/bootstrap.2.1.1',
+		Facebook : '//connect.facebook.net/en_US/all.js',
 		GoogleMap: 'libs/google/map',
 		template: '../html'
 	},
@@ -40,16 +40,19 @@ require.config({
 		},
 		i18N : {
 			deps : [ 'jQuery' ],
-			exports : "i18n"
+			exports: '$.i18n'
 		},
 		Facebook:{
 			exports: 'FB'
+		},
+		logger:{
+			exports: 'logger'
 		}
 		
 	}
 });
 
-require(['order!jQuery','order!Underscore','order!Backbone','order!RentCommon'],function($, _, Backbone){
+require(['jQuery','Underscore','Backbone'],function($, _, Backbone){
 
 	var backyard  = function(){
 		require(['modules/backyard/backyard.loader'], function(Backyard) {
