@@ -11,7 +11,7 @@ require.config({
 		Mustache : 'libs/mustache/mustache-1.0.0',
 		logger : 'libs/log4javascript/log4javascript',
 		RentCommon : 'libs/rent-common/rent-common',
-		Validator : 'libs/jquery-validate/jquery-validate',
+		Validator : 'libs/jquery-validate/jquery.validate-1.9.0',
 		i18N: 'libs/jquery-i18n/jquery.i18n.properties',
 		Bootstrap : 'libs/bootstrap/bootstrap.2.1.1',
 		Facebook : '//connect.facebook.net/en_US/all',
@@ -47,6 +47,10 @@ require.config({
 		},
 		logger:{
 			exports: 'logger'
+		},
+		Validator: {
+			deps : [ 'jQuery' ],
+			exports: '$.validate'
 		}
 		
 	}
