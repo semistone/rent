@@ -159,4 +159,18 @@
             <srcfile />
         </apply>
     </target>	
+    <target name="convert">
+        <apply executable="node" relative="true" dest="build/" >
+            <fileset dir="WebContent" >
+	         <include name="**/*.html" />
+	         <exclude name="*.html" />
+            </fileset>
+            <arg value="r.js" />
+            <arg value="-o" />
+            <arg value="baseUrl=WebContent/js" />
+            <srcfile prefix="name=text!../" suffix=""/>
+	    <targetfile prefix="out=build/" suffix=""/>
+            <mapper type="glob" from="*.html" to="*.html.js"/>               
+        </apply>
+    </target>
 </project>
