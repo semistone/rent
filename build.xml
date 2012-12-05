@@ -161,15 +161,17 @@
     </target>	
     <target name="convert">
         <apply executable="node" relative="true" dest="build/" >
-            <fileset dir="WebContent" >
+            <fileset dir="WebContent/html" >
 	         <include name="**/*.html" />
 	         <exclude name="*.html" />
             </fileset>
             <arg value="r.js" />
             <arg value="-o" />
             <arg value="baseUrl=WebContent/js" />
-            <srcfile prefix="name=text!../" suffix=""/>
-	    <targetfile prefix="out=build/" suffix=""/>
+            <arg value="paths.template=../html" />
+            <arg value="excludeShallow=text" />
+            <srcfile prefix="name=text!template/" suffix=""/>
+	    <targetfile prefix="out=build/html/" suffix=""/>
             <mapper type="glob" from="*.html" to="*.html.js"/>               
         </apply>
     </target>
