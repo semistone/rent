@@ -16,6 +16,8 @@ public class Session {
 	private List<Integer> roles;
 	private long created;
 	private String city;
+	private String country;
+
 
 
 	@JsonIgnore
@@ -142,5 +144,11 @@ public class Session {
 	}
 	public void setCity(String city) {
 		this.city = city;
+	}
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
 	}
 }

@@ -17,7 +17,7 @@ general:
     admin_user: 00000000
     callback_max_retry : 10
     debug: true
-    geoip_data: 'C:/Users/Chen/Downloads/GeoLiteCity_20100201/GeoLiteCity.dat'
+    geoip_data: 'C:/Users/User/Downloads'
 sently:
     username: semistone
     password: semistone

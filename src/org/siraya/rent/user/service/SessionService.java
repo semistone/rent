@@ -44,6 +44,7 @@ public class SessionService implements ISessionService {
 					LookupService.GEOIP_MEMORY_CACHE );
 			Location l1 = cl.getLocation(session.getLastLoginIp());
 			session.setCity(l1.city);
+			session.setCountry(l1.countryName);
 		}catch(Exception e){
 			e.printStackTrace();
 		}

@@ -144,6 +144,8 @@ RENT.user.view.ShowSessionsView = Backbone.View.extend({
 	 				$.i18n.prop('user.register.show_sessions'));
 	     this.$el.find('#i18n_city').text(
 	 				$.i18n.prop('general.city'));
+	     this.$el.find('#i18n_country').text(
+	 				$.i18n.prop('general.country'));
 	}
 });
 });

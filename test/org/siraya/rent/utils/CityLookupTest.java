@@ -11,10 +11,10 @@ import java.io.IOException;
 class CityLookupTest {
     public static void main(String[] args) {
 	try {
-	    LookupService cl = new LookupService("C:/Users/Chen/Downloads/GeoLiteCity_20100201/GeoLiteCity.dat",
+	    LookupService cl = new LookupService("C:/Users/User/Downloads/GeoLiteCity.dat",
 					LookupService.GEOIP_MEMORY_CACHE );
             Location l1 = cl.getLocation("213.52.50.8");
-            Location l2 = cl.getLocation("203.188.197.200");
+            Location l2 = cl.getLocation("218.187.8.11");
 	    System.out.println("countryCode: " + l2.countryCode +
                                "\n countryName: " + l2.countryName +
                                "\n region: " + l2.region +
