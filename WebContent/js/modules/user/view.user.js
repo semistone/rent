@@ -137,7 +137,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		if (this.model.get('name') == null) {
 			logger.debug('device name not exist');
 			var _this = this;
-			require(['modules/user/view.name_device'],function(){
+			require(['modules/main/view.name_device'],function(){
 				var view = new RENT.user.view.NameDeviceView({
 					el: '#register_content',
 					model: _this.model
