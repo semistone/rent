@@ -18,8 +18,7 @@ require.config({
 		GoogleMap: 'libs/google/map',
 		template: '../html'
 	},
-	//baseUrl:'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com/js/',
-	baseUrl:'/rent/js/',
+	baseUrl:'js/',
 	shim : {
 		jQuery : {
 			exports : "$"

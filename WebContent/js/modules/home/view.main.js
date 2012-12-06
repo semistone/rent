@@ -44,17 +44,14 @@ var MainView = Backbone.View.extend({
 
 	initialize : function() {
 		_.bindAll(this, 'render', 'init_router', 'edit', 'edit_mode', 'navibar',
-				'preview', 'save');
-		this.tmpl = $template.find('#tmpl_home').html();
-		this.model = new PageModel();
-		this.model.on('change', this.render);
-		this.model.set({id:'home.json'}, {silent:true});
-		this.model.fetch();
+				'preview', 'save', 'show_page');
+		this.path = 'home';
 		this.init_router();
 		var subroute = this.options['subroute'];
-		if (subroute != null && subroute != '' ) {
-			this.router.navigate(subroute, {trigger: true});						
-		};
+		if (subroute == null || subroute == '') {
+			subroute = 'index';
+		}
+		this.router.navigate(subroute, {trigger: true});
 	},
 	render:function(){
 		logger.debug('render');
@@ -66,6 +63,15 @@ var MainView = Backbone.View.extend({
 		});		
 		this.navibar();
 		this.preview_mode = true;
+	},
+	show_page:function(subview){
+		logger.debug('subview is '+subview);
+		this.router.navigate(this.path + '/'+ subview, {replace: true});
+		this.tmpl = $template.find('#tmpl_'+subview).html();
+		this.model = new PageModel();
+		this.model.on('change', this.render);
+		this.model.set({id:subview+'.json'}, {silent:true});
+		this.model.fetch();		
 	},
 	navibar:function(){
 		if (this.menu != undefined){
@@ -80,8 +86,10 @@ var MainView = Backbone.View.extend({
 	},
 	init_router:function(){
 		this.router = new Backbone.Router();
-		this.router.route('edit', 'edit');	
+		this.router.route('edit', 'edit');
+		this.router.route(this.path+'/*path', 'show_page');
 		this.router.on('route:edit', this.edit);
+		this.router.on('route:show_page', this.show_page);
 	},
 	edit:function(){
 		logger.debug('add edit menu');
