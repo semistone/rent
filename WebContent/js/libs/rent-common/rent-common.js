@@ -124,6 +124,5 @@ var RENT = {
     }
     
 };
-window.RENT = RENT;
 return RENT;
 });

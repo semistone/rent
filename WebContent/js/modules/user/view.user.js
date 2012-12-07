@@ -18,7 +18,7 @@ var $template = $('<div>').append(template);
 RENT.user.view.RegisterView = Backbone.View.extend({
 
 	initialize : function() {
-		_.bindAll(this, 'render', 'error','change_view','verify_success','main_view');
+		_.bindAll(this, 'render', 'error','change_view','verify_success');
 		if (this.model == null) {
 			this.model = new RENT.user.model.UserModel();
 		}
@@ -104,7 +104,7 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			logger.debug('render register view step3');
 			this.model.unbind('change'); 
 			RENT.user.dotDone(RENT.user.mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
-			this.main_view();
+			this.trigger('success');
 			break;
 		default: // show ooop
 			logger.error('user status is removed or suspend');
@@ -153,20 +153,10 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 			});
 		} else {
 			logger.debug('device name  exist');
-			this.main_view();
+			this.trigger('success');
 		}
-	},
-	main_view:function(){
-		logger.debug('show main view');
-		var _this = this;
-		require(['modules/main/view.main'],function(RegisterMainView){
-			var view = new RegisterMainView({
-				el : '#register_content',
-				model: _this.model,
-				subroute: _this.options['subroute']
-			});			
-		});
 	}
+
 });
 
 

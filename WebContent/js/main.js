@@ -18,8 +18,7 @@ require.config({
 		GoogleMap: 'libs/google/map',
 		template: '../html'
 	},
-	//baseUrl:'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com/js/',
-	baseUrl:'/rent/js/',
+	baseUrl:'js/',
 	shim : {
 		jQuery : {
 			exports : "$"
@@ -47,12 +46,16 @@ require.config({
 		},
 		logger:{
 			exports: 'logger'
+		},
+		Validator: {
+			deps : [ 'jQuery' ],
+			exports: '$.validate'
 		}
 		
 	}
 });
 
-require(['jQuery','Underscore','Backbone'],function($, _, Backbone){
+require(['jQuery','Underscore','Backbone', 'logger'],function($, _, Backbone, logger){
 
 	var backyard  = function(){
 		require(['modules/backyard/backyard.loader'], function(Backyard) {
@@ -82,14 +85,16 @@ require(['jQuery','Underscore','Backbone'],function($, _, Backbone){
 		routes: {
 			'main/*subroute': 'main',
 			'backyard':'backyard',
-			'*path/*subroute': 'defaultRoute',
-			'*path':  'defaultRoute'
+			':path/:subroute': 'defaultRoute',
+			':path':  'defaultRoute'
 		}
 	});
 	var router = new MainRoute();
 	router.on('route:defaultRoute', defaultRoute);
 	router.on('route:backyard', backyard);
 	router.on('route:main', main);
-	Backbone.history.start();
+	if (!Backbone.history.start()){
+		router.trigger('route:defaultRoute');
+	}
 });
 
