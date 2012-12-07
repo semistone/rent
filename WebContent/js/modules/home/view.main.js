@@ -45,13 +45,17 @@ var MainView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'init_router', 'edit', 'edit_mode', 'navibar',
 				'preview', 'save', 'show_page');
-		this.path = 'home';
+		this.path = this.options['parent_route'] || 'home';
 		this.init_router();
 		var subroute = this.options['subroute'];
 		if (subroute == null || subroute == '') {
 			subroute = 'index';
 		}
-		this.router.navigate(subroute, {trigger: true});
+		if (subroute.indexOf('edit') > 0) {
+			this.router.trigger('route:edit', subroute);						 
+		} else{
+			this.router.trigger('route:show_page', subroute);			
+		}
 	},
 	render:function(){
 		logger.debug('render');
@@ -66,7 +70,6 @@ var MainView = Backbone.View.extend({
 	},
 	show_page:function(subview){
 		logger.debug('subview is '+subview);
-		this.router.navigate(this.path + '/'+ subview, {replace: true});
 		this.tmpl = $template.find('#tmpl_'+subview).html();
 		this.model = new PageModel();
 		this.model.on('change', this.render);
@@ -86,14 +89,13 @@ var MainView = Backbone.View.extend({
 	},
 	init_router:function(){
 		this.router = new Backbone.Router();
-		this.router.route('edit', 'edit');
-		this.router.route(this.path+'/*path', 'show_page');
+		this.router.route(this.path+'/:name/edit', 'edit');
+		this.router.route(this.path+'/:name', 'show_page');
 		this.router.on('route:edit', this.edit);
 		this.router.on('route:show_page', this.show_page);
 	},
 	edit:function(){
 		logger.debug('add edit menu');
-		this.router.navigate('home/edit', {replace: true});
 		this.navibar();
 		this.menu.append_menu();
 	},
