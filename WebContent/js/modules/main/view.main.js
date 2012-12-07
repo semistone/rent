@@ -16,7 +16,7 @@ var $template = $('<div>').append(template);
 var RegisterMainView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render','sign_off','link_fb');
-		this.path = 'main';
+		this.path = this.options['parent_route'] || 'main';
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.rightView = new Backbone.View();
 		this.router = new MainRouter({'$el' : this.$el, model: this.model, path: this.path});
@@ -38,9 +38,9 @@ var RegisterMainView = Backbone.View.extend({
 		this.render();
 		var subroute = this.options['subroute'];
 		if (subroute == null || subroute == '' ) {
-			this.router.navigate('name_device', {trigger: true});			
+			this.router.trigger('route:name_device');		
 		} else {
-			this.router.navigate( subroute, {trigger:true});						
+			this.router.trigger('route:'+subroute);		
 		};
 
 	},
