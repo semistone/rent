@@ -12,12 +12,12 @@ var MainRouter = Backbone.Router.extend({
 		this.model = options['model'];
 		this.path = options['path'];
 
-		this.on('route:name_device', this.name_device);
-		this.on('route:show_my_device', this.show_my_device);
-		this.on('route:mobile_provider', this.mobile_provider);
-		this.on('route:show_user_profile', this.show_user_profile);
-		this.on('route:sso_application', this.sso_application);
-		this.on('route:list_members', this.list_members);
+		this.on('route:name_device', this._name_device);
+		this.on('route:show_my_device', this._show_my_device);
+		this.on('route:mobile_provider', this._mobile_provider);
+		this.on('route:show_user_profile', this._show_user_profile);
+		this.on('route:sso_application', this._sso_application);
+		this.on('route:list_members', this._list_members);
 		this.on('route:whereami', this.whereami);
 	},
 	routes: {
@@ -29,7 +29,7 @@ var MainRouter = Backbone.Router.extend({
 		'main/list_members' : 'list_members',
 		'main/whereami': 'whereami'
 	},
-	name_device:function(){
+	_name_device:function(){
 		logger.debug('click name device popup');
 		var _this = this;
 		require(['modules/main/view.name_device'],function(NameDeviceView){
@@ -42,7 +42,7 @@ var MainRouter = Backbone.Router.extend({
 			});			
 		});
 	},
-	show_my_device:function(){
+	_show_my_device:function(){
 		logger.debug('click show my devies'); 
 		var _this = this;
 		require(['modules/main/view.devices'],function(){
@@ -52,7 +52,7 @@ var MainRouter = Backbone.Router.extend({
 			});			
 		});
 	},
-	list_members:function(){
+	_list_members:function(){
 		logger.debug('click list_members');
 		var _this = this;
 		require(['modules/main/view.list_members'],function(ListMemberView){
@@ -60,7 +60,7 @@ var MainRouter = Backbone.Router.extend({
 		});
 
 	},
-	mobile_provider:function(){
+	_mobile_provider:function(){
 		logger.debug('click mobile_provider');
 
 		var _this = this;
@@ -72,7 +72,7 @@ var MainRouter = Backbone.Router.extend({
 		});		
 		
 	},
-	show_user_profile:function(){
+	_show_user_profile:function(){
 		logger.debug('click show_user_profile');
 		var _this = this;
 		require(['modules/main/view.profile'],function(UserProfileView){
@@ -84,7 +84,7 @@ var MainRouter = Backbone.Router.extend({
 		});		
 	},
 
-	sso_application:function(){
+	_sso_application:function(){
 		logger.debug('click show sso application'); 
 		var _this = this;
 		require(['modules/main/view.sso'],function(ShowSSOTokenView){
@@ -94,7 +94,7 @@ var MainRouter = Backbone.Router.extend({
 			});					
 		});
 	},
-	whereami:function(){
+	_whereami:function(){
 		logger.debug('click where am i'); 
 		var _this = this;
 		require(['modules/google/view.map'],function(Map){

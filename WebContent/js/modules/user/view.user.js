@@ -34,7 +34,7 @@ RegisterView = Backbone.View.extend({
 		this.model.sign_off({
 			success:function(model,resp){
 				_this.model.clear();
-				_this.model.render();
+				_this.render();
 				_this.model.trigger('logoff_success');				
 			},
 			error:function(model,resp){
@@ -137,10 +137,6 @@ RegisterView = Backbone.View.extend({
 		case 'step3':
 			this.$el.find('#register_title').text($.i18n.prop('user.register.step3'));
 			break;
-		case 'main':
-			this.$el.find('#register_title').text($.i18n.prop('user.register.register_manage_tool'));
-			break;			
-
 		}
 	},
 	verify_success:function(){
