@@ -20,21 +20,6 @@ var RegisterMainView = Backbone.View.extend({
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.rightView = new Backbone.View();
 		this.router = new MainRouter({'$el' : this.$el, model: this.model, path: this.path});
-		var _this = this;		
-		//
-		// add fb module
-		//
-		var user = this.model.get('user');
-		if (user != undefined && user.loginType == 'FB') {
-			var id = null;
-			id = this.model.get('user').loginId;
-			logger.debug('loginType is FB and user.loginId is '+id);
-			require(['modules/user/model.fb'],function(){
-				var fb = new RENT.user.model.FBModel({id:id});
-				_this.fb = fb;
-				RENT.user.navBar.initFBModel(fb);
-			});
-		};
 		this.render();
 		var subroute = this.options['subroute'];
 		if (subroute == null || subroute == '' ) {
@@ -118,21 +103,7 @@ var RegisterMainView = Backbone.View.extend({
 	},
 	sign_off:function(){
 		logger.debug('click signoff device');
-		var _this = this;
-		this.model.sign_off({
-			success:function(model,resp){
-				_this.rightView.undelegateEvents();
-				_this.undelegateEvents();
-				require(['modules/user/view.user'],function(RegisterView){
-					new RegisterView({el:_this.el});
-					logger.debug('trigger sign off event on '+_this.model.cid);
-					_this.model.trigger('sign_off');					
-				});
-			},
-			error:function(model,resp){
-				RENT.simpleErrorDialog(resp,'');
-			}
-		});	
+		this.trigger('logoff');
 	}
 
 });

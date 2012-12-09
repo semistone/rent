@@ -5,7 +5,8 @@ define([
   'logger',
   './namespace.user'
 ], function($, Backbone, RENT,logger) {
-RENT.user.model.UserModel = Backbone.Model.extend({
+var UserModel;
+UserModel = Backbone.Model.extend({
 	initialize:function(){
 		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/';
 	},
@@ -125,5 +126,5 @@ RENT.user.collection.SessionCollection = Backbone.Collection.extend({
 	 
 });
 
-return RENT.user.model.UserModel;
+return UserModel;
 });

@@ -11,11 +11,11 @@ define([
   'text!template/user/tmpl.step1.html'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
-var $template = $('<div>').append(template);
+var $template = $('<div>').append(template),RegisterStep1View;
 //
 // step1
 //
-RENT.user.view.RegisterStep1View = Backbone.View.extend({
+RegisterStep1View = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'new_device_event' , 'new_device_event', 
 				'success', 'error' ,'validate');
@@ -109,4 +109,5 @@ RENT.user.view.RegisterStep1View = Backbone.View.extend({
 		});
 	}
 });
+return RegisterStep1View;
 });

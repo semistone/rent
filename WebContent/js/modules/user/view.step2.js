@@ -12,8 +12,8 @@ define([
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
 var $template = $('<div>').append(template);
-
-RENT.user.view.RegisterStep2View = Backbone.View.extend({
+var RegisterStep2View;
+RegisterStep2View = Backbone.View.extend({
 	events : {
 		"click #verify_button" : 'do_verify',
 		"click #send_mobile_auth_message" : 'send_mobile_auth_message',
@@ -115,4 +115,5 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		});
 	}
 });
+return RegisterStep2View;
 });

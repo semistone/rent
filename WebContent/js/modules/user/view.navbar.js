@@ -18,7 +18,7 @@ NavBarView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'initFBModel','login_facebook','logout_facebook');
 		var _this = this;
-		this.model.on('sign_off',function(){
+		this.model.on('logoff_off',function(){
 			logger.debug('navbar sign off');
 			_this.$el.find('#user_info').empty();
 			if (_this.fbModel != null) {

@@ -6,7 +6,8 @@ define([
   'logger',
   './namespace.user'
 ], function(FB, _, Backbone, RENT, logger) {
-RENT.user.model.FBModel = Backbone.Model.extend({
+var FBModel;
+FBModel = Backbone.Model.extend({
 	setResponse:function() {
 		var _this = this;
 		FB.api('/me', function(response) {
@@ -82,4 +83,5 @@ RENT.user.model.FBModel = Backbone.Model.extend({
 		});
 	}
 });
+return FBModel;
 });

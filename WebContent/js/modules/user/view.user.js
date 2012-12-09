@@ -9,28 +9,39 @@ define([
   'RentCommon',
   'logger',
   'text!template/user/tmpl.register.html',
-  './namespace.user',
-  './model.user'
-  ], function($, _, Backbone, Mustache, RENT, logger,template) {
+  './model.user',
+  './namespace.user'
+  ], function($, _, Backbone, Mustache, RENT, logger,template, UserModel) {
 
-var $template = $('<div>').append(template);
-
-RENT.user.view.RegisterView = Backbone.View.extend({
+var $template = $('<div>').append(template),RegisterView;
+RegisterView = Backbone.View.extend({
 
 	initialize : function() {
-		_.bindAll(this, 'render', 'error','change_view','verify_success');
+		_.bindAll(this, 'render', 'error','change_view','verify_success','logoff', 'login');
 		if (this.model == null) {
-			this.model = new RENT.user.model.UserModel();
+			this.model = new UserModel();
 		}
 		this.model.on('change',this.render);
 		this.model.on('change_view',this.change_view);
 		this.model.on('verify_success',this.verify_success);
-		if (!this.handleMobileAuthRequestForm()){
-			//only no mobile auth request need to do fetch.
-			this.model.fetch({error:this.error});			
-		}
+
 	},
-	handleMobileAuthRequestForm:function(){
+	login:function(){
+		this.model.fetch({error:this.error});
+	},
+	logoff:function(){
+		var _this = this;
+		this.model.sign_off({
+			success:function(model,resp){
+				_this.model.clear();
+				_this.model.trigger('logoff_success');				
+			},
+			error:function(model,resp){
+				RENT.simpleErrorDialog(resp,'');
+			}
+		});	
+	},
+	handle_mobile_auth_request_form:function(){
 		RENT.user.mobileAuthRequestForm = RENT.getQueryVariables();
 		var mobileAuthRequestForm = RENT.user.mobileAuthRequestForm;
 		var _this = this;
@@ -82,8 +93,8 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		case undefined:
 			logger.debug('render register view step1');
 			this.model.unbind('change'); // before change view must unbind all event
-			require(['modules/user/view.step1'],function(){
-				new RENT.user.view.RegisterStep1View({
+			require(['modules/user/view.step1'],function(RegisterStep1View){
+				new RegisterStep1View({
 					el : '#register_content',
 					model : _this.model
 				}).render();				
@@ -93,8 +104,8 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		case 1:
 			logger.debug('render register view step2');
 			this.model.unbind('change'); 
-			require(['modules/user/view.step2'],function(){
-				new RENT.user.view.RegisterStep2View({
+			require(['modules/user/view.step2'],function(RegisterStep2View){
+				new RegisterStep2View({
 					el : '#register_content',
 					model : _this.model
 				}).render();
@@ -103,8 +114,8 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 		case 2:
 			logger.debug('render register view step3');
 			this.model.unbind('change'); 
-			RENT.user.dotDone(RENT.user.mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
-			this.trigger('success');
+			//RENT.user.dotDone(RENT.user.mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
+			this.trigger('login_success', this.model);
 			break;
 		default: // show ooop
 			logger.error('user status is removed or suspend');
@@ -133,12 +144,12 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 	},
 	verify_success:function(){
 		this.$el.find('#register_title').text($.i18n.prop('user.register.step3'));
-		RENT.user.dotDone(RENT.user.mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
+		//RENT.user.dotDone(RENT.user.mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
 		if (this.model.get('name') == null) {
 			logger.debug('device name not exist');
 			var _this = this;
-			require(['modules/user/view.name_device'],function(){
-				var view = new RENT.user.view.NameDeviceView({
+			require(['modules/main/view.name_device'],function(NameDeviceView){
+				var view = new NameDeviceView({
 					el: '#register_content',
 					model: _this.model
 				});
@@ -147,13 +158,12 @@ RENT.user.view.RegisterView = Backbone.View.extend({
 				view.on('success',function(){
 					logger.debug('name device success');
 					view.undelegateEvents();
-					_this.main_view();
-					view.off('success');
+					_this.trigger('login_success', this.model);
 				});			
 			});
 		} else {
 			logger.debug('device name  exist');
-			this.trigger('success');
+			this.trigger('login_success', this.model);
 		}
 	}
 
@@ -175,5 +185,5 @@ RENT.user.view.ErrorView = Backbone.View.extend({
 	}
 });
 
-return RENT.user.view.RegisterView;
+return RegisterView;
 });
