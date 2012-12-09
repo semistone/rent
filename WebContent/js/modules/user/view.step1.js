@@ -60,8 +60,8 @@ RegisterStep1View = Backbone.View.extend({
 			return;
 		}
 		var _this = this;
-		require(['modules/user/view.step2'], function(){
-			new RENT.user.view.RegisterStep2View({
+		require(['modules/user/view.step2'], function(RegisterStep2View){
+			new RegisterStep2View({
 				el : _this.el,
 				model : _this.model
 			}).render();				

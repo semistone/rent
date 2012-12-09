@@ -34,6 +34,7 @@ RegisterView = Backbone.View.extend({
 		this.model.sign_off({
 			success:function(model,resp){
 				_this.model.clear();
+				_this.model.render();
 				_this.model.trigger('logoff_success');				
 			},
 			error:function(model,resp){
@@ -92,7 +93,7 @@ RegisterView = Backbone.View.extend({
 		switch (status) {
 		case undefined:
 			logger.debug('render register view step1');
-			this.model.unbind('change'); // before change view must unbind all event
+			this.model.off('change'); // before change view must unbind all event
 			require(['modules/user/view.step1'],function(RegisterStep1View){
 				new RegisterStep1View({
 					el : '#register_content',
@@ -103,7 +104,7 @@ RegisterView = Backbone.View.extend({
 		case 0:
 		case 1:
 			logger.debug('render register view step2');
-			this.model.unbind('change'); 
+			this.model.off('change'); 
 			require(['modules/user/view.step2'],function(RegisterStep2View){
 				new RegisterStep2View({
 					el : '#register_content',
@@ -113,7 +114,7 @@ RegisterView = Backbone.View.extend({
 			break;
 		case 2:
 			logger.debug('render register view step3');
-			this.model.unbind('change'); 
+			this.model.off('change'); 
 			//RENT.user.dotDone(RENT.user.mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
 			this.trigger('login_success', this.model);
 			break;
@@ -158,7 +159,7 @@ RegisterView = Backbone.View.extend({
 				view.on('success',function(){
 					logger.debug('name device success');
 					view.undelegateEvents();
-					_this.trigger('login_success', this.model);
+					_this.trigger('login_success', _this.model);
 				});			
 			});
 		} else {
