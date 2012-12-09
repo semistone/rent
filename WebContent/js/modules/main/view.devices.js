@@ -6,8 +6,8 @@ define([
   'RentCommon',
   'logger',
   'text!template/user/tmpl.devices.html',
-  '../user/model.user'
-  ], function($, _, Backbone, Mustache, RENT, logger,template) {
+  '../user/collection.device'
+  ], function($, _, Backbone, Mustache, RENT, logger,template, DeviceCollection) {
 
 var $template = $('<div>').append(template);
 //
@@ -23,7 +23,7 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 		this.tmpl = $template.find('#tmpl_show_devices').html();
 		_.bindAll(this, 'render','delete_device','list_sessions');
 		if (this.collection == null) {
-			this.collection =new RENT.user.collection.UserCollection();
+			this.collection = new DeviceCollection();
 			this.collection.fetch();
 		}
 		this.collection.on('reset',this.render);
@@ -59,21 +59,24 @@ RENT.user.view.ShowDevicesView = Backbone.View.extend({
 				$.i18n.prop('user.register.last_login_time'));
 	},
 	list_sessions:function(ev){
-		var deviceId = $(ev.target).parent().attr('id');
+		var _this = this,
+			deviceId = $(ev.target).parent().attr('id');
 		logger.debug("list sessions device id "+deviceId); 
 		this.model.set({deviceId:deviceId},{silent:true});
-		var collection = new RENT.user.collection.SessionCollection();
-		var _this = this;
-		collection.on('reset',function(){
-			logger.debug('undelegate reset event');
-			_this.undelegateEvents();
-			_this.collection.off('reset', arguments.callee.caller);			
+		require(['modules/user/collection.session'],function(SessionCollection){
+			var collection = new SessionCollection();
+			collection.on('reset',function(){
+				logger.debug('undelegate reset event');
+				_this.undelegateEvents();
+				_this.collection.off('reset', arguments.callee.caller);			
+			});
+			new RENT.user.view.ShowSessionsView({
+				el : _this.$el,
+				model : _this.model,
+				collection: collection
+			});
 		});
-		new RENT.user.view.ShowSessionsView({
-			el : this.$el,
-			model : this.model,
-			collection: collection
-		});
+
 	},
 	delete_device:function(ev){
 		var id = $(ev.target).parent().parent().attr('id');

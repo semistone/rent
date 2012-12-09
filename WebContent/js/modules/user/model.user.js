@@ -111,20 +111,5 @@ UserModel = Backbone.Model.extend({
 		Backbone.sync('fetch', this, _options);
 	}
 });
-
-RENT.user.collection.UserCollection = Backbone.Collection.extend({
-	model: RENT.user.model.UserModel,
-	initialize:function(){
-		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/list_devices';
-	}
-	 
-});
-RENT.user.collection.SessionCollection = Backbone.Collection.extend({
-	initialize:function(){
-		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/list_sessions';
-	}
-	 
-});
-
 return UserModel;
 });

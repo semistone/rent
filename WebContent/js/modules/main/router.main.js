@@ -34,29 +34,32 @@ var MainRouter = Backbone.Router.extend({
 		var _this = this;
 		require(['modules/main/view.name_device'],function(NameDeviceView){
 			var view = new NameDeviceView({
-				el : _this.$el.find('#register_right'),
+				tag : 'div',
 				model : _this.model});
 			view.render();
 			view.on('success',function(){
 				_this.navigate('main/show_my_device');
-			});			
+			});
+			_this.$el.find('#register_right').html(view.$el);
 		});
 	},
 	_show_my_device:function(){
 		logger.debug('click show my devies'); 
 		var _this = this;
 		require(['modules/main/view.devices'],function(){
-			new RENT.user.view.ShowDevicesView({
-				el : _this.$el.find('#register_right'),
+			var view = new RENT.user.view.ShowDevicesView({
+				tag : 'div',
 				model : _this.model
-			});			
+			});	
+			_this.$el.find('#register_right').html(view.$el);
 		});
 	},
 	_list_members:function(){
 		logger.debug('click list_members');
 		var _this = this;
 		require(['modules/main/view.list_members'],function(ListMemberView){
-			new ListMemberView({el: _this.$el.find('#register_right')});
+			var view = new ListMemberView({tag : 'div'});
+			_this.$el.find('#register_right').html(view.$el);
 		});
 
 	},
@@ -64,11 +67,12 @@ var MainRouter = Backbone.Router.extend({
 		logger.debug('click mobile_provider');
 
 		var _this = this;
-		require(['modules/main/view.mobile_provider'],function(){
-			var view = new RENT.user.view.MobileProviderView({
-				el: _this.$el.find('#register_right')
+		require(['modules/main/view.mobile_provider'],function(MobileProviderView){
+			var view = new MobileProviderView({
+				tag: 'div'
 			});
 			view.render();
+			_this.$el.find('#register_right').html(view.$el);
 		});		
 		
 	},
@@ -77,10 +81,11 @@ var MainRouter = Backbone.Router.extend({
 		var _this = this;
 		require(['modules/main/view.profile'],function(UserProfileView){
 			var view = new UserProfileView({
-				el: _this.$el.find('#register_right'),
+				tag : 'div',
 				model:_this.model
 			});
 			view.render();
+			_this.$el.find('#register_right').html(view.$el);
 		});		
 	},
 
@@ -88,10 +93,11 @@ var MainRouter = Backbone.Router.extend({
 		logger.debug('click show sso application'); 
 		var _this = this;
 		require(['modules/main/view.sso'],function(ShowSSOTokenView){
-			new ShowSSOTokenView({
-				el : _this.$el.find('#register_right'),
+			var view = new ShowSSOTokenView({
+				tag : 'div',
 				userModel: _this.model
-			});					
+			});
+			_this.$el.find('#register_right').html(view.$el);
 		});
 	},
 	_whereami:function(){
@@ -99,9 +105,10 @@ var MainRouter = Backbone.Router.extend({
 		var _this = this;
 		require(['modules/google/view.map'],function(Map){
 			var map = new Map({
-				el : _this.$el.find('#register_right')
+				tag : 'div',
 			});
 			map.whereami();
+			_this.$el.find('#register_right').html(map.$el);
 		});	
 	}
 });

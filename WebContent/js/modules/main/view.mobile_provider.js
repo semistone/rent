@@ -9,8 +9,8 @@ define([
   './model.mobile_provider'
   ], function($, _, Backbone, Mustache, RENT, logger,template, MobileProviderModel) {
 var $template = $('<div>').append(template);	
-	
-RENT.user.view.MobileProviderView = Backbone.View.extend({
+var MobileProviderView;
+MobileProviderView = Backbone.View.extend({
 	events : {
 		"click #save_provider_link" : 'save_provider'
 	},	
@@ -59,5 +59,5 @@ RENT.user.view.MobileProviderView = Backbone.View.extend({
 				$.i18n.prop('general.save'));
 	}	
 });
-
+return MobileProviderView;
 });
