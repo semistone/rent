@@ -1,4 +1,4 @@
-define([], function() {
+define(['async!http://maps.google.com/maps/api/js?sensor=false!callback'], function() {
 
 var initialLocation;
 var siberia = new google.maps.LatLng(60, 105);
