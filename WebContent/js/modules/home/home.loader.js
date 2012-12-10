@@ -11,7 +11,7 @@ define([
 		RENT.setLangRes(RENT.getLang(), ['rent_user']);
 		$(function(){
 			logger.debug('new home main view');
-			var mainView = new MainView({el:'#main',subroute:subroute, menu_el:'#navbar'});;
+			new MainView({el:'#main',subroute:subroute, menu_el:'#navbar'});
 		});
   };
   return {

@@ -5,7 +5,7 @@ define([
   'RentCommon',
   '../user/view.user'
 ], function($, logger, RENT, User){
-	var main_view, initialize, user_view;
+	var main_view, initialize, user_view, is_initialize = false;
 
 	RENT.setLangRes(RENT.getLang(), ['rent_user']);
 	user_view = new User({el:'#main'});
@@ -41,11 +41,14 @@ define([
 		);
 	};
 	initialize  = function(subroute){
-		user_view.on('login_success', function(model){
-			logger.debug('new register view');
-			main_view(model,subroute);		
-		});
-		user_view.login();
+		if (is_initialize == false) {
+			user_view.on('login_success', function(model){
+				logger.debug('new register view');
+				main_view(model,subroute);		
+			});
+			is_initialize = true;
+		}
+		user_view.login();			
 	};
 	return {
 		initialize: initialize,

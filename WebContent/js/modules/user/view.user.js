@@ -27,7 +27,11 @@ RegisterView = Backbone.View.extend({
 
 	},
 	login:function(){
-		this.model.fetch({error:this.error});
+		if (this.model.get('status') != null && this.model.get('status') != undefined) {
+			this.render();
+		} else {
+			this.model.fetch({error:this.error});			
+		}
 	},
 	logoff:function(){
 		var _this = this;

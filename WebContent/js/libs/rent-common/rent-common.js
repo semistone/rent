@@ -15,7 +15,7 @@ var RENT = {
 			"1"  : {name:"general.unit_state", locale:'en-US', country:"US"}
 		},
 		//DOCUMENT_ROOT : '',
-		DOCUMENT_ROOT : '/rent',
+		DOCUMENT_ROOT : '',
 		FACEBOOK_APP: '362616447158349',
 		FACEBOOK_CHANNEL:'http://angus-ec2.siraya.net/facebook.html', // Channel File
 	},
@@ -26,7 +26,7 @@ var RENT = {
     	if (callback == undefined) callback=function(){};
     	$.i18n.properties({
             name: resFiles, //['xxx','yy']
-            path: extra_path + '/i18n/',
+            path: extra_path + 'i18n/',
             mode:'map', // "map" option is mandatory if your bundle keys contain Javascript Reserved Words, such as ' in string resource
             cache:true,
             language:lang,
