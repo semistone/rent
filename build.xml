@@ -171,7 +171,7 @@
             <arg value="excludeShallow=text" />
             <srcfile prefix="name=text!template/" suffix=""/>
 	    <targetfile prefix="out=build/html/" suffix=""/>
-            <mapper type="glob" from="*.html" to="*.html.js"/>               
+            <mapper type="glob" from="*.phtml" to="*.phtml.js"/>               
         </apply>
     </target>
 </project>
