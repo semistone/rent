@@ -8,7 +8,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!template/user/tmpl.step1.html'
+  'text!template/user/tmpl.step1.phtml'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
 var $template = $('<div>').append(template),RegisterStep1View;

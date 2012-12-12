@@ -5,7 +5,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!template/user/tmpl.main.html',
+  'text!template/user/tmpl.main.phtml',
   './router.main'
   ], function($, _, Backbone, Mustache, RENT, logger,template, MainRouter) {
 

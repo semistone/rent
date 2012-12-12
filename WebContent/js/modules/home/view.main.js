@@ -5,7 +5,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!template/home/tmpl.main.html',
+  'text!template/home/tmpl.main.phtml',
   './model.page'
   ], function($, _, Backbone, Mustache, RENT, logger,template, PageModel) {
 var $template = $('<div>').append(template);	

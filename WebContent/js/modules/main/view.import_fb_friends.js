@@ -5,7 +5,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!template/user/tmpl.import_fb_friends.html',
+  'text!template/user/tmpl.import_fb_friends.phtml',
   '../general/view.pagination',
   './collection.friends'
   ], function($, _, Backbone, Mustache, RENT, logger,template,Pagniation,FriendCollection) {

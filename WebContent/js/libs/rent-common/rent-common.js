@@ -14,7 +14,6 @@ var RENT = {
 			"81" : {name:"general.japan",locale:'ja', country:"JA"},
 			"1"  : {name:"general.unit_state", locale:'en-US', country:"US"}
 		},
-		//DOCUMENT_ROOT : '',
 		DOCUMENT_ROOT : '',
 		FACEBOOK_APP: '362616447158349',
 		FACEBOOK_CHANNEL:'http://angus-ec2.siraya.net/facebook.html', // Channel File

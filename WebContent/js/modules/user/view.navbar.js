@@ -8,7 +8,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!template/user/tmpl.register.html',
+  'text!template/user/tmpl.register.phtml',
   './namespace.user'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 

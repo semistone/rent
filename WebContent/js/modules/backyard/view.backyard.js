@@ -8,7 +8,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!template/backyard/tmpl.backyard.html',
+  'text!template/backyard/tmpl.backyard.phtml',
   './namespace.backyard'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 

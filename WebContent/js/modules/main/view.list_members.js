@@ -5,7 +5,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!template/user/tmpl.member.html',
+  'text!template/user/tmpl.member.phtml',
   '../general/view.pagination',
   './collection.member',
   './model.member',

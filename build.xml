@@ -162,8 +162,7 @@
     <target name="convert">
         <apply executable="node" relative="true" dest="build/" >
             <fileset dir="WebContent/html" >
-	         <include name="**/*.html" />
-	         <exclude name="*.html" />
+	         <include name="**/*.phtml" />
             </fileset>
             <arg value="r.js" />
             <arg value="-o" />

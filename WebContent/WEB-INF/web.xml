@@ -77,7 +77,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>web</servlet-name>
-		<url-pattern>*.do</url-pattern>
+		<url-pattern>*.html</url-pattern>
 	</servlet-mapping>
 
 </web-app>	   

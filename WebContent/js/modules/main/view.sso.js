@@ -5,7 +5,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!template/user/tmpl.sso.html',
+  'text!template/user/tmpl.sso.phtml',
   './model.sso'
   ], function($, _, Backbone, Mustache, RENT, logger,template, RequestModel) {
 var $template = $('<div>').append(template);
