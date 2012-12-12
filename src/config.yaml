@@ -27,3 +27,5 @@ sently:
 keydb:
     cookie: thebestsecretkey
     general: thebestsecretkey
+web:
+    cdn: 'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com'

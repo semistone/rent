@@ -1,3 +1,6 @@
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
 <!doctype html>
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
@@ -14,10 +17,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <!-- CSS concatenated and minified via ant build script-->
-  <link href="http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com/css/bootstrap.min.css" rel="stylesheet">
-  <link href="http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com/css/bootstrap-responsive.min.css" rel="stylesheet">
-  <link href="http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com/css/docs.css" rel="stylesheet">
-  <link href="http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com/css/rent.css" rel="stylesheet">  
+  <link href="<c:out value='${cdn}'/>/css/bootstrap.min.css" rel="stylesheet">
+  <link href="<c:out value='${cdn}'/>/css/bootstrap-responsive.min.css" rel="stylesheet">
+  <link href="<c:out value='${cdn}'/>/css/docs.css" rel="stylesheet">
+  <link href="<c:out value='${cdn}'/>/css/rent.css" rel="stylesheet">  
   <!-- end CSS-->
 </head>
 

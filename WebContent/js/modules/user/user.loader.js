@@ -2,11 +2,10 @@
 define([
   'jQuery',
   'logger',
-  './view.user',
   'RentCommon',
   './view.user',
   './model.user'
-], function($, logger, RegisterView, RENT, RegisterView, UserModel){
+], function($, logger, RENT, RegisterView, UserModel){
 	var main_view,
 		model = new UserModel();
 	$(function(){
