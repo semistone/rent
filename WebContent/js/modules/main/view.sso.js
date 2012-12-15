@@ -6,8 +6,9 @@ define([
   'RentCommon',
   'logger',
   'text!template/user/tmpl.sso.phtml',
-  './model.sso'
-  ], function($, _, Backbone, Mustache, RENT, logger,template, RequestModel) {
+  './model.sso',
+  '../user/namespace.user'
+  ], function($, _, Backbone, Mustache, RENT, logger,template, RequestModel, User) {
 var $template = $('<div>').append(template);
 
 ShowSSOTokenView = Backbone.View.extend({
@@ -49,7 +50,7 @@ ShowSSOTokenView = Backbone.View.extend({
 		var noRole = function(){
 			_this.render();
 		};
-		RENT.user.checkRole(this.userModel,5, inRole, noRole);
+		User.check_role(this.userModel,5, inRole, noRole);
 		this.model.on('change',this.render);
 		this.model.set({
 			requestId:this.GUID(),

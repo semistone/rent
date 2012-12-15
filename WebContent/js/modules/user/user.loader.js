@@ -3,15 +3,25 @@ define([
   'jQuery',
   'logger',
   'RentCommon',
-  './view.user',
   './model.user'
-], function($, logger, RENT, RegisterView, UserModel){
-	var main_view,
+], function($, logger, RENT, UserModel){
+	var initialize,
 		model = new UserModel();
 	$(function(){
 		RENT.bindLoadingPage("#supersized-loader");
 	});
 	RENT.setLangRes(RENT.getLang(), ['rent_user']);
-	main_view = new RegisterView({el:'#main', model:model});
-	return main_view;
+
+	initialize  = function(subroute){
+		if (subroute == 'sso') {
+			logger.debug('subroute is sso');
+			require(['modules/user/view.sso'], function(SSOView){
+				var sso_view = new SSOView({el:'#main', model:model});
+				sso_view.handle_mobile_auth_request_form();				
+			});
+		}		
+	};
+	return {
+		initialize:initialize
+	};
 });

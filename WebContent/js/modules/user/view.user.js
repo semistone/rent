@@ -46,31 +46,7 @@ RegisterView = Backbone.View.extend({
 			}
 		});	
 	},
-	handle_mobile_auth_request_form:function(){
-		RENT.user.mobileAuthRequestForm = RENT.getQueryVariables();
-		var mobileAuthRequestForm = RENT.user.mobileAuthRequestForm;
-		var _this = this;
-		if (mobileAuthRequestForm['requestId'] != null) {
-			logger.debug('deal with request');
-			this.model.mobile_auth_request(mobileAuthRequestForm,{
-				success:function(model,response){
-					logger.debug('success');					
-					_this.model.set(model);
-				},
-				error:function(resp){
-					if (resp != null && resp.status == 409) {
-						_this.model.set({status:1});
-					} else {
-						_this.error(_this.model,resp);						
-					}
-				}
-			});
-			return true;
-		} else {
-			RENT.user.mobileAuthRequestForm = null; //reset to null
-			return false;			
-		}
-	},
+
 	error :function(model,resp){
 		logger.debug("fetch error");
 		var status = resp.status;
@@ -78,21 +54,18 @@ RegisterView = Backbone.View.extend({
 			this.render();			
 			return;
 		} else {
-			new RENT.user.view.ErrorView({
-				el : this.el
-			}).render();
+			var _this = this;
+			require(['modules/general/view.oops'], function(ErrorView){
+				new ErrorView({
+					el : this.el
+				}).render();				
+			});
 		}
 	},
 	render : function() {
 		this.$el.html($template.find('#tmpl_register_form').html());
 		var status =this.model.get('status');
 		logger.debug("render user status:"+status);
-		if (RENT.user.mobileAuthRequestForm != null && 
-			(status == undefined || status == 0) &&
-			this.model.get('userId') != null
-		) {
-			status = 1;
-		}
 		var _this = this;
 		switch (status) {
 		case undefined:
@@ -119,7 +92,6 @@ RegisterView = Backbone.View.extend({
 		case 2:
 			logger.debug('render register view step3');
 			this.model.off('change'); 
-			//RENT.user.dotDone(RENT.user.mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
 			this.trigger('login_success', this.model);
 			break;
 		default: // show ooop
@@ -169,22 +141,5 @@ RegisterView = Backbone.View.extend({
 	}
 
 });
-
-
-
-RENT.user.view.ErrorView = Backbone.View.extend({
-	initialize : function() {
-		this.tmpl = $template.find('#tmpl_register_error').html();
-	},
-	render:function(){
-		this.$el.html(this.tmpl);
-		//
-		// i18n
-		//
-		this.$el.find('#i18n_error').text(
-				$.i18n.prop('user.register.error'));
-	}
-});
-
 return RegisterView;
 });

@@ -5,29 +5,13 @@ define([
   'logger',
   'Underscore'
 ], function($, RENT, logger, _) {
-	$.extend(RENT, {
-		user : {
+		var user;
+		user = {
 			model : {},
 			view : {},
 			collection : {},
-			dotDone:function(mobileAuthRequestForm,response){
-				//
-				// redirect back to .done
-				//		  
-				if (mobileAuthRequestForm != null && mobileAuthRequestForm['done'] != undefined) {
-					logger.info('done exist '+mobileAuthRequestForm['done']);
-					var field = ['requestId','responseTime','status','sign'];
-					var params = '?';
-					$.each(response,function(key,value){
-						if ($.inArray(key,field) >=0 ){
-							params += key+'='+encodeURIComponent(value)+'&';
-						}
-					});
-					window.location.replace(mobileAuthRequestForm['done']+ params);
-					return;
-				}		
-			},
-			checkRole:function(userModel, roleId, inRole, noRole){
+
+			check_role:function(userModel, roleId, inRole, noRole){
 				var user = userModel.get('user');
 				if (user.roles == undefined) {
 					userModel.get_roles({
@@ -52,7 +36,6 @@ define([
 				}
 
 			}
-		}
-	});	
-	return RENT;
+	};
+	return user;
 });
