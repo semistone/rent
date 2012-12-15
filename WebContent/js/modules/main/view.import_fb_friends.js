@@ -10,7 +10,8 @@ define([
   './collection.friends'
   ], function($, _, Backbone, Mustache, RENT, logger,template,Pagniation,FriendCollection) {
 var $template = $('<div>').append(template);	
-RENT.user.view.ImportFbFriendsView = Backbone.View.extend({
+var ImportFbFriendsView;
+ImportFbFriendsView = Backbone.View.extend({
 	events : {
 		'click .delete_friend_link' : 'delete_friend',
 		'click #create_members_link' : 'create_members'
@@ -77,5 +78,5 @@ RENT.user.view.ImportFbFriendsView = Backbone.View.extend({
 		});
 	}
 });
-
+return ImportFbFriendsView;
 });

@@ -46,8 +46,8 @@ var MainRouter = Backbone.Router.extend({
 	_show_my_device:function(){
 		logger.debug('click show my devies'); 
 		var _this = this;
-		require(['modules/main/view.devices'],function(){
-			var view = new RENT.user.view.ShowDevicesView({
+		require(['modules/main/view.devices'],function(ShowDevicesView){
+			var view = new ShowDevicesView({
 				tag : 'div',
 				model : _this.model
 			});	

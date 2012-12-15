@@ -8,15 +8,16 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!template/user/tmpl.profile.phtml'
-  ], function($, _, Backbone, Mustache, RENT, logger,template) {
+  'text!template/user/tmpl.profile.phtml',
+  '../user/model.user'
+  ], function($, _, Backbone, Mustache, RENT, logger,template, UserModel) {
 var $template = $('<div>').append(template);
 	
 var UserProfileView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render' , 'i18n');
 		if (this.model == null) {
-			this.model = new RENT.user.model.UserModel();
+			this.model = new UserModel();
 		}
 		this.model.on('change',this.render);
 	},

@@ -94,7 +94,7 @@ RegisterStep2View = Backbone.View.extend({
 		};
 		var auth_code = this.$el.find('#auth_code').val();
 		logger.debug('click do verify button auth code is '+auth_code);
-		if (RENT.user.mobileAuthRequestForm == undefined || RENT.user.mobileAuthRequestForm == null) {
+		if (this.mobileAuthRequestForm == undefined) {
 			this.model.verify_mobile_auth_code(auth_code,{success:success});			
 		} else {
 			this.model.verify_mobile_auth_request_code(auth_code,{success:success});
@@ -107,8 +107,8 @@ RegisterStep2View = Backbone.View.extend({
 	go_back_step1 : function() {
 		this.undelegateEvents();
 		var _this = this;
-		require(['modules/user/view.step1'],function(){
-			new RENT.user.view.RegisterStep1View({
+		require(['modules/user/view.step1'],function(RegisterStep1View){
+			new RegisterStep1View({
 				el : _this.el,
 				model : _this.model
 			}).render();			

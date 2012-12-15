@@ -96,7 +96,8 @@ RegisterView = Backbone.View.extend({
 			break;
 		default: // show ooop
 			logger.error('user status is removed or suspend');
-			new RENT.user.view.ErrorView({
+			require(['modules/general/view.oops'], ErrorView);
+			new ErrorView({
 				el : this.el
 			}).render();
 		}
@@ -117,8 +118,7 @@ RegisterView = Backbone.View.extend({
 	},
 	verify_success:function(){
 		this.$el.find('#register_title').text($.i18n.prop('user.register.step3'));
-		//RENT.user.dotDone(RENT.user.mobileAuthRequestForm, this.model.toJSON()); // if redirect to dot done page.
-		if (this.model.get('name') == null) {
+		if (this.model.get('name') == null && this.mobileAuthRequestForm == null) {
 			logger.debug('device name not exist');
 			var _this = this;
 			require(['modules/main/view.name_device'],function(NameDeviceView){

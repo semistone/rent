@@ -88,8 +88,8 @@ var RegisterMainView = Backbone.View.extend({
 			});
 		};
 		if (this.fb == undefined) {
-			require(['modules/user/model.fb'],function(){
-				var fb = new RENT.user.model.FBModel();
+			require(['modules/user/model.fb'],function(FBModel){
+				var fb = new FBModel();
 				fb.init();
 				_this.fb = fb;
 				//
