@@ -56,13 +56,6 @@ require.config({
 });
 
 require(['jQuery','Underscore','Backbone', 'logger'],function($, _, Backbone, logger){
-
-	var backyard  = function(){
-		require(['modules/backyard/backyard.loader'], function(Backyard) {
-			Backyard.initialize();
-		});
-	};
-
 	var defaultRoute = function(){
 		var module , subroute = null;
 		if (arguments.length == 2) {
@@ -79,15 +72,12 @@ require(['jQuery','Underscore','Backbone', 'logger'],function($, _, Backbone, lo
 	};	
 	var MainRoute =  Backbone.Router.extend({
 		routes: {
-			'backyard':'backyard',
 			':path/:subroute': 'defaultRoute',
 			':path':  'defaultRoute'
 		}
 	});
 	var router = new MainRoute();
 	router.on('route:defaultRoute', defaultRoute);
-	router.on('route:backyard', backyard);
-	router.on('route:main', main);
 	if (!Backbone.history.start()){
 		router.trigger('route:defaultRoute');
 	}
