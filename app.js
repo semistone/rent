@@ -3,11 +3,11 @@ var app = require('http').createServer(handler),
     url = require('url'),
     crypto = require('crypto'),
     cookie = require('express/node_modules/cookie'),
-    pool = {},
     http = require('http'),
     key = 'thebestsecretkey',
     registerHost = 'localhost',
-    registerPort = 8080;
+    registerPort = 8080,
+    logger  = io.log;
      
 app.listen(9090);
 
@@ -16,21 +16,15 @@ function handler(req, res) {
     cmd = cmd.split('/');
     id = cmd[0]; 
     cmd = cmd[1]; 
-    console.log('id is '+id + ' cmd is '+cmd);
+    logger.debug('id is '+id + ' cmd is '+cmd);
     req.on('data', function(data){
         body += data;
     });
     req.on('end', function(){
-        if (pool[id] != undefined) {
-            console.log('body is '+body);
-            pool[id].emit(cmd, JSON.parse(body));
-            res.writeHead(200, {"Content-Type": "text/plain"});
-            res.end('Hello '+ id + '\n' );
-        } else {
-            console.log('id not exist');
-            res.writeHead(401, {"Content-Type": "text/plain"});
-            res.end( id + ' not found\n');
-        }
+        logger.debug('body is '+body);
+	io.sockets.in(id).emit(cmd, JSON.parse(body));
+        res.writeHead(200, {"Content-Type": "text/plain"});
+        res.end('Hello '+ id + '\n' );
     });
 }; 
 
@@ -42,10 +36,10 @@ function register_connect(headers) {
 
     request.on('response', function(response) {
         if (response.statusCode != 200) {
-            console.log('regstier connection status is '+response.statusCode);
+            logger.debug('regstier connection status is '+response.statusCode);
             return;
         } else {
-            console.log('register connection ok');
+            logger.debug('register connection ok');
         }
     });
     request.end();
@@ -59,10 +53,10 @@ function register_disconnect(headers) {
 
     request.on('response', function(response) {
         if (response.statusCode != 200) {
-            console.log('regstier disconnect status is '+response.statusCode);
+            logger.debug('regstier disconnect status is '+response.statusCode);
             return;
         } else {
-            console.log('register disconnect ok');
+            logger.debug('register disconnect ok');
         }
     });
     request.end();
@@ -74,7 +68,7 @@ io.configure(function(){
         var session, decipher;
         if (data.headers.cookie) {
             data.cookie = cookie.parse(data.headers.cookie);
-            console.log(data.cookie['S']);
+            logger.debug(data.cookie['S']);
             if (data.cookie['S'] == undefined) {
                 return callback('no session cookie' ,false);
             }
@@ -84,7 +78,7 @@ io.configure(function(){
             if (cookie == null) {
                 return callback('no cookie decrypted' ,false);
             } else {
-                console.log('session is '+session);
+                logger.debug('session is '+session);
                 data.session = session;
             }
         } else {
@@ -94,16 +88,12 @@ io.configure(function(){
     });
 });
 io.sockets.on('connection', function (socket) {
-    socket.emit('news', { hello: 'world' });
-    socket.on('my other event', function (data) {
-        console.log(data);
-    });
     var id = socket.handshake.session.split(':')[0];
-    pool[id] = socket;
-    console.log('new connection sesion id is '+ id);
+    socket.join(id);
+    logger.info('new connection join id is '+ id);
     register_connect(socket.handshake.headers);
     socket.on('disconnect', function(){
         register_disconnect(socket.handshake.headers);
-        delete pool[id];
+	socket.leave(id);
     });
 });
