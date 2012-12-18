@@ -6,7 +6,8 @@ var app = require('http').createServer(handler),
     pool = {},
     http = require('http'),
     key = 'thebestsecretkey',
-    registerHost = 'localhost';
+    registerHost = 'localhost',
+    registerPort = 8080;
      
 app.listen(9090);
 
@@ -33,17 +34,12 @@ function handler(req, res) {
     });
 }; 
 
-function register_connect(cookie) {
-    var client = http.createClient(80, registerHost), 
-        headers, request;
-
-    headers = {
-        'Cookie': cookie,
-        'Content-Type': 'application/json'
-    };
+function register_connect(headers) {
+    var client = http.createClient(registerPort, registerHost), 
+        request;
+    headers['Content-Type']  = 'application/json';
     request = client.request('GET', '/rest/device/connect', headers);
 
-    var resString = '';
     request.on('response', function(response) {
         if (response.statusCode != 200) {
             console.log('regstier connection status is '+response.statusCode);
@@ -55,6 +51,24 @@ function register_connect(cookie) {
     request.end();
 };
 
+function register_disconnect(headers) {
+    var client = http.createClient(registerPort, registerHost), 
+        request;
+    headers['Content-Type']  = 'application/json';
+    request = client.request('GET', '/rest/device/disconnect', headers);
+
+    request.on('response', function(response) {
+        if (response.statusCode != 200) {
+            console.log('regstier disconnect status is '+response.statusCode);
+            return;
+        } else {
+            console.log('register disconnect ok');
+        }
+    });
+    request.end();
+
+
+}
 io.configure(function(){
     io.set('authorization', function(data, callback){
         var session, decipher;
@@ -65,8 +79,8 @@ io.configure(function(){
                 return callback('no session cookie' ,false);
             }
             decipher = crypto.createDecipher('aes-128-ecb', key);
-	    session = decipher.update(data.cookie['S'] ,'hex','utf8')
-	    session += decipher.final('utf8')
+            session = decipher.update(data.cookie['S'] ,'hex','utf8')
+            session += decipher.final('utf8')
             if (cookie == null) {
                 return callback('no cookie decrypted' ,false);
             } else {
@@ -87,8 +101,9 @@ io.sockets.on('connection', function (socket) {
     var id = socket.handshake.session.split(':')[0];
     pool[id] = socket;
     console.log('new connection sesion id is '+ id);
-    register_connect(socket.handshake.headers.cookie);
+    register_connect(socket.handshake.headers);
     socket.on('disconnect', function(){
+        register_disconnect(socket.handshake.headers);
         delete pool[id];
     });
 });
