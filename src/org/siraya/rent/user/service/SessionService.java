@@ -139,6 +139,7 @@ public class SessionService implements ISessionService {
 					RentException.RentErrorCode.ErrorInvalidParameter,
 					"callback is null");
 		}
+		session.setOnlineStatus(1);
 		this.sessionDao.updateOnlineStatus(session);
 		UserOnlineStatus user = new UserOnlineStatus();
 		user.setId(session.getUserId());
