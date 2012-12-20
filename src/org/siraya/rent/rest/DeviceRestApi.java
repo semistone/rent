@@ -41,8 +41,7 @@ public class DeviceRestApi {
 	}
 
 	@GET
-	@Path("/connect/#{callback}")
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/connect/{callback}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response connect(@PathParam("callback") String callback) {
 		logger.debug("connect");
@@ -55,9 +54,8 @@ public class DeviceRestApi {
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
 	}
 
-	@PUT
+	@GET
 	@Path("/disconnect")
-	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response disconnect(@PathParam("id") String id) {
 		logger.debug("disconnect");
