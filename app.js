@@ -9,8 +9,11 @@ var app = require('http').createServer(handler),
     registerPort = 8080,
     logger  = io.log,
     listenPort = 9090,
-    callback = '127.0.0.1:'+listenPort;
-     
+    callback;
+
+listenPort = process.argv[2];     
+callback = '127.0.0.1:'+listenPort;
+logger.info('listen port is ' + listenPort);
 app.listen(listenPort);
 
 function handler(req, res) {
@@ -90,7 +93,7 @@ io.configure(function(){
     });
 });
 io.sockets.on('connection', function (socket) {
-    var id = socket.handshake.session.split(':')[0];
+    var id = socket.handshake.session.split(':')[2];
     socket.join(id);
     logger.info('new connection join id is '+ id);
     register_connect(socket.handshake.headers);
