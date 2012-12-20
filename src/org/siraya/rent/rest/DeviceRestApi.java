@@ -40,30 +40,28 @@ public class DeviceRestApi {
 		}
 	}
 
-	@PUT
-	@Path("/connect/#{id}")
+	@GET
+	@Path("/connect/#{callback}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response connect(@PathParam("id") String id,
-			Map<String, String> input) {
+	public Response connect(@PathParam("callback") String callback) {
 		logger.debug("connect");
-		Session session = new Session();
-		session.setId(id);
-		session.setUserId(userAuthorizeData.getUserId());
-		session.setCallback(input.get("callback"));
+		Session session = userAuthorizeData.getSession();
+		if (session.getCallback() != null) {
+			return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
+		}
+		session.setCallback(callback);		
 		sessionService.connect(session);
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
 	}
 
 	@PUT
-	@Path("/disconnect/#{id}")
+	@Path("/disconnect")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response disconnect(@PathParam("id") String id) {
 		logger.debug("disconnect");
-		Session session = new Session();
-		session.setId(id);
-		session.setUserId(userAuthorizeData.getUserId());
+		Session session = userAuthorizeData.getSession();
 		sessionService.disconnect(session);
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
 	}

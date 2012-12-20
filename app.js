@@ -7,9 +7,11 @@ var app = require('http').createServer(handler),
     key = 'thebestsecretkey',
     registerHost = 'localhost',
     registerPort = 8080,
-    logger  = io.log;
+    logger  = io.log,
+    listenPort = 9090,
+    callback = '127.0.0.1:'+listenPort;
      
-app.listen(9090);
+app.listen(listenPort);
 
 function handler(req, res) {
     var cmd = url.parse(req.url, true).pathname.substr(1), id, body = '';
@@ -32,7 +34,7 @@ function register_connect(headers) {
     var client = http.createClient(registerPort, registerHost), 
         request;
     headers['Content-Type']  = 'application/json';
-    request = client.request('GET', '/rest/device/connect', headers);
+    request = client.request('GET', '/rest/device/connect/'+callback, headers);
 
     request.on('response', function(response) {
         if (response.statusCode != 200) {

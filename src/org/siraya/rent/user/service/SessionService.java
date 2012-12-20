@@ -151,6 +151,7 @@ public class SessionService implements ISessionService {
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false)
 	public void disconnect(Session session) {
 		session.setOnlineStatus(0);
+		session.setCallback(null);
 		this.sessionDao.updateOnlineStatus(session);
 		int count = this.sessionDao.getUserOnlineStatusFromSessions(session
 				.getUserId());
