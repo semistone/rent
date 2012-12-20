@@ -1,5 +1,6 @@
 package org.siraya.rent.user.service;
 import java.util.HashMap;
+import org.siraya.rent.user.dao.IUserOnlineStatusDao;
 import java.util.List;
 import java.util.Map;
 
@@ -15,9 +16,7 @@ import org.siraya.rent.utils.IApplicationConfig;
 import org.junit.Test;
 import org.siraya.rent.filter.UserRole;
 import org.siraya.rent.mobile.service.IMobileGatewayService;
-import org.siraya.rent.pojo.Device;
-import org.siraya.rent.pojo.Session;
-import org.siraya.rent.pojo.User;
+import org.siraya.rent.pojo.*;
 public class TestSessionService {
 	SessionService sessionService;
 	private boolean isMock = true;
@@ -25,6 +24,7 @@ public class TestSessionService {
 	private Session session;
 	private IApplicationConfig config;
 	private ISessionDao sessionDao; 
+	private IUserOnlineStatusDao userOnlineStatusDao;
 	private IRoleDao roleDao;
 	private IDeviceDao deviceDao; 
 	private List<Role> roles;
@@ -39,9 +39,11 @@ public class TestSessionService {
 			this.sessionDao = context.mock(ISessionDao.class);
 			this.roleDao = context.mock(IRoleDao.class);
 			this.deviceDao = context.mock(IDeviceDao.class);
+			this.userOnlineStatusDao = context.mock(IUserOnlineStatusDao.class);
 			this.sessionService.setDeviceDao(deviceDao);
 			this.sessionService.setSessionDao(sessionDao);
 			this.sessionService.setRoleDao(roleDao);
+			this.sessionService.setUserOnlineStatusDao(userOnlineStatusDao);
 			device = new Device();
 			device.setId("testid ");
 			device.setUserId("userid");
@@ -52,6 +54,7 @@ public class TestSessionService {
 			roles.add(new Role("x", UserRole.UserRoleId.ADMIN));
 			roles.add(new Role("x", UserRole.UserRoleId.ROOT));
 			session = new Session();
+			session.setCallback("http://127.0.0.2");
 			session.setDeviceId(device.getId());
 			session.setUserId(device.getUserId());
 			session.genId();
@@ -91,5 +94,39 @@ public class TestSessionService {
 			});
 		}
 		sessionService.getRoles(session.getUserId());
+	}
+
+	@Test
+	public void testConnect() {
+		context.checking(new Expectations() {
+			{
+				one(sessionDao).updateOnlineStatus(session);
+				one(userOnlineStatusDao).updateOnlineStatus(
+						with(any(UserOnlineStatus.class)));
+				will(returnValue(0));
+				one(userOnlineStatusDao).insert(
+						with(any(UserOnlineStatus.class)));
+
+			}
+		});
+		sessionService.connect(session);
+
+	}
+
+	@Test
+	public void testDisconnect() {
+		context.checking(new Expectations() {
+			{
+				one(sessionDao).updateOnlineStatus(session);
+				one(sessionDao).getUserOnlineStatusFromSessions(
+						session.getUserId());
+				will(returnValue(0));
+				one(userOnlineStatusDao).updateOnlineStatus(
+						with(any(UserOnlineStatus.class)));
+				will(returnValue(0));
+			}
+		});
+		sessionService.disconnect(session);
+
 	}
 }

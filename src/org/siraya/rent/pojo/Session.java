@@ -17,8 +17,10 @@ public class Session {
 	private long created;
 	private String city;
 	private String country;
-
-
+	
+	private int onlineStatus;
+	@JsonIgnore
+	private String callback;
 
 	@JsonIgnore
 	private boolean isChange = false;
@@ -32,7 +34,12 @@ public class Session {
 		this.isChange = true;
 		this.roles = new java.util.ArrayList<Integer>();
 	}
-	
+	public String getCallback() {
+		return callback;
+	}
+	public void setCallback(String callback) {
+		this.callback = callback;
+	}
 	@JsonIgnore
 	public boolean isNew() {
 		return isNew;
@@ -151,4 +158,11 @@ public class Session {
 	public void setCountry(String country) {
 		this.country = country;
 	}
+	
+	public int getOnlineStatus() {
+		return onlineStatus;
+	}
+	public void setOnlineStatus(int onlineStatus) {
+		this.onlineStatus = onlineStatus;
+	}	
 }

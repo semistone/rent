@@ -7,5 +7,6 @@
     <result column="DEVICE_ID" jdbcType="VARCHAR" property="deviceId" />
     <result column="LAST_LOGIN_IP" jdbcType="VARCHAR" property="lastLoginIp" />
     <result column="CREATED" jdbcType="DECIMAL" property="created" />
+    <result column="CALLBACK" jdbcType="VARCHAR" property="callback" />
   </resultMap>
 </mapper>

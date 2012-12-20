@@ -10,4 +10,9 @@ public interface ISessionService {
 	public List<Session> getSessions(Device device,int limit ,int offset);
 
 	public List<Role> getRoles(String userId);
+	
+	public void connect(Session session);
+
+	public void disconnect(Session session);
+
 }

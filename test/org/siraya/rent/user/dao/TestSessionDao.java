@@ -26,6 +26,8 @@ public class TestSessionDao  extends AbstractJUnit4SpringContextTests{
     	session.setCreated(time/1000);
     	session.setCity("Taipei");
     	session.setCountry("Taiwan");
+    	session.setCallback("http://127.0.0.1:8080");
+    	session.setOnlineStatus(1);
 	}
 	
     @Test   
@@ -37,5 +39,10 @@ public class TestSessionDao  extends AbstractJUnit4SpringContextTests{
 		
 		Session session2=sessionDao.getSession(session.getId());
 		Assert.assertEquals(session.getDeviceId(), session2.getDeviceId());
+		
+		sessionDao.updateOnlineStatus(session);
+		int count = sessionDao.getUserOnlineStatusFromSessions(session
+				.getUserId());
+		Assert.assertEquals(1, count);
     }
 }

@@ -78,4 +78,5 @@ public interface IDeviceDao {
     @Select("select * from DEVICE where STATUS ='5' order by MODIFIED desc limit 10")     
     @ResultMap("rent.mapper.DeviceResultMap")
     public List<Device> getSsoDevices();
+
 }
