@@ -11,10 +11,6 @@ var app = require('http').createServer(handler),
     listenPort = 9090,
     callback;
 
-listenPort = process.argv[2];     
-callback = '127.0.0.1:'+listenPort;
-logger.info('listen port is ' + listenPort);
-app.listen(listenPort);
 
 function handler(req, res) {
     var cmd = url.parse(req.url, true).pathname.substr(1), id, body = '';
@@ -27,7 +23,7 @@ function handler(req, res) {
     });
     req.on('end', function(){
         logger.debug('body is '+body);
-	io.sockets.in(id).emit(cmd, JSON.parse(body));
+        io.sockets.in(id).emit(cmd, JSON.parse(body));
         res.writeHead(200, {"Content-Type": "text/plain"});
         res.end('Hello '+ id + '\n' );
     });
@@ -98,7 +94,16 @@ io.sockets.on('connection', function (socket) {
     logger.info('new connection join id is '+ id);
     register_connect(socket.handshake.headers);
     socket.on('disconnect', function(){
-        register_disconnect(socket.handshake.headers);
-	socket.leave(id);
+        logger.debug('disconnect '+id);
+        socket.leave(id);
+        if (io.sockets.in(id).clients().length == 0){
+            register_disconnect(socket.handshake.headers);
+        }
     });
 });
+(function(){
+    listenPort = process.argv[2];     
+    callback = '127.0.0.1:'+listenPort;
+    logger.info('listen port is ' + listenPort);
+    app.listen(listenPort);
+})()
