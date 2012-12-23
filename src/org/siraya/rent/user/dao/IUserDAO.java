@@ -42,4 +42,7 @@ public interface IUserDAO {
     
     @Update("update USER set LOGIN_ID=#{loginId}, LOGIN_TYPE=#{loginType}, NAME=#{name}, MODIFIED=#{modified} where ID = #{id} and LOGIN_TYPE is null and LOGIN_ID is null")
     public int initLoginIdAndType(User user);
+    
+    @Update("UPDATE USER SET EMAIL=#{email}, LANG=#{lang}, CC=#{cc}, NAME=#{name}, TIMEZONE=#{timezone},MODIFIED=#{modified} WHERE ID=#{id}")
+    public int updateProfile(User user);
 }

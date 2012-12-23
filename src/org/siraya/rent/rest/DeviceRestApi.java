@@ -101,6 +101,7 @@ public class DeviceRestApi {
 
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public Response delete(
 			@DefaultValue("") @QueryParam("deviceId") String deviceId)
 			throws Exception {
@@ -209,6 +210,7 @@ public class DeviceRestApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/list_sessions")
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public List<Session> getSessions(@QueryParam("deviceId") String deviceId,
 			@DefaultValue("20") @QueryParam("limit") int limit,
 			@DefaultValue("0") @QueryParam("offset") int offset) {
@@ -290,6 +292,7 @@ public class DeviceRestApi {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/mobile_auth_request")
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public Response mobileAuthRequest(MobileAuthRequest request) {
 		Set<ConstraintViolation<MobileAuthRequest>> constraintViolations = validator
 				.validate(request);
@@ -319,6 +322,7 @@ public class DeviceRestApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/list_devices")
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public List<Device> deviceList(
 			@DefaultValue("20") @QueryParam("limit") int limit,
 			@DefaultValue("0") @QueryParam("offset") int offset) {

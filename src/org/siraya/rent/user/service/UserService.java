@@ -593,6 +593,10 @@ public class UserService implements IUserService {
 		return request;
 	}
 	
+	public void updateProfile(User user){
+		this.userDao.updateProfile(user);
+	}
+	
 	public IMobileAuthRequestDao getMobileAuthRequestDao() {
 		return mobileAuthRequestDao;
 	}
