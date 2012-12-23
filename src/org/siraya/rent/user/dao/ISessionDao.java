@@ -30,5 +30,5 @@ public interface ISessionDao {
     public int getUserOnlineStatusFromSessions(@Param("userId")String userId);
 
     @Select("select distinct(CALLBACK) from SESSION where ONLINE_STATUS='1' and USER_ID = #{userId}")
-    public List<String> callbacks(String userId);
+    public List<String> callbacks(@Param("userId")String userId);
 }

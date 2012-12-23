@@ -3,8 +3,10 @@ package org.siraya.rent.user.dao;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.Select;
 import org.siraya.rent.pojo.UserOnlineStatus;
 import org.springframework.stereotype.Repository;
+import java.util.List;
 @Repository("userOnlineStatusDao")
 public interface IUserOnlineStatusDao {
 	
@@ -13,6 +15,8 @@ public interface IUserOnlineStatusDao {
 
     @Insert("insert into USER_ONLINE_STATUS values(#{id}, #{onlineStatus})")
     public void insert(UserOnlineStatus user);
-    
 
+
+    @Select("select * from USER_ONLINE_STATUS where ID IN (#{ids})") 
+    public List<UserOnlineStatus> list(@Param("ids") String[] ids);
 }

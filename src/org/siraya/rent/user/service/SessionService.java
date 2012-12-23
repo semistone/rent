@@ -4,9 +4,11 @@ import org.siraya.rent.user.dao.IRoleDao;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.pojo.Session;
 import org.siraya.rent.pojo.User;
-import org.siraya.rent.user.dao.ISessionDao;
-import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.user.dao.IUserOnlineStatusDao;
+import org.siraya.rent.user.dao.ISessionDao;
+import org.siraya.rent.user.dao.IUserOnlineStatusDao;
+import org.siraya.rent.user.dao.IDeviceDao;
+import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.utils.RentException;
 import org.slf4j.Logger;
@@ -167,6 +169,11 @@ public class SessionService implements ISessionService {
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
     public List<String> callbacks(String userId){
 		return this.sessionDao.callbacks(userId);
+    }
+
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<UserOnlineStatus> list(String[] ids){
+		return this.userOnlineStatusDao.list(ids);
     }
 
     public IUserOnlineStatusDao getUserOnlineStatusDao() {

@@ -1,6 +1,5 @@
 package org.siraya.rent.user.service;
-import org.siraya.rent.pojo.Role;
-import org.siraya.rent.pojo.Session;
+import org.siraya.rent.pojo.*;
 import java.util.List;
 import org.siraya.rent.pojo.Device;
 public interface ISessionService {
@@ -16,4 +15,6 @@ public interface ISessionService {
 	public void disconnect(Session session);
 
     public List<String> callbacks(String userId);
+
+    public List<UserOnlineStatus> list(String[] ids);
 }
