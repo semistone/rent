@@ -5,10 +5,10 @@ define([
   'logger',
   './namespace.user'
 ], function($, Backbone, RENT,logger) {
-var UserModel;
-UserModel = Backbone.Model.extend({
+var DeviceModel;
+DeviceModel = Backbone.Model.extend({
 	initialize:function(){
-		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/';
+		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/device/';
 	},
 	new_device:function(options){
 		Backbone.sync("create",this, options);	
@@ -111,5 +111,5 @@ UserModel = Backbone.Model.extend({
 		Backbone.sync('fetch', this, _options);
 	}
 });
-return UserModel;
+return DeviceModel;
 });

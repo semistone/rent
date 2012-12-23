@@ -4,13 +4,13 @@ define([
   'Backbone',
   'RentCommon',
   'logger',
-  './model.user'
-  ], function($, _, Backbone, RENT, logger, UserModel) {
+  './model.device'
+  ], function($, _, Backbone, RENT, logger, DeviceModel) {
 var DeviceCollection;
 DeviceCollection = Backbone.Collection.extend({
-	model: UserModel,
+	model: DeviceModel,
 	initialize:function(){
-		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/list_devices';
+		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/device/list_devices';
 	}
 	 
 });

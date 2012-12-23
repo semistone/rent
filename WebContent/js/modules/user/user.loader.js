@@ -3,10 +3,10 @@ define([
   'jQuery',
   'logger',
   'RentCommon',
-  './model.user'
-], function($, logger, RENT, UserModel){
+  './model.device'
+], function($, logger, RENT, DeviceModel){
 	var initialize,
-		model = new UserModel();
+		model = new DeviceModel();
 	$(function(){
 		RENT.bindLoadingPage("#supersized-loader");
 	});

@@ -10,15 +10,15 @@ define([
 	RENT.setLangRes(RENT.getLang(), ['rent_user']);
 	user_view = new User({el:'#main'});
 	
-	main_view=function(user_model, subroute){
+	main_view=function(DeviceModel, subroute){
 		logger.debug('show main view');
 		require(['modules/main/view.main', 'modules/user/view.navbar'],
 			function(RegisterMainView, NavBarView){
 				var nav_bar, user, main_view;
-				nav_bar = new NavBarView({el:'#navbar',model:user_model});
+				nav_bar = new NavBarView({el:'#navbar',model:DeviceModel});
 				main_view = new RegisterMainView({
 					el : '#main',
-					model: user_model,
+					model: DeviceModel,
 					subroute: subroute
 				});
 				main_view.on('logoff',function(){

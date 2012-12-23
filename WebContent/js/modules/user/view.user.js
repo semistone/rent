@@ -9,9 +9,9 @@ define([
   'RentCommon',
   'logger',
   'text!template/user/tmpl.register.phtml',
-  './model.user',
+  './model.device',
   './namespace.user'
-  ], function($, _, Backbone, Mustache, RENT, logger,template, UserModel) {
+  ], function($, _, Backbone, Mustache, RENT, logger,template, DeviceModel) {
 
 var $template = $('<div>').append(template),RegisterView;
 RegisterView = Backbone.View.extend({
@@ -19,7 +19,7 @@ RegisterView = Backbone.View.extend({
 	initialize : function() {
 		_.bindAll(this, 'render', 'error','change_view','verify_success','logoff', 'login');
 		if (this.model == null) {
-			this.model = new UserModel();
+			this.model = new DeviceModel();
 		}
 		this.model.on('change',this.render);
 		this.model.on('change_view',this.change_view);

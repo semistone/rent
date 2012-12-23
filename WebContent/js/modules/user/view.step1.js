@@ -9,8 +9,8 @@ define([
   'RentCommon',
   'logger',
   'text!template/user/tmpl.step1.phtml',
-  './model.user'
-  ], function($, _, Backbone, Mustache, RENT, logger,template, UserModel) {
+  './model.device'
+  ], function($, _, Backbone, Mustache, RENT, logger,template, DeviceModel) {
 
 var $template = $('<div>').append(template),RegisterStep1View;
 //
@@ -22,7 +22,7 @@ RegisterStep1View = Backbone.View.extend({
 				'success', 'error' ,'validate');
 		this.tmpl = $template.find('#tmpl_register_step1').html();
 		if (this.model == null) {
-			this.model = new UserModel();
+			this.model = new DeviceModel();
 		}
 	},
 	render: function(){

@@ -43,7 +43,7 @@ import javax.ws.rs.DefaultValue;
 import junit.framework.Assert;
 
 @Component("userRestApi")
-@Path("/user")
+@Path("/device")
 public class UserRestApi {
 	@Autowired
 	private IUserService userService;
