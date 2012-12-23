@@ -16,6 +16,7 @@ require.config({
 		Bootstrap : 'libs/bootstrap/bootstrap.2.1.1',
 		Facebook : '//connect.facebook.net/en_US/all',
 		GoogleMap: 'libs/google/map',
+		SocketIO :'/socket.io/socket.io.js',
 		template: '../html'
 	},
 	baseUrl:'js/',

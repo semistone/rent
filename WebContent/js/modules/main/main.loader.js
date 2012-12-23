@@ -44,7 +44,10 @@ define([
 		if (is_initialize == false) {
 			user_view.on('login_success', function(model){
 				logger.debug('new register view');
-				main_view(model,subroute);		
+				main_view(model,subroute);
+				require(['../general/model.socketio'], function(socket){
+					logger.debug('init socket io');
+				});
 			});
 			is_initialize = true;
 		}
