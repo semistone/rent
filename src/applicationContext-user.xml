@@ -22,9 +22,6 @@
     <bean id="cookieExtractFilter" class="org.siraya.rent.filter.CookieExtractFilter" scope="singleton">
         <property name="userAuthorizeData" ref="userAuthorizeData"/>
     </bean>
-    <bean id="userRestApi" class="org.siraya.rent.rest.UserRestApi" scope="singleton">
-        <property name="userAuthorizeData" ref="userAuthorizeData"/>
-    </bean>
     <context:component-scan base-package="org.siraya.rent.utils;org.siraya.rent.user;org.siraya.rent.rest;org.siraya.rent.page;
     org.siraya.rent.filter" />
 
