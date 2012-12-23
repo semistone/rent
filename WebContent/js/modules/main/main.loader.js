@@ -13,10 +13,10 @@ define([
 	main_view=function(DeviceModel, subroute){
 		logger.debug('show main view');
 		require(['modules/main/view.main', 'modules/user/view.navbar'],
-			function(RegisterMainView, NavBarView){
+			function(MainView, NavBarView){
 				var nav_bar, user, main_view;
 				nav_bar = new NavBarView({el:'#navbar',model:DeviceModel});
-				main_view = new RegisterMainView({
+				main_view = new MainView({
 					el : '#main',
 					model: DeviceModel,
 					subroute: subroute

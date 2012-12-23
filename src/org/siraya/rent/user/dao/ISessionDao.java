@@ -28,4 +28,7 @@ public interface ISessionDao {
     
     @Select("select count(*) from SESSION where ONLINE_STATUS='1' and USER_ID = #{userId}")
     public int getUserOnlineStatusFromSessions(@Param("userId")String userId);
+
+    @Select("select distinct(CALLBACK) from SESSION where ONLINE_STATUS='1' and USER_ID = #{userId}")
+    public List<String> callbacks(String userId);
 }

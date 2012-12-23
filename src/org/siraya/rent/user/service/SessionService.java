@@ -164,11 +164,16 @@ public class SessionService implements ISessionService {
 		}
 	}
 	
-	public IUserOnlineStatusDao getUserOnlineStatusDao() {
-		return userOnlineStatusDao;
-	}
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<String> callbacks(String userId){
+		return this.sessionDao.callbacks(userId);
+    }
 
-	public void setUserOnlineStatusDao(IUserOnlineStatusDao userOnlineStatusDao) {
-		this.userOnlineStatusDao = userOnlineStatusDao;
-	}
+    public IUserOnlineStatusDao getUserOnlineStatusDao() {
+        return userOnlineStatusDao;
+    }
+
+    public void setUserOnlineStatusDao(IUserOnlineStatusDao userOnlineStatusDao) {
+        this.userOnlineStatusDao = userOnlineStatusDao;
+    }
 }

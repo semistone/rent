@@ -6,10 +6,10 @@ define([
   'logger',
   'text!template/general/tmpl.general.phtml'
   ], function($, _, Backbone, Mustache, logger,template) {
-var ErrorView;
+var ErrorView, $template = $('<div>').append(template);
 ErrorView = Backbone.View.extend({
 		initialize : function() {
-			this.tmpl = $template.find('#tmpl_register_error').html();
+			this.tmpl = $template.find('#tmpl_oops_error').html();
 		},
 		render:function(){
 			this.$el.html(this.tmpl);

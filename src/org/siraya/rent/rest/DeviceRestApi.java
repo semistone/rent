@@ -64,6 +64,7 @@ public class DeviceRestApi {
 	private static Map<String, String> OK;
 
 	public DeviceRestApi() {
+    	logger.info("new device rest api");
 		if (OK == null) {
 			OK = new HashMap<String, String>();
 			OK.put("status", "SUCCESS");
@@ -472,6 +473,7 @@ public class DeviceRestApi {
 	@GET
 	@Path("/connect/{callback}")
 	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public Response connect(@PathParam("callback") String callback) {
 		logger.debug("connect");
 		Session session = userAuthorizeData.getSession();
@@ -486,6 +488,7 @@ public class DeviceRestApi {
 	@GET
 	@Path("/disconnect")
 	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public Response disconnect(@PathParam("id") String id) {
 		logger.debug("disconnect");
 		Session session = userAuthorizeData.getSession();
@@ -493,6 +496,14 @@ public class DeviceRestApi {
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
 	}
 
+	@GET
+	@Path("/callbacks/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
+	public List<String> callbacks(@PathParam("userId") String userId) {
+		logger.debug("callbacks");
+		return sessionService.callbacks(userId);
+	}
 	
 	void setUserService(IUserService userService) {
 		this.userService = userService;

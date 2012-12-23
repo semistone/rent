@@ -67,7 +67,7 @@
 	</target>
 
 	<!-- COMPILE -->
-	<target name="compile" depends="prepare">
+	<target name="compile" depends="">
 		<echo>=== COMPILE ===</echo>
 
 		<echo>Compiling ${src.dir} files ...</echo>

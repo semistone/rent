@@ -57,7 +57,7 @@ RegisterView = Backbone.View.extend({
 			var _this = this;
 			require(['modules/general/view.oops'], function(ErrorView){
 				new ErrorView({
-					el : this.el
+					el : _this.el
 				}).render();				
 			});
 		}

@@ -15,4 +15,5 @@ public interface ISessionService {
 
 	public void disconnect(Session session);
 
+    public List<String> callbacks(String userId);
 }

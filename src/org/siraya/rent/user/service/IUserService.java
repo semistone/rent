@@ -86,5 +86,4 @@ public interface IUserService {
 	public void nameDevice(Device device);
 	
 
-
 }

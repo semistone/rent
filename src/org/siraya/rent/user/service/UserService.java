@@ -576,6 +576,7 @@ public class UserService implements IUserService {
 		return this.deviceDao.getSsoDevices();
 	}
 	
+
 	public MobileAuthRequest getMobileAuthRequest(String requestId) {
 		MobileAuthRequest request = this.mobileAuthRequestDao.get(requestId);
 		if (request == null) {
