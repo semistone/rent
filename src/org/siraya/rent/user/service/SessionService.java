@@ -172,8 +172,14 @@ public class SessionService implements ISessionService {
     }
 
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<UserOnlineStatus> list(String[] ids){
-		return this.userOnlineStatusDao.list(ids);
+    public List<UserOnlineStatus> list(List<String> ids){
+    	java.lang.StringBuffer buf=new java.lang.StringBuffer();
+    	for(String tmp:ids){
+    		buf.append(tmp);
+    		buf.append(",");
+    	}
+    	String tmpids = buf.substring(0, buf.length()-1);
+    	return this.userOnlineStatusDao.list(tmpids);
     }
 
     public IUserOnlineStatusDao getUserOnlineStatusDao() {

@@ -17,6 +17,6 @@ public interface IUserOnlineStatusDao {
     public void insert(UserOnlineStatus user);
 
 
-    @Select("select * from USER_ONLINE_STATUS where ID IN (#{ids})") 
-    public List<UserOnlineStatus> list(@Param("ids") String[] ids);
+    @Select("select * from USER_ONLINE_STATUS where FIND_IN_SET(ID, #{ids}) <> 0") 
+    public List<UserOnlineStatus> list(@Param("ids") String ids);
 }

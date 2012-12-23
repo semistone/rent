@@ -1,6 +1,5 @@
 package org.siraya.rent.rest;
 
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -29,22 +28,23 @@ public class UserRestApi {
 	private IUserService userService;
 	@Autowired
 	private ISessionService sessionService;
-    private static Map<String,String> OK;
-	private static Logger logger = LoggerFactory
-			.getLogger(UserRestApi.class);
-    public UserRestApi(){
-    	logger.debug("new user rest api");
-    	if (OK == null) {
-    		OK = new HashMap<String,String>();
-    		OK.put("status", "SUCCESS");
-    	}
-    }
+	private static Map<String, String> OK;
+	private static Logger logger = LoggerFactory.getLogger(UserRestApi.class);
+
+	public UserRestApi() {
+		logger.debug("new user rest api");
+		if (OK == null) {
+			OK = new HashMap<String, String>();
+			OK.put("status", "SUCCESS");
+		}
+	}
+
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/online_status")
-	public List<UserOnlineStatus> onlineStatus(List<String> ids){
-        return sessionService.list(ids);
+	public List<UserOnlineStatus> onlineStatus(List<String> ids) {
+		return sessionService.list(ids);
 	}
-	
+
 }
