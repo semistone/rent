@@ -45,7 +45,27 @@ function register_connect(headers) {
     });
     request.end();
 };
+function fetch_callback(headers, id, fn){
+    var client = http.createClient(registerPort, registerHost), 
+        request ;
+    headers['Content-Type']  = 'application/json';
+    request = client.request('GET', '/rest/device/callbacks/'+id, headers);
 
+    request.on('response', function(response) {
+        if (response.statusCode != 200) {
+            logger.debug('fetch callback error'+response.statusCode);
+            fn(response.statusCode);
+            return;
+        } else {
+            response.on('data', function (chunk) {
+                logger.debug('fetch callbacks is '+chunk);
+                fn(200, JSON.parse(chunk));
+            });
+        }
+    });
+    request.end();
+
+};
 function register_disconnect(headers) {
     var client = http.createClient(registerPort, registerHost), 
         request;
@@ -89,10 +109,27 @@ io.configure(function(){
     });
 });
 io.sockets.on('connection', function (socket) {
-    var id = socket.handshake.session.split(':')[2];
+    var id = socket.handshake.session.split(':')[2],
+        headers = socket.handshake.headers;
     socket.join(id);
     logger.info('new connection join id is '+ id);
-    register_connect(socket.handshake.headers);
+    register_connect(headers);
+    socket.on('msg', function(data, fn){
+        logger.debug('msg to '+data.to);
+        fetch_callback(headers, data.to, function(status, callbackData){
+             if (status == 200) {
+                 for(var i in callbackData) {
+                     logger.debug('callback in '+callbackData[i]);
+                     if (callback == callbackData[i]) {
+                         logger.debug('send alert to '+data.to+ ' and conetnt is '+data.content);
+                         io.sockets.in(data.to).emit('msg', {content: data.content});
+                     } else {
+                         logger.debug('chat server not match to '+callbackData[i]);
+                     }
+                 }
+             }   
+        });
+    });
     socket.on('disconnect', function(){
         logger.debug('disconnect '+id);
         socket.leave(id);

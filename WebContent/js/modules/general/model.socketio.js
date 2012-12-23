@@ -5,9 +5,9 @@ define([
 ], function(io, RENT, logger) {
 var socket;
 socket = io.connect('/');
-socket.on('alert', function (data) {
-	logger.info('notify '+data.msg);
-	alert(data.msg);
+socket.on('msg', function (data) {
+	logger.info('notify '+data.content);
+	alert(data.content);
 });		
 return socket;
 });

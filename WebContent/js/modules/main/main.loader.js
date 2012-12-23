@@ -27,10 +27,10 @@ define([
 				//
 				// add fb module
 				//
-				user = user_model.get('user');
+				user = DeviceModel.get('user');
 				if (user != undefined && user.loginType == 'FB') {
 					var id = null;
-					id = user_model.get('user').loginId;
+					id = DeviceModel.get('user').loginId;
 					logger.debug('loginType is FB and user.loginId is '+id);
 					require(['modules/user/model.fb'],function(FBModel){
 						nav_bar.initFBModel(new FBModel({id:id}));
@@ -45,7 +45,7 @@ define([
 			user_view.on('login_success', function(model){
 				logger.debug('new register view');
 				main_view(model,subroute);
-				require(['../general/model.socketio'], function(socket){
+				require(['modules/general/model.socketio'], function(socket){
 					logger.debug('init socket io');
 				});
 			});
