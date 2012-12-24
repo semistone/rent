@@ -8,7 +8,7 @@ define([
 var SessionCollection;
 SessionCollection = Backbone.Collection.extend({
 	initialize:function(){
-		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/list_sessions';
+		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/device/list_sessions';
 	}
 	 
 });
