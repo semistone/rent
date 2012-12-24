@@ -174,4 +174,11 @@
             <mapper type="glob" from="*.phtml" to="*.phtml.js"/>               
         </apply>
     </target>
+    <target name="uglify-main">
+        <exec executable="node">
+            <arg value="r.js" />
+            <arg value="-o" />
+            <arg value="build.js" />
+        </exec>
+    </target>
 </project>
