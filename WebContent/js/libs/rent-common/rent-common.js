@@ -49,7 +49,7 @@ var RENT = {
     },
 
     simpleDialog : function(title, msg) {
-		require(['Mustache','text!../html/general/tmpl.general.html','Bootstrap'],function(Mustache, template){
+		require(['Mustache','text!template/general/tmpl.general.phtml','Bootstrap'],function(Mustache, template){
 			var $template = $('<div>').html(template);
 			var dialog= Mustache.to_html($template.find('#tmpl_simple_dialog').html(), {
 				title:title,msg:msg});
