@@ -55,7 +55,7 @@ require.config({
 	}
 });
 
-require(['jQuery','Underscore','Backbone', 'logger'],function($, _, Backbone, logger){
+require(['jQuery','Underscore','Backbone', 'logger', 'RentCommon', 'Mustache'],function($, _, Backbone, logger){
 	var defaultRoute = function(){
 		var module , subroute = null;
 		if (arguments.length == 2) {
