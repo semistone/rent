@@ -56,6 +56,8 @@
     </div>
 </div>
 </footer>
-<script data-main="<c:out value='${cdn}'/>/js/main" src="<c:out value='${cdn}'/>/js/libs/require/require.js"></script>  
+<script src="<c:out value='${cdn}'/>/js/libs/require/require.js"></script>  
+<script>require.config({baseUrl:'<c:out value='${cdn}'/>/js/'});</script>
+<script src="<c:out value='${cdn}'/>/js/main.js"></script>
 </body>
 </html>

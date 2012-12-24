@@ -19,7 +19,6 @@ require.config({
 		SocketIO :'../socket.io/socket.io',
 		template: '../html'
 	},
-	baseUrl:'js/',
 	shim : {
 		jQuery : {
 			exports : "$"
