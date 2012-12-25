@@ -3,12 +3,14 @@ define([
   'Backbone',
   'RentCommon',
   'logger',
+  './model.user',
   './namespace.user'
-], function($, Backbone, RENT,logger) {
+], function($, Backbone, RENT,logger, UserModel) {
 var DeviceModel;
 DeviceModel = Backbone.Model.extend({
 	initialize:function(){
 		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/device/';
+		this.userModel = new UserModel();
 	},
 	new_device:function(options){
 		Backbone.sync("create",this, options);	
@@ -69,22 +71,15 @@ DeviceModel = Backbone.Model.extend({
 		});
 		Backbone.sync("create",this, options);	
 	},
+	get_user:function(){
+		this.userModel.set(this.get('user'), {silent:true});
+		return this.userModel;
+	},
 	sign_off:function(options){
 		options = $.extend(options, {
 			url : this.url + 'sign_off'
 		});
 		Backbone.sync("fetch",this, options);	
-	},
-	link_facebook:function(id, name,options){
-		logger.debug('link facebook');
-		var user = this.get('user');
-		user.loginType = 'FB';
-		user.loginId = id;
-		user.name = name;
-		options = $.extend(options, {
-			url : this.url + 'link_facebook'
-		});
-		Backbone.sync("update",this, options);		
 	},
 	get_roles:function(options){
 		logger.debug('get user roles');
