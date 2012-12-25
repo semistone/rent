@@ -25,7 +25,7 @@ var RequestModel = Backbone.Model.extend({
 		Backbone.sync('fetch',this, options);		
 	},
 	apply_sso_application:function(options){
-		logger.debug('link facebook');
+		logger.debug('apply sso application');
 		options = $.extend(options, {
 			url : this.url + 'apply_sso_application'
 		});
