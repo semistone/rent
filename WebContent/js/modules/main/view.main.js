@@ -92,13 +92,14 @@ var RegisterMainView = Backbone.View.extend({
 		if (this.fb == undefined) {
 			require(['modules/user/model.fb'],function(FBModel){
 				var fb = new FBModel();
-				fb.init();
 				_this.fb = fb;
 				//
 				// do login 
 				//
-				_this.fb.login();
-				_this.fb.on('change', do_link_fb);
+				fb.on('change', do_link_fb);
+				fb.on('not_connected',function(){
+					fb.login();
+				});
 			});
 		}
 

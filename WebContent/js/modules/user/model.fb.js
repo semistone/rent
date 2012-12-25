@@ -57,12 +57,13 @@ FBModel = Backbone.Model.extend({
 		FB.getLoginStatus(function(response) {
 			if (response.status === 'connected') {
 				// connected
-				logger.debug('fb connected');
 				_this.set({connected:true},{silent:true});
 				_this.set_response();
+				logger.debug('trigger connected');
+				_this.trigger('connected');
 			}else {
-				logger.debug('fb not connected');
-				_this.trigger('change');
+				logger.debug('trigger not connected');
+				_this.trigger('not_connected');
 			}
 		});
 	},
