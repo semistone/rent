@@ -278,4 +278,17 @@ public class TestUserService {
 		
 		this.userService.applySSOApplication(device);
 	}
+	@Test
+	public void testInitLoginIdAndType(){
+		if (isMock) {
+			context.checking(new Expectations() {
+				{
+					one(userDao).initLoginIdAndType(user);
+					will(returnValue(1));
+				}
+			});
+
+		}
+		this.userService.initLoginIdAndType(user);		
+	}
 }

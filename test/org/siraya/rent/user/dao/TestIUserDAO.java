@@ -49,8 +49,17 @@ public class TestIUserDAO extends AbstractJUnit4SpringContextTests{
     	Assert.assertEquals(user.getId(),user2.getId());
     	Assert.assertEquals(email,user2.getEmail());
     	Assert.assertEquals(email,user3.getEmail());
-
+    	
     }
     
+    @Test
+    public void testInitLoginIdAndType(){
+       	User user=new User();
+       	user.setId("7004b786-07b0-4c7e-9bac-6d3d38bc7a07");
+       	user.setLoginId("831487349");
+       	user.setLoginType("FB");
+       	user.setName("Derma Liu");
+    	int ret=userDao.initLoginIdAndType(user);
+    }
 }
 
