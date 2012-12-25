@@ -35,11 +35,12 @@ var RegisterMainView = Backbone.View.extend({
 		'click #link_to_fb_link' : 'link_fb'
 	},
 	render:function(){
-		this.model.trigger('change_view','main');
-		var device = this.model.toJSON();
-		if (device.user.loginType == 'FB') {
-			device.user.is_fb = true;			
-		}
+        this.model.trigger('change_view','main');
+        var device= $.extend(true, {}, this.model.toJSON());
+        if (device.user.loginType == 'FB') {
+            device.user.is_fb = true;			
+        }
+        alert(this.model.get('user').is_fb);
 		if (device.user.roles && _.contains(device.user.roles,5)) {
 			logger.debug('sso role exist');
 			device.user.is_sso = true;
