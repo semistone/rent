@@ -346,30 +346,6 @@ public class DeviceRestApi {
 		return request;
 	}
 
-	@PUT
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/link_facebook")
-	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
-	public Response linkFacebook(Device device) {
-		User user = device.getUser();
-		if (user == null || user.getLoginId() == null) {
-			throw new RentException(
-					RentException.RentErrorCode.ErrorInvalidParameter,
-					"user not exist");
-		}
-		//
-		// check user match
-		//
-		if (!this.userAuthorizeData.getUserId().equals(user.getId())) {
-			throw new RentException(
-					RentException.RentErrorCode.ErrorPermissionDeny,
-					"user not match");
-		}
-		this.userService.initLoginIdAndType(user);
-		logger.info("link to facebook success");
-		return Response.status(HttpURLConnection.HTTP_OK).entity(this.OK)
-				.build();
-	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
