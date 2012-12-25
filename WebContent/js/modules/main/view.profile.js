@@ -9,28 +9,40 @@ define([
   'RentCommon',
   'logger',
   'text!template/user/tmpl.profile.phtml',
-  '../user/model.device'
-  ], function($, _, Backbone, Mustache, RENT, logger,template, DeviceModel) {
+  '../user/model.user'
+  ], function($, _, Backbone, Mustache, RENT, logger,template, UserModel) {
 var $template = $('<div>').append(template);
 	
 var UserProfileView = Backbone.View.extend({
+	events:{
+		"click #save_profile_link" : "save_profile",	
+	},
 	initialize : function() {
 		_.bindAll(this, 'render' , 'i18n');
 		if (this.model == null) {
-			this.model = new DeviceModel();
+			this.model = new UserModel();
 		}
 		this.model.on('change',this.render);
+		
 	},
 	render : function() {
+		var _this = this, tmpl;
 		logger.debug('render profile');
-		var user = this.model.get('user');
-		if (user.loginType == 'FB') {
-			user.is_fb = true;			
+		
+		if (this.model.get('loginType') == 'FB') {
+			this.model.set({is_fb:true},{silent:true});
 		}
-		var tmpl = $template.find('#tmpl_profile_form').html();
-		this.$el.html(Mustache.to_html(tmpl, user));
-		this.generateCountryOptions(this.$el.find('#lang'), user.lang+'-'+user.cc);
+		tmpl = $template.find('#tmpl_profile_form').html();
+		this.$el.html(Mustache.to_html(tmpl, this.model.toJSON()));
+		this.generateCountryOptions(this.$el.find('#lang'), this.model.get('lang')+'-'+ this.model.get('cc'));
 		this.i18n();
+		
+		RENT.initValidator(function(){
+			_this.$el.find("#profile_form").validate();			
+			_this.$el.find('#email').rules('add', {
+				regex : /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+			});
+		});			
 	},
 	i18n:function(){
 		this.$el.find('#i18n_name').text(
@@ -56,6 +68,19 @@ var UserProfileView = Backbone.View.extend({
 			options[options.length] = option;
 
 		});
+    },
+    save_profile:function(){
+        var formvalidate = this.$el.find('#profile_form').valid();
+        if (!formvalidate) {
+        	logger.error('form validate fail');
+        	return;
+        }
+		this.model.set({
+			name: this.$el.find('#name').val(),
+			email:  this.$el.find('#email').val(),
+			lang:  this.$el.find('#lang').val()
+		},{slient:true});
+		this.model.save();
     }
 });	
 return UserProfileView;
