@@ -14,36 +14,37 @@ define([
 var $template = $('<div>').append(template);
 	
 var UserProfileView = Backbone.View.extend({
-	events:{
-		"click #save_profile_link" : "save_profile",	
-	},
-	initialize : function() {
-		_.bindAll(this, 'render' , 'i18n');
-		if (this.model == null) {
-			this.model = new UserModel();
-		}
-		this.model.on('change',this.render);
+    events:{
+        "click #save_profile_link" : "save_profile",	
+    },
+    initialize : function() {
+        _.bindAll(this, 'render' , 'i18n');
+        if (this.model == null) {
+            this.model = new UserModel();
+        }
+        this.model.on('change',this.render);
+    },
+    render : function() {
+        var _this = this, tmpl, user;
+        logger.debug('render profile');
+        user = this.model.toJSON();
+        user = $.extend({}, this.model.toJSON());
+
+        if (this.model.get('loginType') == 'FB') {
+            user.is_fb = true;
+        }
+        tmpl = $template.find('#tmpl_profile_form').html();
+        this.$el.html(Mustache.to_html(tmpl, user));
+        this.generateCountryOptions(this.$el.find('#lang'), this.model.get('lang')+'-'+ this.model.get('cc'));
+        this.i18n();
 		
-	},
-	render : function() {
-		var _this = this, tmpl;
-		logger.debug('render profile');
-		
-		if (this.model.get('loginType') == 'FB') {
-			this.model.set({is_fb:true},{silent:true});
-		}
-		tmpl = $template.find('#tmpl_profile_form').html();
-		this.$el.html(Mustache.to_html(tmpl, this.model.toJSON()));
-		this.generateCountryOptions(this.$el.find('#lang'), this.model.get('lang')+'-'+ this.model.get('cc'));
-		this.i18n();
-		
-		RENT.initValidator(function(){
+        RENT.initValidator(function(){
 			_this.$el.find("#profile_form").validate();			
 			_this.$el.find('#email').rules('add', {
 				regex : /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
 			});
-		});			
-	},
+        });			
+    },
 	i18n:function(){
 		this.$el.find('#i18n_name').text(
 				$.i18n.prop('general.name'));

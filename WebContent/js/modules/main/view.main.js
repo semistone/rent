@@ -40,7 +40,6 @@ var RegisterMainView = Backbone.View.extend({
         if (device.user.loginType == 'FB') {
             device.user.is_fb = true;			
         }
-        alert(this.model.get('user').is_fb);
 		if (device.user.roles && _.contains(device.user.roles,5)) {
 			logger.debug('sso role exist');
 			device.user.is_sso = true;
