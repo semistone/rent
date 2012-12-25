@@ -30,9 +30,5 @@
             <from>/rest/([^\/]*)/$</from>
             <to type="forward">/$1/index.jsp</to>
         </rule>
-
-
-
-
 </urlrewrite>
 

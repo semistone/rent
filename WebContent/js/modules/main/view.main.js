@@ -31,7 +31,8 @@ var RegisterMainView = Backbone.View.extend({
 	},
 
 	events : {
-		'click #sign_off_link' : 'sign_off'
+		'click #sign_off_link' : 'sign_off',
+		'click #link_to_fb_link' : 'link_fb'
 	},
 	render:function(){
 		this.model.trigger('change_view','main');
@@ -76,10 +77,11 @@ var RegisterMainView = Backbone.View.extend({
 		var _this = this;
 
 		var do_link_fb = function(){
-			_this.model.link_facebook(_this.fb.get('id'), _this.fb.get('name'),{
+			_this.model.get_user().link_facebook(_this.fb.get('id'), _this.fb.get('name'),{
 				success:function(model,resp){
 					logger.debug('link fb success');	
 					_this.$el.find('#link_to_fb_link').hide();
+					RENT.simpleDialog($.i18n.prop('user.main.fb_link_success'), '');
 				},
 				error:function(model,resp){
 					logger.debug('link fb fail');
