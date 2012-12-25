@@ -8,6 +8,9 @@ define([
 	
 var UserModel;
 UserModel = Backbone.Model.extend({	
+	initialize:function(){
+		this.url = RENT.CONSTANTS.APIs_BASE_DIR + 'rest/user/';
+	},
 	link_facebook:function(id, name,options){
 		logger.debug('link facebook');
 		this.set({

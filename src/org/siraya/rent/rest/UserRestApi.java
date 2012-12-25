@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.HashMap;
 import org.siraya.rent.user.service.IUserService;
 import org.siraya.rent.user.service.ISessionService;
+import org.siraya.rent.utils.RentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.siraya.rent.filter.UserAuthorizeData;
@@ -62,4 +63,21 @@ public class UserRestApi {
 		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
 
 	}
+	
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/link_facebook")
+	public Response linkFacebook(User user) {
+		user.setId(userAuthorizeData.getUserId());
+		if (user == null || user.getLoginId() == null) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"user not exist");
+		}
+		this.userService.initLoginIdAndType(user);
+		logger.info("link to facebook success");
+		return Response.status(HttpURLConnection.HTTP_OK).entity(this.OK)
+				.build();
+	}
+	
 }
