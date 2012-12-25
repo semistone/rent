@@ -82,7 +82,7 @@ var MainRouter = Backbone.Router.extend({
 		require(['modules/main/view.profile'],function(UserProfileView){
 			var view = new UserProfileView({
 				tag : 'div',
-				model:_this.model
+				model:_this.model.get_user()
 			});
 			view.render();
 			_this.$el.find('#register_right').html(view.$el);
