@@ -8,13 +8,13 @@ define([
 ], function(FB, _, Backbone, RENT, logger) {
 var FBModel;
 FBModel = Backbone.Model.extend({
-	setResponse:function() {
+	set_response:function() {
+		logger.debug('set fb response');
 		var _this = this;
 		FB.api('/me', function(response) {
 			_this.set({matchUser:_this.get('id') == response.id},{silent:true});
 			logger.debug('set fb response is match:' + _this.get('matchUser'));
 			_this.set(response);
-
 		});
 	},
 	logout:function(callback){
@@ -29,6 +29,7 @@ FBModel = Backbone.Model.extend({
 	},
 	login: function(options) {
 		var _this = this;
+		logger.debug('fb login');
 		FB.login(function(response) {
 			if (_this.get('name') != null) {
 				logger.debug('already logined');
@@ -41,7 +42,7 @@ FBModel = Backbone.Model.extend({
 				logger.debug('login success');
 				_this.set({connected:true},{silent:true});
 				if (options != null) options.success();
-				_this.setResponse();
+				_this.set_response();
 				_this.trigger('login_success');
 				// connected
 			} else {
@@ -52,12 +53,13 @@ FBModel = Backbone.Model.extend({
 
 	check_status:function(){
 		var _this = this;
+		logger.debug('fb check status');
 		FB.getLoginStatus(function(response) {
 			if (response.status === 'connected') {
 				// connected
 				logger.debug('fb connected');
 				_this.set({connected:true},{silent:true});
-				_this.setResponse();
+				_this.set_response();
 			}else {
 				logger.debug('fb not connected');
 				_this.trigger('change');
@@ -66,7 +68,7 @@ FBModel = Backbone.Model.extend({
 	},
 	initialize : function() {
 		var _this = this;
-		_.bindAll(this, 'login','setResponse','check_status');
+		_.bindAll(this, 'login','set_response','check_status');
 		window.fbAsyncInit = function() {
 			_this.init();
 			_this.check_status();
