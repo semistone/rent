@@ -16,7 +16,7 @@ public class TestIPageDao extends AbstractJUnit4SpringContextTests{
     private ISpaceDao spaceDao; 
     @Test   
     public void testCRUD()throws Exception{
-    	List<Space> ret = spaceDao.getByPageName("home");
+    	List<Space> ret = spaceDao.getByPageName("index");
     	Assert.assertTrue(ret.size() > 0);
     }
 }

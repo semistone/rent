@@ -28,11 +28,11 @@ public class TestMobileAuthService {
 	private Mockery context;
 	String deviceId= "123";
 	String userId= "456";
-	String mobilePhone="87E45511C317F40D40509943AD6AF951";
+	String mobilePhone="29BFD9986CFB4E66CEDB3574267CDE30";
 	Device device =null;
 	private IApplicationConfig config;
 	User user = new User();
-	private String authCode = "809FFECF2869157CA16B50F1A3E6B75C";	
+	private String authCode = "8800312F4B86C306E1496CEAA2FEE2FC";	
 	private IDeviceDao deviceDao;
 	private EncodeUtility encodeUtility;
     private RestOperations restTemplate;
@@ -87,12 +87,12 @@ public class TestMobileAuthService {
 			mobileAuthService.setMobileAuthResponseDao(mobileAuthResponseDao);
 		}
 		mobileAuthRequest.setRequestId("request id ");
-		mobileAuthRequest.setMobilePhone("FE4DC1C73AE63F2BDE5C80E1E3B93BFC");
-		mobileAuthRequest.setToken("FE4DC1C73AE63F2BDE5C80E1E3B93BFC");
+		mobileAuthRequest.setMobilePhone("29BFD9986CFB4E66CEDB3574267CDE30");
+		mobileAuthRequest.setToken("E81FC6F81B71D6447CC9E1A1B6376375");
 		mobileAuthRequest.setAuthUserId(device.getUserId());
 		mobileAuthRequest.setDevice(device);
 		mobileAuthRequest.setRequestTime(0);
-		mobileAuthRequest.setAuthCode("886911826844");
+		mobileAuthRequest.setAuthCode("615202");
 		mobileAuthRequest.setCallback("http://www.yahoo.com");
 		mobileAuthRequest.setRequestFrom("test user");
 		mobileAuthRequest.setAuthUserId(user.getId());
@@ -178,7 +178,7 @@ public class TestMobileAuthService {
 		
 
 		
-		mobileAuthService.verifyAuthCode(device.getId(),device.getUserId(), "12313131");		
+		mobileAuthService.verifyAuthCode(device.getId(),device.getUserId(), "794917");		
 	}
 	
 	@Test 
@@ -225,7 +225,7 @@ public class TestMobileAuthService {
 			});	
 		}
 				
-		mobileAuthService.verifyAuthCodeByMobilePhone("55555555", "12313131");		
+		mobileAuthService.verifyAuthCodeByMobilePhone("+886936072283", "794917");		
 	}
 	
 	

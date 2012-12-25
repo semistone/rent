@@ -23,7 +23,6 @@ public class TestEncodeUtility {
 
 		String msg = "886911826844";
 		String encrypt = test.encrypt(msg,"general");
-		System.out.println(encrypt);
 		String msg2 = test.decrypt(encrypt,"cookie");
 		Assert.assertEquals(msg, msg2);
 	}

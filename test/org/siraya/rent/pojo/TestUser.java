@@ -18,7 +18,7 @@ public class TestUser {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		validator = factory.getValidator();
 		user.setCc("886");
-		user.setMobilePhone("88693112222");
+		user.setMobilePhone("+88693112222");
 		user.setStatus(0);
 		user.setEmail("xxx@test.com");
 	}
