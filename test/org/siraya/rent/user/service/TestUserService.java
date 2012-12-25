@@ -84,7 +84,7 @@ public class TestUserService {
 			request.setRequestTime(time/1000);
 			request.setCountryCode("886");
 			
-			request.setMobilePhone("8862332131313");
+			request.setMobilePhone("+8862332131313");
 			request.setDone("http://www.yahoo.com");
 			request.setDevice(device);
 			setting = new HashMap<String, Object>();
@@ -118,7 +118,7 @@ public class TestUserService {
 				}
 			});
 		}
-		user = userService.newUserByMobileNumber(886, "88653936072283");
+		user = userService.newUserByMobileNumber(886, "+88653936072283");
 		Assert.assertNotNull(user.getId());
 	}
 

@@ -85,6 +85,7 @@ public class User {
 	 * @mbggenerated Mon Sep 10 16:50:24 CST 2012
 	 */
 	@NotNull
+	@Pattern(regexp = "^\\d{1,3}$")
 	private String cc;
 
 	/**
