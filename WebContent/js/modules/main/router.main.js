@@ -18,7 +18,8 @@ var MainRouter = Backbone.Router.extend({
 		this.on('route:show_user_profile', this._show_user_profile);
 		this.on('route:sso_application', this._sso_application);
 		this.on('route:list_members', this._list_members);
-		this.on('route:whereami', this.whereami);
+		this.on('route:whereami', this._whereami);
+		this.on('route:link_fb', this._link_fb);
 	},
 	routes: {
 		'main/name_device': 'name_device',
@@ -27,7 +28,8 @@ var MainRouter = Backbone.Router.extend({
 		'main/show_user_profile' : 'show_user_profile',
 		'main/sso_application' : 'sso_application',
 		'main/list_members' : 'list_members',
-		'main/whereami': 'whereami'
+		'main/whereami': 'whereami',
+		'main/link_fb': 'link_fb'
 	},
 	_name_device:function(){
 		logger.debug('click name device popup');
@@ -110,7 +112,17 @@ var MainRouter = Backbone.Router.extend({
 			map.whereami();
 			_this.$el.find('#register_right').html(map.$el);
 		});	
-	}
+	},
+    _link_fb : function(){
+        var _this = this;
+        require('modules/main/view.link_fb', function(LinkFbView){
+            var view = new LinkFbView({
+                tag : 'div',
+                model : _this.model
+            });	
+            _this.$el.find('#register_right').html(view.$el);
+        });
+    }
 });
 return MainRouter;
 });
