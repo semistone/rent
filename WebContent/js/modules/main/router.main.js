@@ -118,7 +118,7 @@ var MainRouter = Backbone.Router.extend({
         require(['modules/main/view.link_fb'], function(LinkFbView){
             var view = new LinkFbView({
                 tag : 'div',
-                model : _this.model
+                userModel : _this.model
             });	
             _this.$el.find('#register_right').html(view.$el);
         });
