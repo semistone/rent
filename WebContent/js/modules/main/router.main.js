@@ -115,7 +115,7 @@ var MainRouter = Backbone.Router.extend({
 	},
     _link_fb : function(){
         var _this = this;
-        require('modules/main/view.link_fb', function(LinkFbView){
+        require(['modules/main/view.link_fb'], function(LinkFbView){
             var view = new LinkFbView({
                 tag : 'div',
                 model : _this.model
