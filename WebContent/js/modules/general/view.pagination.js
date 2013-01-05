@@ -30,10 +30,16 @@ var PaginationView = Backbone.View.extend({
 			currentPage: 1
 		},{silent:true});
 		_.bindAll(this, 'render', 'page_index','prev_page_link',
-				'next_page_link');
+				'next_page_link','i18n');
 		this.tmpl = $template.find('#tmpl_pagination').html();
 		this.model.on('change',this.render);
 	},
+    i18n: function(){
+		this.$el.find('#pre_page_link').text(
+				$.i18n.prop('general.pre_page'));
+		this.$el.find('#next_page_link').text(
+				$.i18n.prop('general.next_page'));
+    },
 	render: function(){
 		logger.debug('render pagination');
 		var totalPage = Math.ceil(this.model.get('total')/ this.model.get('pageSize'));
@@ -74,6 +80,7 @@ var PaginationView = Backbone.View.extend({
 		}
 		this.model.set({isNext: isNext, isPrev: isPrev,pages:pages},{silent:true});			
 		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));
+        this.i18n();
 	},
 	page_index:function(ev){
 		logger.debug('set page '+setPage);

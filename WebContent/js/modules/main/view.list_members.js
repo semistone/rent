@@ -56,6 +56,20 @@ ListMembersView = Backbone.View.extend({
 	i18n:function(){
 		this.$el.find('#i18n_show_members').text(
 				$.i18n.prop('user.main.list_members'));
+		this.$el.find('#i18n_mobile_phone').text(
+				$.i18n.prop('user.register.mobile_phone'));
+		this.$el.find('#i18n_email').text(
+				$.i18n.prop('general.email'));
+		this.$el.find('#i18n_name').text(
+				$.i18n.prop('general.name'));
+		this.$el.find('#save_add_member_link').text(
+				$.i18n.prop('general.save'));
+		this.$el.find('#i18n_close').text(
+				$.i18n.prop('general.close'));
+		this.$el.find('#add_member_link').text(
+				$.i18n.prop('general.add'));
+		this.$el.find('#i18n_search').text(
+				$.i18n.prop('general.search'));
 	},
 	change_page:function(){
 		logger.debug('change page');
@@ -76,6 +90,7 @@ ListMembersView = Backbone.View.extend({
 		var tmpl = $template.find(template_id).html(),
         _this = this;
 		this.$el.find('#edit_member').html(Mustache.to_html(tmpl ,model.toJSON()));
+        this.i18n();
 		this.$el.find('#myModal').modal('show');
 		if (is_need_validate == false) {
 			return;
