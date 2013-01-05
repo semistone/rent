@@ -29,8 +29,8 @@ ListMembersView = Backbone.View.extend({
 				'edit_member', 'delete_member', 'save_edit_member',
 				'add_member', 'save_add_member','save_delete_member');
 		this.collection = new MemberCollection();
-		this.collection.on('reset add remove', this.render);
 		this.collection.on('error', RENT.simpleErrorDialogForCollectionError);
+		this.collection.on('reset add remove error', this.render);
 		this.tmpl = $template.find('#tmpl_list_members').html();
 		this.collection.search('%', '10', '0');
 		this.paginationModel = new Backbone.Model();
@@ -81,6 +81,7 @@ ListMembersView = Backbone.View.extend({
 			return;
 		}
 		RENT.initValidator(function(){
+		this.change_page();
 			_this.$el.find("#edit_member_form").validate();			
 			_this.$el.find('#mobile-phone').rules('add', {
 				regex : /^\+?\d{10,15}$/
@@ -130,18 +131,23 @@ ListMembersView = Backbone.View.extend({
 		this.show_member_form(new MemberModel(),'#tmpl_new_member');	
 	},
 	save_add_member:function(){
-        var formvalidate = this.$el.find("#edit_member_form").valid(), model;
+        var formvalidate = this.$el.find("#edit_member_form").valid(), 
+                model,
+                _this = this;
         if (!formvalidate) {
         	logger.error('form validate fail');
         	return false;
         }	
-		logger.debug('save id '+id);
 		model = new MemberModel();
 		model.set({
 			name: this.$el.find('#name').val(),
 			email:  this.$el.find('#email').val(),
 			mobilePhone:  this.$el.find('#mobile-phone').val()
 		},{slient:true});
+        model.on('change', function(){
+            logger.debug('add model into collection');
+            _this.collection.add(this);       
+        });
 		model.save();
 		this.$el.find('#myModal').modal('hide');        
 	}
