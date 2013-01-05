@@ -5,7 +5,7 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
-  'text!template/main/tmpl.link_fb.phtml',
+  'text!template/user/tmpl.link_fb.phtml',
   '../user/model.fb'
   ], function($, _, Backbone, Mustache, RENT, logger,template, FBModel) {
 var LinkFbView, $template = $('<div>').append(template);
