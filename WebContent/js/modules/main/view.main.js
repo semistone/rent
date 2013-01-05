@@ -15,7 +15,7 @@ var $template = $('<div>').append(template);
 //
 var RegisterMainView = Backbone.View.extend({
 	initialize : function() {
-		_.bindAll(this, 'render','sign_off','link_fb');
+		_.bindAll(this, 'render','sign_off');
 		this.path = this.options['parent_route'] || 'main';
 		this.tmpl = $template.find('#tmpl_register_step3').html();
 		this.rightView = new Backbone.View();
@@ -31,8 +31,7 @@ var RegisterMainView = Backbone.View.extend({
 	},
 
 	events : {
-		'click #sign_off_link' : 'sign_off',
-		'click #link_to_fb_link' : 'link_fb'
+		'click #sign_off_link' : 'sign_off'
 	},
 	render:function(){
         this.model.trigger('change_view','main');
@@ -69,40 +68,6 @@ var RegisterMainView = Backbone.View.extend({
 				$.i18n.prop('user.main.user_profile'));		
 		this.$el.find('#i18n_mobile_provider').text(
 				$.i18n.prop('user.main.mobile_provider'));
-
-	},
-
-	link_fb : function(){
-		logger.debug('link to fb');
-		var _this = this;
-
-		var do_link_fb = function(){
-			_this.model.get_user().link_facebook(_this.fb.get('id'), _this.fb.get('name'),{
-				success:function(model,resp){
-					logger.debug('link fb success');	
-					_this.$el.find('#link_to_fb_link').hide();
-					RENT.simpleDialog($.i18n.prop('user.main.fb_link_success'), '');
-				},
-				error:function(model,resp){
-					logger.debug('link fb fail');
-					RENT.simpleErrorDialog(resp,'');
-				}
-			});
-		};
-		if (this.fb == undefined) {
-			require(['modules/user/model.fb'],function(FBModel){
-				var fb = new FBModel();
-				_this.fb = fb;
-				//
-				// do login 
-				//
-				fb.on('change', do_link_fb);
-				fb.on('not_connected',function(){
-					fb.login();
-				});
-			});
-		}
-
 	},
 	sign_off:function(){
 		logger.debug('click signoff device');
