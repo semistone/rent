@@ -308,7 +308,7 @@ public class UserService implements IUserService {
 		if (ret != 1) {
 			throw new RentException(
 					RentException.RentErrorCode.ErrorStatusViolate,
-					"update login id and type fail, maybe already initialized");
+					"update login id and type fail, maybe already initialized ret is "+ret);
 		}
     }
     

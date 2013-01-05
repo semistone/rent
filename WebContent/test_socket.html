@@ -56,9 +56,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
     var socket = io.connect('http://angus-ec2.siraya.net');
-    socket.on('news', function (data) {
-        alert(data.hello);
-    });
+    socket.emit('msg', {to:'7004b786-07b0-4c7e-9bac-6d3d38bc7a07', content:'hello'}) ;
 </script>
 </body>
 </html>
