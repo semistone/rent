@@ -8,6 +8,7 @@ import org.siraya.rent.pojo.VerifyEvent;
 import org.siraya.rent.pojo.Member;
 import org.siraya.rent.pojo.MobileAuthResponse;
 import org.siraya.rent.user.dao.IUserDAO;
+import org.siraya.rent.user.dao.IUserOnlineStatusDao;
 import org.siraya.rent.user.dao.IVerifyEventDao;
 import org.siraya.rent.user.dao.IMobileAuthRequestDao;
 import org.siraya.rent.user.dao.IMobileAuthResponseDao;
@@ -31,6 +32,9 @@ import org.siraya.rent.user.dao.IDeviceDao;
 
 
 import java.util.List;
+
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
 @Service("userService")
 public class UserService implements IUserService {
 
@@ -54,6 +58,8 @@ public class UserService implements IUserService {
 	@Autowired
 	private IRoleDao roleDao;
 
+	@Autowired
+	private IUserOnlineStatusDao userOnlineStatusDao;
 
 	private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
@@ -526,6 +532,16 @@ public class UserService implements IUserService {
 		}
 		response.setSign(responseSign);	
 		return response;
+	}
+	
+	public List<User> getOnineUser(int limit, int offset){
+		List<String> idlist = this.userOnlineStatusDao.online(limit, offset);
+		java.lang.StringBuffer sb = new java.lang.StringBuffer();
+		for(String id : idlist){
+			sb.append(id);
+			sb.append(",");
+		}
+		return this.userDao.list(sb.substring(0, sb.length()-1));
 	}
 	
 	private Member createMemberFromRequest(MobileAuthRequest request){

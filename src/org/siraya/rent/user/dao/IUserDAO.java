@@ -1,11 +1,14 @@
 package org.siraya.rent.user.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.siraya.rent.pojo.User;
+import org.siraya.rent.pojo.UserOnlineStatus;
 import org.springframework.stereotype.Repository;
 @Repository("userDao")
 public interface IUserDAO {
@@ -45,4 +48,7 @@ public interface IUserDAO {
     
     @Update("UPDATE USER SET EMAIL=#{email}, LANG=#{lang}, CC=#{cc}, NAME=#{name}, TIMEZONE=#{timezone},MODIFIED=#{modified} WHERE ID=#{id}")
     public int updateProfile(User user);
+        
+    @Select("select * from USER where FIND_IN_SET(ID, #{ids}) <> 0") 
+    public List<User> list(@Param("ids") String ids);
 }

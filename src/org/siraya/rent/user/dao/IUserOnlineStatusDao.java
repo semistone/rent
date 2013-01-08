@@ -19,4 +19,8 @@ public interface IUserOnlineStatusDao {
 
     @Select("select * from USER_ONLINE_STATUS where FIND_IN_SET(ID, #{ids}) <> 0") 
     public List<UserOnlineStatus> list(@Param("ids") String ids);
+    
+    @Select("select ID from USER_ONLINE_STATUS where ONLINE_STATUS='1'  limit #{limit} offset #{offset}") 
+    public List<String> online(@Param("limit") int limit , @Param("offset")int offset);
+    
 }

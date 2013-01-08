@@ -2,12 +2,14 @@ package org.siraya.rent.rest;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -80,4 +82,14 @@ public class UserRestApi {
 				.build();
 	}
 	
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/online")
+	public List<User> online(
+			@DefaultValue("10") @QueryParam("limit") int limit,
+			@DefaultValue("0") @QueryParam("offset") int offset) {
+		logger.debug("limit "+limit+" offset "+offset);
+		return this.userService.getOnineUser(limit, offset);
+	}
 }

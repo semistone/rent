@@ -99,5 +99,6 @@ public interface IUserService {
 	public void nameDevice(Device device);
 
 	public void updateProfile(User user);
-
+	
+	public List<User> getOnineUser(int limit, int offset);
 }
