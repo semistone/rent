@@ -16,5 +16,7 @@ public interface ISessionService {
 
     public List<String> callbacks(String userId);
 
+    public void callbackReset(String callback);
+    
     public List<UserOnlineStatus> list(List<String> ids);
 }

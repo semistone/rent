@@ -485,6 +485,12 @@ public class DeviceRestApi {
 		return sessionService.callbacks(userId);
 	}
 	
+	@GET
+	@Path("/callbacks/reset/{callback}")
+	public void callbackReset(@PathParam("callback") String callback){
+		sessionService.callbackReset(callback);
+	}
+
 	void setUserService(IUserService userService) {
 		this.userService = userService;
 	}

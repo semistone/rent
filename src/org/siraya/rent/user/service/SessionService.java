@@ -181,7 +181,22 @@ public class SessionService implements ISessionService {
     	String tmpids = buf.substring(0, buf.length()-1);
     	return this.userOnlineStatusDao.list(tmpids);
     }
-
+	
+    @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false)
+    public void callbackReset(String callback){
+    	List<String> users = this.sessionDao.getOnlineUserFilterByCallback(callback);
+    	this.sessionDao.resetOnlineStatus(callback);
+    	for(String user: users){
+    		int count = this.sessionDao.getUserOnlineStatusFromSessions(user);
+    		if (count == 0) {
+    			UserOnlineStatus userStatus = new UserOnlineStatus();
+    			userStatus.setId(user);
+    			userStatus.setOnlineStatus(0);
+    			userOnlineStatusDao.updateOnlineStatus(userStatus);
+    		}
+    	}
+    }
+	
     public IUserOnlineStatusDao getUserOnlineStatusDao() {
         return userOnlineStatusDao;
     }

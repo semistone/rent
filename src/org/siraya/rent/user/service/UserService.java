@@ -534,6 +534,7 @@ public class UserService implements IUserService {
 		return response;
 	}
 	
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<User> getOnineUser(int limit, int offset){
 		List<String> idlist = this.userOnlineStatusDao.online(limit, offset);
 		java.lang.StringBuffer sb = new java.lang.StringBuffer();
