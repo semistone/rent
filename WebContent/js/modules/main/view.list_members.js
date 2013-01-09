@@ -63,6 +63,8 @@ ListMembersView = Backbone.View.extend({
 				$.i18n.prop('general.name'));
 		this.$el.find('#i18n_search').text(
 				$.i18n.prop('general.search'));
+		this.$el.find('#save_delete_member_link').text(
+				$.i18n.prop('general.delete'));
 	},
 	change_page:function(){
 		logger.debug('change page');
@@ -70,6 +72,9 @@ ListMembersView = Backbone.View.extend({
             pageSize = this.paginationModel.get('pageSize'),
             setPage = this.paginationModel.get('currentPage'),
             start = (setPage - 1) * pageSize;
+        if (search == undefined) {
+            search = '';
+        }
 		this.collection.search('%'+search+'%', pageSize, start);		
 	},
 	search_link:function(){
@@ -95,7 +100,7 @@ ListMembersView = Backbone.View.extend({
             _this = this, tmpl;
 		logger.debug('delete member '+id);
 		model = this.collection.get(id);
-		tmpl = $template.find(template_id).html(),
+		tmpl = $template.find('#tmpl_delete_member').html(),
 		this.$el.find('#edit_member').html(Mustache.to_html(tmpl ,model.toJSON()));
         this.i18n();
 		this.$el.find('#myModal').modal('show');
