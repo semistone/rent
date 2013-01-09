@@ -42,7 +42,6 @@ public class UserRestApi {
 		logger.debug("new user rest api");
 		if (OK == null) {
 			OK = new HashMap<String, String>();
-			OK.put("status", "SUCCESS");
 		}
 	}
 

@@ -67,7 +67,6 @@ public class DeviceRestApi {
     	logger.info("new device rest api");
 		if (OK == null) {
 			OK = new HashMap<String, String>();
-			OK.put("status", "SUCCESS");
 		}
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		validator = factory.getValidator();
@@ -481,14 +480,16 @@ public class DeviceRestApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public List<String> callbacks(@PathParam("userId") String userId) {
-		logger.debug("callbacks");
 		return sessionService.callbacks(userId);
 	}
 	
 	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/callbacks/reset/{callback}")
-	public void callbackReset(@PathParam("callback") String callback){
+	public Response callbackReset(@PathParam("callback") String callback){
+		logger.info("reset callback "+callback);
 		sessionService.callbackReset(callback);
+		return Response.status(HttpURLConnection.HTTP_OK).entity(OK).build();
 	}
 
 	void setUserService(IUserService userService) {

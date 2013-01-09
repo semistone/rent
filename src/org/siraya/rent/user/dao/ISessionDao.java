@@ -35,8 +35,7 @@ public interface ISessionDao {
 	@Update("update SESSION set ONLINE_STATUS = '0' where CALLBACK =#{callback} and ONLINE_STATUS='1'")
 	public void resetOnlineStatus(@Param("callback") String callback);
 
-	@Select("select distinct<USER_ID> from SESSION where CALLBACK=#{callback} and ONLINE_STATUS='1'")
-	public List<String> getOnlineUserFilterByCallback(
-			@Param("callback") String callback);
+	@Select("select distinct(USER_ID) from SESSION where CALLBACK=#{callback} and ONLINE_STATUS='1'")
+	public List<String> getOnlineUserFilterByCallback(@Param("callback") String callback);
     
 }
