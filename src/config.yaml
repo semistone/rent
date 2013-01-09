@@ -29,3 +29,7 @@ keydb:
     general: thebestsecretkey
 web:
     cdn: 'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com'
+    
+dropbox:
+    app_key: test
+    app_secret: test
