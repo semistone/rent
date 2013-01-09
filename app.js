@@ -66,6 +66,26 @@ function fetch_callback(headers, id, fn){
     request.end();
 
 };
+function reset_callback(fn){
+    var client = http.createClient(registerPort, registerHost), 
+        request, headers ={} ;
+    logger.info('reset callback');
+    headers['Content-Type']  = 'application/json';
+    request = client.request('GET', '/rest/device/callbacks/reset/'+callback, headers);
+
+    request.on('response', function(response) {
+        if (response.statusCode != 200) {
+            logger.debug('reset callback error'+response.statusCode);
+            fn(response.statusCode);
+            return;
+        } else {
+            logger.info('reset callback success');
+            fn();
+        }
+    });
+    request.end();
+};
+
 function register_disconnect(headers) {
     var client = http.createClient(registerPort, registerHost), 
         request;
@@ -141,6 +161,11 @@ io.sockets.on('connection', function (socket) {
 (function(){
     listenPort = process.argv[2];     
     callback = '127.0.0.1:'+listenPort;
-    logger.info('listen port is ' + listenPort);
-    app.listen(listenPort);
+    //
+    // reset callback first.
+    //
+    reset_callback(function(){
+        logger.info('listen port is ' + listenPort);
+        app.listen(listenPort);
+    });
 })()
