@@ -310,7 +310,16 @@ public class UserService implements IUserService {
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class) 
     public void initLoginIdAndType(User user){
     	user.setModified(new Long(0));
-    	int ret =this.userDao.initLoginIdAndType(user);
+    	int ret;
+    	try{
+    		ret =this.userDao.initLoginIdAndType(user);
+    	}catch(Exception e){
+			//
+			// assume exception happen when duplicate key happen.
+			//
+			throw new RentException(RentException.RentErrorCode.ErrorDuplicate,
+					"fb account has been used, " + e.getMessage());
+    	}
 		if (ret != 1) {
 			throw new RentException(
 					RentException.RentErrorCode.ErrorStatusViolate,
