@@ -1,16 +1,16 @@
 <script id="tmpl_link_fb" type="x-tmpl-mustache">
 <div class="span7 offset1">
     <form id="link_fb_form" class="form-horizontal well">
-        <h4>Warning!</h4>
+        <h4 id="i18n_warning"></h4>
 		<p class="text-info">
-			This user will be linked to Facebook account <strong>{{name}}</strong> 
+			<span id="i18n_link_fb_msg1"></span><strong>{{name}}</strong> 
 			<img src="https://graph.facebook.com/{{id}}/picture">
 		</p>
-		<p class="text-info">
-		Do you want to continue?
+		<p id="i18n_link_fb_msg2" class="text-info">
+		
 		</p>
 		<div class="form-actions">
-			<button id="link_fb_ok" class="btn btn-primary" type="button">Yes</button>
+			<button id="link_fb_ok" class="btn btn-primary" type="button"></button>
 			<!--button class="btn btn-primary" type="button">Change to anther account</button-->
 			<!--button id="link_fb_no" class="btn btn-primary" type="button">No, thanks</button-->
 		</div>

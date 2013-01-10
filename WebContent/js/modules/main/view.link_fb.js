@@ -35,9 +35,16 @@ LinkFbView = Backbone.View.extend({
         }
     }, 
     render : function(){
-		logger.debug('render link fb');
-		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));	
-    	this.is_render = true;
+        logger.debug('render link fb');
+        this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));	
+        this.i18n();
+        this.is_render = true;
+    },
+    i18n: function(){
+        this.$el.find('#link_fb_ok').text($.i18n.prop('general.OK'));
+        this.$el.find('#i18n_link_fb_msg2').text($.i18n.prop('user.link_fb.msg2'));
+        this.$el.find('#i18n_link_fb_msg1').text($.i18n.prop('user.link_fb.msg1'));
+        this.$el.find('#i18n_warning').text($.i18n.prop('general.warning'));        
     },
     link_fb_ok : function(){
         this.userModel.get_user().link_facebook(this.model.get('id'), this.model.get('name'), {
