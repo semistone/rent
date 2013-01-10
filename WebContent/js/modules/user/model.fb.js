@@ -6,8 +6,9 @@ define([
   'logger',
   './namespace.user'
 ], function(FB, _, Backbone, RENT, logger) {
-var FBModel;
+var FBModel = null;
 FBModel = Backbone.Model.extend({
+	is_init : false,
 	set_response:function() {
 		logger.debug('set fb response');
 		var _this = this;
@@ -71,9 +72,16 @@ FBModel = Backbone.Model.extend({
 		var _this = this;
 		_.bindAll(this, 'login','set_response','check_status');
 		window.fbAsyncInit = function() {
+			FBModel.is_init = true;
 			_this.init();
 			_this.check_status();
 		};
+		//
+		// if fb already init, then must call check_status by ourself.
+		//
+		if (FBModel.is_init == true) {
+			this.check_status();
+		}
 	},
 	init: function(){
 		FB.init({

@@ -27,10 +27,17 @@ LinkFbView = Backbone.View.extend({
         this.model.on('not_connected', function(){
             _this.model.login();
         });
+        //
+        // prevent model.on after change event trigger.
+        //
+        if (this.model.get('connected') == true) {
+            this.render();
+        }
     }, 
     render : function(){
 		logger.debug('render link fb');
 		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));	
+    	this.is_render = true;
     },
     link_fb_ok : function(){
         this.userModel.get_user().link_facebook(this.model.get('id'), this.model.get('name'), {
