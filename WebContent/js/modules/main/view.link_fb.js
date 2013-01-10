@@ -10,22 +10,29 @@ define([
   ], function($, _, Backbone, Mustache, RENT, logger,template, FBModel) {
 var LinkFbView, $template = $('<div>').append(template);
 LinkFbView = Backbone.View.extend({
+	events:{
+		'click #link_fb_ok' : 'link_fb_ok'
+	},
     initialize : function() {
 		this.userModel = this.options.userModel;
 		this.model = new FBModel();
         logger.debug('initialize link fb view');
-        _.bindAll(this, 'do_link_fb');
-		logger.debug('link to fb');
-        var _this = this;
+        _.bindAll(this, 'render', 'link_fb_ok');
+		this.tmpl = $template.find('#tmpl_link_fb').html();
+		var _this = this;
         //
         // do login 
         //
-        this.model.on('change', this.do_link_fb);
+        this.model.on('change', this.render);
         this.model.on('not_connected', function(){
             _this.model.login();
         });
     }, 
-    do_link_fb : function(){
+    render : function(){
+		logger.debug('render link fb');
+		this.$el.html(Mustache.to_html(this.tmpl, this.model.toJSON()));	
+    },
+    link_fb_ok : function(){
         this.userModel.get_user().link_facebook(this.model.get('id'), this.model.get('name'), {
             success : function(model, resp) {
                 logger.debug('link fb success');	
