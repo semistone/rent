@@ -33,3 +33,5 @@ web:
 dropbox:
     app_key: test
     app_secret: test
+    toekn_key: test
+    token_secret: test

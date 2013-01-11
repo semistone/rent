@@ -7,43 +7,65 @@ public class Image {
 	private long modified;
 	private String id;
 	private String imgGroup;
-	
+
+	public static String genId() {
+		return java.util.UUID.randomUUID().toString();
+	}
+
 	public String getImgTarget() {
 		return imgTarget;
 	}
+
 	public void setImgTarget(String imgTarget) {
 		this.imgTarget = imgTarget;
 	}
+
 	public String getShareUrl() {
 		return shareUrl;
 	}
+
 	public void setShareUrl(String shareUrl) {
 		this.shareUrl = shareUrl;
 	}
+
 	public long getCreated() {
+		if (created == 0) {
+			created=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+			modified= created;
+		}
+
 		return created;
 	}
+
 	public void setCreated(long created) {
 		this.created = created;
 	}
+
 	public long getModified() {
+		if (modified == 0) {
+			modified=java.util.Calendar.getInstance().getTimeInMillis()/1000;
+		}
 		return modified;
 	}
+
 	public void setModified(long modified) {
 		this.modified = modified;
 	}
+
 	public String getId() {
 		return id;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public String getImgGroup() {
 		return imgGroup;
 	}
+
 	public void setImgGroup(String imgGroup) {
 		this.imgGroup = imgGroup;
 	}
 
-	
 }
