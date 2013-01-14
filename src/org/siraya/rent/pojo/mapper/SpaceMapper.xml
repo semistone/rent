@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rent.mapper">
+  <resultMap id="SpaceResultMap" type="org.siraya.rent.pojo.Space">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="CONTENT" jdbcType="VARCHAR" property="content" />
+  </resultMap>
+</mapper>

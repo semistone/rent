@@ -1,0 +1,48 @@
+<script id="tmpl_backyard" type="x-tmpl-mustache">
+<div class="row">
+<div class="span3">
+	<div class="well">
+    	<ul class="nav nav-list bs-docs-sidenav affix-top">
+			<li><h4 id="show_token_link">Show token</h4><p>only work on debug mode</p></li>
+			<li><h4>Set mobile gateway debug mode
+                <select id="set_sms_gateway_debug_mode" class="span1"><option value=""></option><option value="true">true</option><option value="false">false</option></select>
+                </h4>
+			<p>No sms message will be sent in debug mode</p>
+            </li>
+            <li>
+				<h4 id="list_users_link">Show users in current device</h4>
+				<p>Show how many user have used this device</p>
+            </li>
+	    </ul>
+	</div> 
+</div> 
+<div id="backyard_right" class="span9">
+</div>
+</div>
+</script>
+<script id="tmpl_show_uses" type="x-tmpl-mustache">
+<div class="row">
+	<div class="span6">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<td><span>ID</span></td>
+					<td><span>Login Type</span></td>
+					<td><span>Login Id</span></td>
+					<td><span>Email</span></td>
+				</tr>
+			</thead>
+			<tbody>
+{{#users}}
+				<tr>
+					<td>{{id}}</td>
+					<td>{{loginType}}</td>
+					<td>{{loginId}}</td>
+					<td>{{email}}</td>
+				</tr>
+{{/users}}
+			</tbody>
+		</table>
+	</div>
+</div>
+</script>

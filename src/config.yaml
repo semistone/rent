@@ -1,0 +1,35 @@
+mobile_country_code: 
+    "886":
+       country: TW
+       lang: zh-TW
+       timezone: Taipei
+    "86":
+       country: CN
+       lang: zh-CN
+       timezone: Beijing
+filter:
+    exclude: ['^sently_callback']
+general:
+    max_device_count: 10
+    max_user_per_device: 10
+    auth_retry_limit: 10
+    auth_verify_timeout : 1800
+    admin_user: 00000000
+    callback_max_retry : 10
+    debug: true
+    geoip_data: 'C:/Users/User/Downloads'
+sently:
+    username: semistone
+    password: semistone
+    debug: true
+    callback_pass: 123456789
+    max_msgs_per_day : 100
+keydb:
+    cookie: thebestsecretkey
+    general: thebestsecretkey
+web:
+    cdn: 'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com'
+    
+dropbox:
+    app_key: test
+    app_secret: test

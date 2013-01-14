@@ -1,0 +1,2 @@
+<%@ page language="java" contentType="application/json;charset=UTF-8" %>
+[{"id":"4f8d0db7-effa-422f-b792-b6aa60c476bc","email":"test@email.com","loginId":"835041697","loginType":"FB","timezone":"Taipei","lang":"zh","status":1,"created":1349579170,"modified":1351413248}]

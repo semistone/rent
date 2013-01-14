@@ -1,0 +1,36 @@
+<script id="tmpl_simple_dialog" type="x-tmpl-mustache">
+<div id="error_dialog" class="modal hide fade">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal"
+			aria-hidden="true">&times;</button>
+		<h3>{{title}}</h3>
+	</div>
+	<div class="modal-body">
+		<p>{{msg}}</p>
+	</div>
+	<div class="modal-footer">
+		<a  class="btn" data-dismiss="modal">Close</a> 
+	</div>
+</div>
+</script>
+<script id="tmpl_pagination" type="x-tmpl-mustache">
+<div class="pagination">
+	<ul>
+		<li {{^isPrev}}class="disabled"{{/isPrev}}><a id="prev_page_link">Prev</a></li>
+		{{#pages}}
+		<li class="page_index {{#current}}active{{/current}}"><a>{{index}}</a></li>
+		{{/pages}}
+		<li {{^isNext}}class="disabled"{{/isNext}}><a id="next_page_link">Next</a></li>
+	</ul>
+</div>
+</script>    	
+<script id="tmpl_oops_error" type="x-tmpl-mustache">
+<div class="row">
+    <div class="span12">
+        <div class="alert alert-error">
+            <h1 id="i18n_error"></h1>
+            <p><span><strong id="i18n_error_msg"></strong></span>
+        </div>
+    </div>
+</div>
+</script>
