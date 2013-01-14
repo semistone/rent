@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+>>>>>>> master
 <mapper namespace="rent.mapper">
   <resultMap id="UserResultMap" type="org.siraya.rent.pojo.User">
     <!--
@@ -15,6 +20,10 @@
     <result column="PASSWORD" jdbcType="VARCHAR" property="password" />
     <result column="TIMEZONE" jdbcType="VARCHAR" property="timezone" />
     <result column="NATIONAL_ID" jdbcType="VARCHAR" property="nationalId" />
+<<<<<<< HEAD
+=======
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+>>>>>>> master
     <result column="CC" jdbcType="VARCHAR" property="cc" />
     <result column="LANG" jdbcType="VARCHAR" property="lang" />
     <result column="STATUS" jdbcType="INTEGER" property="status" />

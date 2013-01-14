@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <%@ page language="java" contentType="application/json;charset=UTF-8" %>
 <%
 String method = request.getMethod();
@@ -32,3 +33,7 @@ if (method.equals("GET")) {
 <%	
 }
 %>
+=======
+<%@ page language="java" contentType="application/json;charset=UTF-8" %>
+{"status":"SUCCESS"}
+>>>>>>> master

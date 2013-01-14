@@ -44,7 +44,10 @@ public class AdminRestApi {
     	logger.debug("new admin rest api");
     	if (OK == null) {
     		OK = new HashMap<String,String>();
+<<<<<<< HEAD
     		OK.put("status", "SUCCESS");
+=======
+>>>>>>> master
     	}
     }
 

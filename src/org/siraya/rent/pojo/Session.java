@@ -15,6 +15,16 @@ public class Session {
 	private String lastLoginIp;
 	private List<Integer> roles;
 	private long created;
+<<<<<<< HEAD
+=======
+	private String city;
+	private String country;
+	
+	private int onlineStatus;
+	@JsonIgnore
+	private String callback;
+
+>>>>>>> master
 	@JsonIgnore
 	private boolean isChange = false;
 	private boolean isNew = false;
@@ -27,7 +37,16 @@ public class Session {
 		this.isChange = true;
 		this.roles = new java.util.ArrayList<Integer>();
 	}
+<<<<<<< HEAD
 	
+=======
+	public String getCallback() {
+		return callback;
+	}
+	public void setCallback(String callback) {
+		this.callback = callback;
+	}
+>>>>>>> master
 	@JsonIgnore
 	public boolean isNew() {
 		return isNew;
@@ -133,4 +152,27 @@ public class Session {
     	}
     	return this.id + ":" + this.deviceId +":"+this.userId+":"+ this.lastLoginIp+":"+rolesString.trim();
 	}
+<<<<<<< HEAD
+=======
+	
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
+	
+	public int getOnlineStatus() {
+		return onlineStatus;
+	}
+	public void setOnlineStatus(int onlineStatus) {
+		this.onlineStatus = onlineStatus;
+	}	
+>>>>>>> master
 }

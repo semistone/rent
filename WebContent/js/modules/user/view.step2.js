@@ -8,12 +8,21 @@ define([
   'Mustache',
   'RentCommon',
   'logger',
+<<<<<<< HEAD
   'text!../../../html/user/tmpl.step2.html'
   ], function($, _, Backbone, Mustache, RENT, logger,template) {
 
 var $template = $('<div>').append(template);
 
 RENT.user.view.RegisterStep2View = Backbone.View.extend({
+=======
+  'text!template/user/tmpl.step2.phtml'
+  ], function($, _, Backbone, Mustache, RENT, logger,template) {
+
+var $template = $('<div>').append(template);
+var RegisterStep2View;
+RegisterStep2View = Backbone.View.extend({
+>>>>>>> master
 	events : {
 		"click #verify_button" : 'do_verify',
 		"click #send_mobile_auth_message" : 'send_mobile_auth_message',
@@ -94,7 +103,11 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 		};
 		var auth_code = this.$el.find('#auth_code').val();
 		logger.debug('click do verify button auth code is '+auth_code);
+<<<<<<< HEAD
 		if (RENT.user.mobileAuthRequestForm == undefined || RENT.user.mobileAuthRequestForm == null) {
+=======
+		if (this.mobileAuthRequestForm == undefined) {
+>>>>>>> master
 			this.model.verify_mobile_auth_code(auth_code,{success:success});			
 		} else {
 			this.model.verify_mobile_auth_request_code(auth_code,{success:success});
@@ -107,12 +120,22 @@ RENT.user.view.RegisterStep2View = Backbone.View.extend({
 	go_back_step1 : function() {
 		this.undelegateEvents();
 		var _this = this;
+<<<<<<< HEAD
 		requre(['modules/user/view.step1'],function(){
 			new RENT.user.view.RegisterStep1View({
+=======
+		require(['modules/user/view.step1'],function(RegisterStep1View){
+			new RegisterStep1View({
+>>>>>>> master
 				el : _this.el,
 				model : _this.model
 			}).render();			
 		});
 	}
 });
+<<<<<<< HEAD
 });
+=======
+return RegisterStep2View;
+});
+>>>>>>> master

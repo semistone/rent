@@ -24,6 +24,13 @@ public class TestSessionDao  extends AbstractJUnit4SpringContextTests{
     	session.setUserId("u"+time);
     	session.setLastLoginIp("192.168.0.1");
     	session.setCreated(time/1000);
+<<<<<<< HEAD
+=======
+    	session.setCity("Taipei");
+    	session.setCountry("Taiwan");
+    	session.setCallback("http://127.0.0.1:8080");
+    	session.setOnlineStatus(1);
+>>>>>>> master
 	}
 	
     @Test   
@@ -35,5 +42,13 @@ public class TestSessionDao  extends AbstractJUnit4SpringContextTests{
 		
 		Session session2=sessionDao.getSession(session.getId());
 		Assert.assertEquals(session.getDeviceId(), session2.getDeviceId());
+<<<<<<< HEAD
+=======
+		
+		sessionDao.updateOnlineStatus(session);
+		int count = sessionDao.getUserOnlineStatusFromSessions(session
+				.getUserId());
+		Assert.assertEquals(1, count);
+>>>>>>> master
     }
 }
