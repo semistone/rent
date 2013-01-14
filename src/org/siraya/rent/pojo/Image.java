@@ -1,12 +1,25 @@
 package org.siraya.rent.pojo;
 
+import javax.validation.constraints.NotNull;
+
 public class Image {
+	@NotNull
 	private String imgTarget;
 	private String shareUrl;
 	private long created;
 	private long modified;
 	private String id;
 	private String imgGroup;
+	@NotNull
+	private String userId;
+	
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
 	public static String genId() {
 		return java.util.UUID.randomUUID().toString();
