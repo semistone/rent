@@ -153,8 +153,11 @@ io.sockets.on('connection', function (socket) {
     socket.on('disconnect', function(){
         logger.debug('disconnect '+id);
         socket.leave(id);
-        if (io.sockets.in(id).clients().length == 0){
+        if (io.sockets.in(id).clients().length == 1){
+            logger.debug('disconnect all session '+id);
             register_disconnect(socket.handshake.headers);
+        } else {
+            logger.debug('disconnect id '+id+' client length is '+io.sockets.in(id).clients().length);
         }
     });
 });
