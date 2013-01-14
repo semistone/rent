@@ -23,4 +23,5 @@
 		 <property name="exposeContextBeansAsAttributes" value="true"/>
 		 
 	</bean>
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"></bean>	
 </beans>
