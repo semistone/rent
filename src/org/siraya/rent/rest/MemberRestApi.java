@@ -39,7 +39,6 @@ public class MemberRestApi {
 	public MemberRestApi(){
 		if (OK == null) {
 			OK = new HashMap<String, String>();
-			OK.put("status", "SUCCESS");
 		}
 	}
 	
