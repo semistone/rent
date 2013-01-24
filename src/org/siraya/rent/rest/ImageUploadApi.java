@@ -3,6 +3,8 @@ package org.siraya.rent.rest;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.io.FileOutputStream;
+
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Path;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,57 +26,79 @@ import org.siraya.rent.dropbox.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 @Component("imageRestApi")
-@Path("/upload")
+@Path("/image/")
 public class ImageUploadApi {
 	@Autowired
 	private UserAuthorizeData userAuthorizeData;
     @Autowired
     private IApplicationConfig applicationConfig;
     @Autowired
-    private DropboxService dropboxService;
+    private IDropboxService dropboxService;
     private static Logger logger = LoggerFactory.getLogger(ImageUploadApi.class);
 	
     
     @POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/image/{image_group}/{image_target}")
+	@Path("/{image_group}/{image_target}")
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public Response upload(@PathParam("image_group") String imgGroup,@PathParam("image_target") String imgTarget,  InputStream requestBodyStream) throws Exception{
 		java.util.Map<String,Object> setting = applicationConfig.get("general");
 		String tmpDir = (String)setting.get("tmp_dir");
 		String baseUrl = (String)setting.get("base_url");
+		
 		String dest = tmpDir + "/" + imgGroup + "/" + imgTarget;
 
 		this.mkdir(tmpDir + "/" + imgGroup);
 		File f = new File(dest);
+		//
+		// check file already exists
+		//
 		if (f.exists()) {
 			throw new RentException(RentException.RentErrorCode.ErrorDuplicate,"file already exist");
 		}
+		
+		
+		//
+		// copy file to tmp
+		//
+		saveFileToTmp(f, requestBodyStream);
+		try{
+			logger.info("image upload complete");
+			Image image = new Image();
+			image.setUserId(userAuthorizeData.getUserId());
+			image.setImgGroup(imgGroup);
+			image.setImgTarget(dest);
+			String shareUrl = baseUrl + "/image/" + imgGroup + "/" + imgTarget;
+			logger.debug("share url is "+shareUrl+ " target is "+dest+ " group "+imgGroup+" user "+image.getUserId());
+			image.setShareUrl(shareUrl);
+			dropboxService.save(image);
+		}catch(Exception e){
+			logger.debug("delete file");
+			//f.delete();
+			throw e;
+		}		
+		return Response.status(HttpURLConnection.HTTP_OK).entity(new HashMap<String,String>()).build();
+	}
+	
+    private void saveFileToTmp(File f, InputStream is) throws Exception{
 		FileOutputStream fos = null;
 		try{
 			fos = new FileOutputStream(f);
 			byte[] buf = new byte[8192];
 			while (true) {
-				int length = requestBodyStream.read(buf);
+				int length = is.read(buf);
 				if (length < 0)
 					break;
 				fos.write(buf, 0, length);
+				System.out.println("write length "+length);
 			}
 		}finally{
 			if (fos != null) {
 				fos.flush();
 				fos.close();				
 			}
-		}
-		Image image = new Image();
-		image.setUserId(userAuthorizeData.getUserId());
-		image.setImgGroup(imgGroup); 
-		image.setImgTarget(dest);
-		String shareUrl = baseUrl+"/image/"+imgGroup+"/"+imgTarget;
-		image.setShareUrl(shareUrl);
-		dropboxService.upload(image);
-		return Response.status(HttpURLConnection.HTTP_OK).entity(new HashMap<String,String>()).build();
-	}
-	
+		}	
+    }
 	private void mkdir(String path) {
 		logger.debug("mkdir "+path);
 		File f = new File(path);
