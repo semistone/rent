@@ -85,12 +85,10 @@ public class ImageUploadApi {
 		try{
 			fos = new FileOutputStream(f);
 			byte[] buf = new byte[8192];
-			while (true) {
-				int length = is.read(buf);
-				if (length < 0)
-					break;
-				fos.write(buf, 0, length);
-				System.out.println("write length "+length);
+			int n =0;
+			while (-1 != (n = is.read(buf))) {
+				fos.write(buf, 0, n);
+				System.out.println("write length "+n);
 			}
 		}finally{
 			if (fos != null) {

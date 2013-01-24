@@ -166,6 +166,8 @@ public class DropboxService implements IDropboxService {
 
 	private void validateImageSize(File f){
 		java.awt.image.BufferedImage readImage = null;
+		if (imgSetting == null && applicationConfig != null ) 
+			imgSetting = applicationConfig.get("image");
 		try {
 		    readImage = ImageIO.read(f);
 		    int h = readImage.getHeight();
@@ -176,6 +178,7 @@ public class DropboxService implements IDropboxService {
 		    }
 		} catch (Exception e) {
 		    readImage = null;
+		    logger.error("validate image size error", e);
 		    throw new RentException(RentException.RentErrorCode.ErrorInvalidParameter," input is not image ");
 		}
 	}
