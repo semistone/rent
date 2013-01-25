@@ -230,6 +230,43 @@ public class DropboxService implements IDropboxService {
 			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
 					"update fail");
 		}
+		src.delete();
 	}
 
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false)
+	public void delete(Image image){
+		logger.info("delete image id " + image.getId());
+		int ret = this.imageDao.delete(image.getId(), image.getUserId());
+		if (ret != 1) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
+					"delete id not found");
+		}
+		if (image.getStatus() == 0) {
+			File f = new File(image.getImgTarget());
+			if (!f.exists()) {
+				logger.info("file already not exist");
+				return;
+			}
+			if (!f.delete()) {
+				throw new RentException(
+						RentException.RentErrorCode.ErrorGeneral,
+						"delete file error");
+			}
+		} else {
+			DropboxAPI<WebAuthSession> api = this.getApi();
+			try {
+				api.delete(image.getImgTarget());
+			} catch (Exception e) {
+				logger.error("delete file from dropbox error", e);
+				throw new RentException(
+						RentException.RentErrorCode.ErrorGeneral,
+						"delete from dropbox error");
+			}
+		}
+	}
+	
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
+	public Image get(String id) {
+		return this.imageDao.get(id);
+	}
 }

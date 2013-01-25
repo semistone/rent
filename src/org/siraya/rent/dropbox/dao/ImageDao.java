@@ -18,8 +18,8 @@ public interface ImageDao {
     @ResultMap("rent.mapper.ImageResultMap")
     public Image get(@Param("id")String id);
     
-    @Delete("delete from IMAGE where ID=#{id}")
-    public int delete(@Param("id")String id);
+    @Delete("delete from IMAGE where ID=#{id} and USER_ID=#{userId}")
+    public int delete(@Param("id")String id,@Param("userId")String userId);
     
     @Select("select * from IMAGE where STATUS='0' limit 100")
     @ResultMap("rent.mapper.ImageResultMap")
@@ -34,4 +34,6 @@ public interface ImageDao {
     
     @Select("select count(*) from IMAGE where IMG_GROUP=#{imgGroup}")
     public int groupCount();
+    
+ 
 }

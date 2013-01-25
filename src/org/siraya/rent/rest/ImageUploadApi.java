@@ -3,15 +3,17 @@ package org.siraya.rent.rest;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Path;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.ws.rs.Consumes;
+import java.io.OutputStream;
 import javax.ws.rs.POST;
+import javax.ws.rs.GET;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -79,7 +81,73 @@ public class ImageUploadApi {
 		}		
 		return Response.status(HttpURLConnection.HTTP_OK).entity(new HashMap<String,String>()).build();
 	}
-	
+    
+    @DELETE
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/{id}")
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
+    public void delete(@PathParam("id") String id){
+		Image image = new Image();
+		image.setUserId(userAuthorizeData.getUserId());
+		image.setId(id);
+		dropboxService.delete(image);
+    }
+    
+	@GET
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@Path("/{id}")
+	public Response get(@PathParam("id") String id, OutputStream response) {
+		Image image = dropboxService.get(id);
+		//
+		// image not found
+		//
+		if (image == null) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
+					"no image id ");
+		}
+		//
+		// image had upload to dropbox, use redirect
+		//
+		if (image.getStatus() == 1) {
+			try {
+				return Response.seeOther(new java.net.URI(image.getShareUrl()))
+						.build();
+			} catch (Exception e) {
+				logger.error("url error", e);
+				throw new RentException(
+						RentException.RentErrorCode.ErrorGeneral, "url error");
+			}
+		} else {
+			//
+			// image still in local, load into response.
+			//
+			try {
+				copyToOutputStream(new File(image.getImgTarget()), response);
+				return Response.status(HttpURLConnection.HTTP_OK).build();
+			} catch (Exception e) {
+				logger.error("copy stream error", e);
+				throw new RentException(
+						RentException.RentErrorCode.ErrorGeneral,
+						"copy stream error");
+			}
+		}
+	}
+ 
+	private void copyToOutputStream(File f, OutputStream os) throws Exception{
+		java.io.FileInputStream fis = null;
+		try{
+			fis = new FileInputStream(f);
+			byte[] buf = new byte[8192];
+			int n =0;
+			while (-1 != (n = fis.read(buf))) {
+				os.write(buf, 0, n);
+			}
+		}finally{
+			if (fis != null) {
+				fis.close();				
+			}
+		}		
+	}
     private void saveFileToTmp(File f, InputStream is) throws Exception{
 		FileOutputStream fos = null;
 		try{

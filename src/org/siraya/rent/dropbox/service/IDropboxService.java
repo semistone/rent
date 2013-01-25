@@ -12,4 +12,8 @@ public interface IDropboxService {
 	public void save(Image img);
 	
 	public void sync();
+	
+	public void delete(Image img);
+	
+	public Image get(String id);
 }
