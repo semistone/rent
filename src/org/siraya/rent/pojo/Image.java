@@ -5,11 +5,20 @@ import javax.validation.constraints.NotNull;
 public class Image {
 	@NotNull
 	private String imgTarget;
+	@NotNull
 	private String shareUrl;
 	private long created;
 	private long modified;
 	private String id;
+	@NotNull
 	private String imgGroup;
+	@NotNull
+	private int status;
+
+	private int width;
+	private int height;
+	private long size;
+
 	@NotNull
 	private String userId;
 	
@@ -79,6 +88,36 @@ public class Image {
 
 	public void setImgGroup(String imgGroup) {
 		this.imgGroup = imgGroup;
+	}
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int widdh) {
+		this.width = widdh;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public long getSize() {
+		return size;
+	}
+
+	public void setSize(long size) {
+		this.size = size;
 	}
 
 }

@@ -35,3 +35,7 @@ dropbox:
     app_secret: test
     toekn_key: test
     token_secret: test
+image:
+    ext: ['png', 'gif', 'jpg']
+    limit: [4000,2000]
+    max_pics_per_group: 10

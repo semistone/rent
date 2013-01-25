@@ -10,4 +10,6 @@ public interface IDropboxService {
 	public void upload(Image img);
 
 	public void save(Image img);
+	
+	public void sync();
 }

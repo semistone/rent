@@ -1,5 +1,5 @@
 package org.siraya.rent.dropbox.service;
-
+import org.w3c.dom.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URI;
@@ -27,7 +27,9 @@ import com.dropbox.client2.session.Session.AccessType;
 import org.siraya.rent.utils.RentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import javax.imageio.*;
+import javax.imageio.stream.*;
+import javax.imageio.metadata.*;
 @Service("dropboxService")
 public class DropboxService implements IDropboxService {
 	@Autowired
@@ -99,8 +101,8 @@ public class DropboxService implements IDropboxService {
 		if (!src.isFile()) {
 			throw new RentException(RentException.RentErrorCode.ErrorNotFound,src+ " is not file");
 		}
-		this.validateImageSize(src);
-		
+		this.validateImageSize(src, img);
+
 		String ext = src.getName();
 		ext = ext.substring(ext.lastIndexOf(".")+1);
 		this.checkExtend(ext);
@@ -115,12 +117,25 @@ public class DropboxService implements IDropboxService {
 			String url = this.upload(src, target);
 			img.setShareUrl(url);			
 		}
-		imageDao.insert(img);
+		try {	
+			int count = imageDao.groupCount();
+			int maxCount = (int) imgSetting.get("max_pics_per_group");
+			if (count > maxCount) {
+				throw new RentException(
+						RentException.RentErrorCode.ErrorExceedLimit,
+						"can't upload too manay images");
+			}
+			imageDao.insert(img);
+		}catch(Exception e){
+			logger.error("insert image fail",e);			
+			throw new RentException(RentException.RentErrorCode.ErrorDuplicate,"insert image fail");
+		}
 	}
 
 	private String upload(File src, String target) {
 		try {
 			FileInputStream fis = new FileInputStream(src);
+			if (api == null) init();
 			api.putFile(target, fis, src.length(), null, null);
 			DropboxLink link = api.share(target);
 			return link.url;
@@ -164,7 +179,7 @@ public class DropboxService implements IDropboxService {
 		this.imageDao = imageDao;
 	}
 
-	private void validateImageSize(File f){
+	private void validateImageSize(File f, Image image){
 		java.awt.image.BufferedImage readImage = null;
 		if (imgSetting == null && applicationConfig != null ) 
 			imgSetting = applicationConfig.get("image");
@@ -172,6 +187,9 @@ public class DropboxService implements IDropboxService {
 		    readImage = ImageIO.read(f);
 		    int h = readImage.getHeight();
 		    int w = readImage.getWidth();
+		    image.setHeight(h);
+		    image.setWidth(w);
+		    image.setSize(f.length());
 		    List<Integer> limit = (List<Integer>)imgSetting.get("limit");
 		    if (limit.get(0) < h || limit.get(1) < w) {
 		    	throw new RentException(RentException.RentErrorCode.ErrorInvalidParameter,"image size not match current "+h+":"+w);
@@ -182,4 +200,36 @@ public class DropboxService implements IDropboxService {
 		    throw new RentException(RentException.RentErrorCode.ErrorInvalidParameter," input is not image ");
 		}
 	}
+
+	/**
+	 * 
+	 */
+	public void sync(){
+		logger.info("execute sync");
+		List<Image> images = this.imageDao.fetchImgNeedSync();
+		for(Image image: images){
+			this.sync(image,new File(image.getImgTarget()));
+
+		}
+	}
+	
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false)
+	private void sync(Image img, File src) {
+		String ext = img.getImgTarget();
+		ext = ext.substring(ext.lastIndexOf(".") + 1);
+		String target = DIR + img.getUserId() + SEPERATOR + img.getImgGroup()
+				+ SEPERATOR + img.getId() + "." + ext;
+		logger.debug("sync id " + img.getId() + " target is " + target);
+		img.setImgTarget(target);
+		String url = this.upload(src, target);
+		img.setShareUrl(url);
+		img.setModified(0);
+		img.setStatus(1);
+		int ret = this.imageDao.update(img);
+		if (ret != 1) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
+					"update fail");
+		}
+	}
+
 }

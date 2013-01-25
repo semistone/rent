@@ -74,7 +74,7 @@ public class ImageUploadApi {
 			dropboxService.save(image);
 		}catch(Exception e){
 			logger.debug("delete file");
-			//f.delete();
+			f.delete();
 			throw e;
 		}		
 		return Response.status(HttpURLConnection.HTTP_OK).entity(new HashMap<String,String>()).build();
@@ -88,7 +88,6 @@ public class ImageUploadApi {
 			int n =0;
 			while (-1 != (n = is.read(buf))) {
 				fos.write(buf, 0, n);
-				System.out.println("write length "+n);
 			}
 		}finally{
 			if (fos != null) {
