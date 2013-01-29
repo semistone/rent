@@ -96,7 +96,9 @@ public class DropboxService implements IDropboxService {
 	}
 
 	private void save(Image img, boolean isUpload) {
-		img.setId(Image.genId());
+		if (img.getId() == null) {
+			img.setId(Image.genId());
+		}
 		File src = new File(img.getImgTarget());
 		if (!src.isFile()) {
 			throw new RentException(RentException.RentErrorCode.ErrorNotFound,src+ " is not file");
@@ -235,11 +237,13 @@ public class DropboxService implements IDropboxService {
 
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false)
 	public void delete(Image image){
-		logger.info("delete image id " + image.getId());
+		String id = image.getId();
+		logger.info("delete image id " + id+" user id "+image.getUserId());
+		image=  this.get(id);
 		int ret = this.imageDao.delete(image.getId(), image.getUserId());
 		if (ret != 1) {
 			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
-					"delete id not found");
+					"delete id not found ret is "+ret);
 		}
 		if (image.getStatus() == 0) {
 			File f = new File(image.getImgTarget());
@@ -251,11 +255,14 @@ public class DropboxService implements IDropboxService {
 				throw new RentException(
 						RentException.RentErrorCode.ErrorGeneral,
 						"delete file error");
+			} else {
+				logger.info("delete file "+id +" success");
 			}
 		} else {
 			DropboxAPI<WebAuthSession> api = this.getApi();
 			try {
 				api.delete(image.getImgTarget());
+				logger.info("delete file "+id +" success");
 			} catch (Exception e) {
 				logger.error("delete file from dropbox error", e);
 				throw new RentException(
@@ -267,6 +274,10 @@ public class DropboxService implements IDropboxService {
 	
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
 	public Image get(String id) {
-		return this.imageDao.get(id);
+		Image image=  this.imageDao.get(id);
+		if (image == null){
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,"image not found");
+		}
+		return image;
 	}
 }

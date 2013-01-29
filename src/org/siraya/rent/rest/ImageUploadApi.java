@@ -1,9 +1,8 @@
 package org.siraya.rent.rest;
-
+import javax.ws.rs.core.StreamingOutput;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
+import java.io.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Path;
@@ -67,10 +66,11 @@ public class ImageUploadApi {
 		try{
 			logger.info("image upload complete");
 			Image image = new Image();
+			image.setId(Image.genId());
 			image.setUserId(userAuthorizeData.getUserId());
 			image.setImgGroup(imgGroup);
 			image.setImgTarget(dest);
-			String shareUrl = baseUrl + "/image/" + imgGroup + "/" + imgTarget;
+			String shareUrl = baseUrl + "/image/"+image.getId();
 			logger.debug("share url is "+shareUrl+ " target is "+dest+ " group "+imgGroup+" user "+image.getUserId());
 			image.setShareUrl(shareUrl);
 			dropboxService.save(image);
@@ -94,10 +94,11 @@ public class ImageUploadApi {
     }
     
 	@GET
-	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	@Path("/{id}")
-	public Response get(@PathParam("id") String id, OutputStream response) {
-		Image image = dropboxService.get(id);
+	public Response get(@PathParam("id") String id) {
+		final Image image = dropboxService.get(id);
+		String ext = image.getImgTarget();
+		ext = ext.substring(ext.lastIndexOf(".") + 1 );
 		//
 		// image not found
 		//
@@ -121,15 +122,23 @@ public class ImageUploadApi {
 			//
 			// image still in local, load into response.
 			//
-			try {
-				copyToOutputStream(new File(image.getImgTarget()), response);
-				return Response.status(HttpURLConnection.HTTP_OK).build();
-			} catch (Exception e) {
-				logger.error("copy stream error", e);
-				throw new RentException(
-						RentException.RentErrorCode.ErrorGeneral,
-						"copy stream error");
-			}
+			StreamingOutput stream = new StreamingOutput() {
+				public void write(OutputStream output) throws IOException {
+					try {
+						copyToOutputStream(new File(image.getImgTarget()),
+								output);
+
+					} catch (Exception e) {
+						logger.error("copy stream error", e);
+						throw new RentException(
+								RentException.RentErrorCode.ErrorGeneral,
+								"copy stream error");
+					}
+				}
+			};
+
+			return Response.ok(stream).status(HttpURLConnection.HTTP_OK)
+					.type("image/" + ext).build();
 		}
 	}
  
