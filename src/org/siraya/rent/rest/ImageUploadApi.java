@@ -94,13 +94,15 @@ public class ImageUploadApi {
     }
     
 	@GET
-	@Path("/thumbnail/{size}/{id}.{ext}")
+	@Path("/thumbnail/{size}/{id}")
 	public Response thumbnail(@PathParam("id") final String id,
-			@PathParam("size")final String size, @PathParam("ext") final String ext) {
+			@PathParam("size")final String size) {
+		final StringBuffer sb = new StringBuffer();
 		StreamingOutput stream = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException {
 				try {
-					dropboxService.thumbnail(id, size, ext, output);
+					Image image = dropboxService.thumbnail(id, size, output);
+					sb.append(image.getExt());
 				} catch (Exception e) {
 					logger.error("copy stream error", e);
 					throw new RentException(
@@ -110,15 +112,14 @@ public class ImageUploadApi {
 			}
 		};
 		return Response.ok(stream).status(HttpURLConnection.HTTP_OK)
-				.type("image/" + ext).build();
+				.type("image/" + sb.toString()).build();
 	}
     
 	@GET
 	@Path("/{id}")
 	public Response get(@PathParam("id") String id) {
 		final Image image = dropboxService.get(id);
-		String ext = image.getImgTarget();
-		ext = ext.substring(ext.lastIndexOf(".") + 1 );
+		String ext = image.getExt();
 
 		//
 		// image had upload to dropbox, use redirect

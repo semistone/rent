@@ -22,6 +22,18 @@ public class Image {
 	@NotNull
 	private String userId;
 	
+	private String ext;
+	public String getExt() {
+		if (this.ext == null){
+			ext = imgTarget.substring(imgTarget.lastIndexOf(".") + 1 );
+		}
+		return ext;
+	}
+
+	public void setExt(String ext) {
+		this.ext = ext;
+	}
+
 	public String getUserId() {
 		return userId;
 	}

@@ -289,7 +289,7 @@ public class DropboxService implements IDropboxService {
 		return image;
 	}
 	
-	public void thumbnail(String id, String size, String ext, java.io.OutputStream out){
+	public Image thumbnail(String id, String size, java.io.OutputStream out){
 		Image image = this.get(id);
 		if (image.getStatus() == 0){
 			throw new RentException(RentException.RentErrorCode.ErrorStatusViolate,"only uploaded pic can show thumbnail");
@@ -297,11 +297,12 @@ public class DropboxService implements IDropboxService {
 		DropboxAPI<WebAuthSession> api = getApi();
 		try {
 			api.getThumbnail(image.getImgTarget(), out,
-					this.getSize(size), this.getFormat(ext), null);
+					this.getSize(size), this.getFormat(image.getExt()), null);
 		}catch (Exception e){
 			logger.error("get thumbnail fail", e);
 			throw new RentException(RentException.RentErrorCode.ErrorMobileGateway,"remote exception");
 		}
+		return image;
 	}
 	
 	private ThumbSize getSize(String size){

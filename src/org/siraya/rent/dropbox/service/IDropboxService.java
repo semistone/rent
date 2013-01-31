@@ -17,5 +17,5 @@ public interface IDropboxService {
 	
 	public Image get(String id);
 	
-	public void thumbnail(String id, String size, String ext, java.io.OutputStream out);
+	public Image thumbnail(String id, String size, java.io.OutputStream out);
 }
