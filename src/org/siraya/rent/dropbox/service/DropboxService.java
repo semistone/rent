@@ -1,7 +1,6 @@
 package org.siraya.rent.dropbox.service;
 import org.w3c.dom.*;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.net.URI;
 import java.util.Map;
 import java.awt.Dimension;
@@ -16,7 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.imageio.ImageIO;
 import java.util.*;
 import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.DropboxAPI.DropboxFileInfo;
+import com.dropbox.client2.DropboxAPI.DropboxInputStream;
 import com.dropbox.client2.DropboxAPI.DropboxLink;
+import com.dropbox.client2.DropboxAPI.ThumbFormat;
+import com.dropbox.client2.DropboxAPI.ThumbSize;
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
@@ -43,7 +46,7 @@ public class DropboxService implements IDropboxService {
 	private static String SEPERATOR = "/";
 	private static Map<String,Object> imgSetting;
 	
-
+	private static final int IO_BUFFER_SIZE = 4 * 1024;  
 	public DropboxAPI<WebAuthSession> getApi() {
 		if (api == null) {
 			init();
@@ -141,6 +144,7 @@ public class DropboxService implements IDropboxService {
 			api.putFile(target, fis, src.length(), null, null);
 			DropboxLink link = api.share(target);
 			return link.url;
+			
 		}catch(Exception e){
 			logger.error(e.getMessage(), e);
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral, e.getMessage());
@@ -275,9 +279,58 @@ public class DropboxService implements IDropboxService {
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
 	public Image get(String id) {
 		Image image=  this.imageDao.get(id);
-		if (image == null){
-			throw new RentException(RentException.RentErrorCode.ErrorNotFound,"image not found");
+		//
+		// image not found
+		//
+		if (image == null) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
+					"image not found");
 		}
 		return image;
 	}
+	
+	public void thumbnail(String id, String size, String ext, java.io.OutputStream out){
+		Image image = this.get(id);
+		if (image.getStatus() == 0){
+			throw new RentException(RentException.RentErrorCode.ErrorStatusViolate,"only uploaded pic can show thumbnail");
+		}
+		DropboxAPI<WebAuthSession> api = getApi();
+		try {
+			api.getThumbnail(image.getImgTarget(), out,
+					this.getSize(size), this.getFormat(ext), null);
+		}catch (Exception e){
+			logger.error("get thumbnail fail", e);
+			throw new RentException(RentException.RentErrorCode.ErrorMobileGateway,"remote exception");
+		}
+	}
+	
+	private ThumbSize getSize(String size){
+		switch (size) {
+		case "small":
+			return ThumbSize.ICON_32x32;
+		case "medium":
+			return ThumbSize.ICON_64x64;
+		case "large":
+			return ThumbSize.ICON_128x128;
+		default:
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"thumb size not support");
+		}
+	}
+	private ThumbFormat getFormat(String format){
+		switch (format) {
+		case "png":
+			return ThumbFormat.PNG;
+		case "jpg":
+			return ThumbFormat.JPEG;
+		default:
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"thumb format not support");
+		}
+	}
+	
+
+
 }

@@ -94,18 +94,32 @@ public class ImageUploadApi {
     }
     
 	@GET
+	@Path("/thumbnail/{size}/{id}.{ext}")
+	public Response thumbnail(@PathParam("id") final String id,
+			@PathParam("size")final String size, @PathParam("ext") final String ext) {
+		StreamingOutput stream = new StreamingOutput() {
+			public void write(OutputStream output) throws IOException {
+				try {
+					dropboxService.thumbnail(id, size, ext, output);
+				} catch (Exception e) {
+					logger.error("copy stream error", e);
+					throw new RentException(
+							RentException.RentErrorCode.ErrorGeneral,
+							"copy stream error");
+				}
+			}
+		};
+		return Response.ok(stream).status(HttpURLConnection.HTTP_OK)
+				.type("image/" + ext).build();
+	}
+    
+	@GET
 	@Path("/{id}")
 	public Response get(@PathParam("id") String id) {
 		final Image image = dropboxService.get(id);
 		String ext = image.getImgTarget();
 		ext = ext.substring(ext.lastIndexOf(".") + 1 );
-		//
-		// image not found
-		//
-		if (image == null) {
-			throw new RentException(RentException.RentErrorCode.ErrorNotFound,
-					"no image id ");
-		}
+
 		//
 		// image had upload to dropbox, use redirect
 		//

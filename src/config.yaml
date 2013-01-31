@@ -18,6 +18,8 @@ general:
     callback_max_retry : 10
     debug: true
     geoip_data: 'C:/Users/User/Downloads'
+    tmp_dir: d:/tmp
+    base_url: http://localhost:8080/rent/rest
 sently:
     username: semistone
     password: semistone
