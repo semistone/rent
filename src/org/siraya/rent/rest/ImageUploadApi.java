@@ -63,10 +63,12 @@ public class ImageUploadApi {
 		// copy file to tmp
 		//
 		saveFileToTmp(f, requestBodyStream);
+		Image image = null;
 		try{
 			logger.info("image upload complete");
-			Image image = new Image();
+			image = new Image();
 			image.setId(Image.genId());
+			image.setName(imgTarget);
 			image.setUserId(userAuthorizeData.getUserId());
 			image.setImgGroup(imgGroup);
 			image.setImgTarget(dest);
@@ -79,7 +81,9 @@ public class ImageUploadApi {
 			f.delete();
 			throw e;
 		}		
-		return Response.status(HttpURLConnection.HTTP_OK).entity(new HashMap<String,String>()).build();
+		HashMap<String,String> ret = new HashMap<String,String>();
+		ret.put("id", image.getId());
+		return Response.status(HttpURLConnection.HTTP_OK).entity(ret).build();
 	}
     
     @DELETE

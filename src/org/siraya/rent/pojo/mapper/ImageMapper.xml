@@ -8,6 +8,7 @@
     <result column="SHARE_URL" jdbcType="VARCHAR" property="shareUrl" />
     <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
     <result column="STATUS" jdbcType="INTEGER" property="status" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
     <result column="CREATED" jdbcType="DECIMAL" property="created" />
     <result column="MODIFIED" jdbcType="DECIMAL" property="modified" />
   </resultMap>

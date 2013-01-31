@@ -11,7 +11,7 @@ import org.siraya.rent.pojo.Image;
 import org.apache.ibatis.annotations.Select;
 @Repository("imageDao")
 public interface ImageDao {
-    @Insert("insert into IMAGE (ID,USER_ID,IMG_TARGET,IMG_GROUP,SHARE_URL,STATUS,CREATED,MODIFIED) values(#{id},#{userId}, #{imgTarget}, #{imgGroup}, #{shareUrl},#{status}, #{created}, #{modified})")
+    @Insert("insert into IMAGE (ID,USER_ID,IMG_TARGET,IMG_GROUP,SHARE_URL,NAME,STATUS,CREATED,MODIFIED) values(#{id},#{userId}, #{imgTarget}, #{imgGroup}, #{shareUrl},#{name},#{status}, #{created}, #{modified})")
 	public int insert(Image image);
     
     @Select("select * from IMAGE where ID=#{id}") 
