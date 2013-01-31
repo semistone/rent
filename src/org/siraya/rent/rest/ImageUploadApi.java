@@ -97,12 +97,11 @@ public class ImageUploadApi {
 	@Path("/thumbnail/{size}/{id}")
 	public Response thumbnail(@PathParam("id") final String id,
 			@PathParam("size")final String size) {
-		final StringBuffer sb = new StringBuffer();
+		final Image image = dropboxService.get(id);
 		StreamingOutput stream = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException {
 				try {
-					Image image = dropboxService.thumbnail(id, size, output);
-					sb.append(image.getExt());
+					dropboxService.thumbnail(image, size, output);
 				} catch (Exception e) {
 					logger.error("copy stream error", e);
 					throw new RentException(
@@ -112,7 +111,7 @@ public class ImageUploadApi {
 			}
 		};
 		return Response.ok(stream).status(HttpURLConnection.HTTP_OK)
-				.type("image/" + sb.toString()).build();
+				.type("image/" + image.getExt()).build();
 	}
     
 	@GET
