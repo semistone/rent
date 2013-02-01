@@ -11,7 +11,7 @@ import org.siraya.rent.pojo.Image;
 import org.apache.ibatis.annotations.Select;
 @Repository("imageDao")
 public interface ImageDao {
-    @Insert("insert into IMAGE (ID,USER_ID,IMG_TARGET,IMG_GROUP,SHARE_URL,NAME,STATUS,CREATED,MODIFIED) values(#{id},#{userId}, #{imgTarget}, #{imgGroup}, #{shareUrl},#{name},#{status}, #{created}, #{modified})")
+    @Insert("insert into IMAGE (ID,USER_ID,IMG_TARGET,IMG_GROUP,GROUP_ID,SHARE_URL,NAME,STATUS,CREATED,MODIFIED) values(#{id},#{userId}, #{imgTarget}, #{imgGroup},#{groupId}, #{shareUrl},#{name},#{status}, #{created}, #{modified})")
 	public int insert(Image image);
     
     @Select("select * from IMAGE where ID=#{id}") 
@@ -32,9 +32,9 @@ public interface ImageDao {
     @ResultMap("rent.mapper.ImageResultMap")
     public List<Image> getImage(@Param("userId")String userId, @Param("imgGroup")String imgGroup);
     
-    @Select("select * from IMAGE where IMG_GROUP=#{imgGroup}")
+    @Select("select * from IMAGE where GROUP_ID=#{groupId}")
     @ResultMap("rent.mapper.ImageResultMap")
-    public List<Image> getImageByGroup( @Param("imgGroup")String imgGroup);
+    public List<Image> getImageByGroup( @Param("groupId")String groupId);
     
     @Select("select count(*) from IMAGE where IMG_GROUP=#{imgGroup}")
     public int groupCount();

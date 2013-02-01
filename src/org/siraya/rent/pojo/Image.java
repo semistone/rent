@@ -2,6 +2,8 @@ package org.siraya.rent.pojo;
 
 import javax.validation.constraints.NotNull;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 public class Image {
 	@NotNull
 	private String imgTarget;
@@ -16,6 +18,8 @@ public class Image {
 	private int status;
 	private String groupId;
 
+
+
 	private String name;
 
 	private int width;
@@ -26,6 +30,10 @@ public class Image {
 	private String userId;
 	
 	private String ext;
+	@JsonIgnore
+	private ImageGroup imageGroup;
+
+
 	public String getExt() {
 		if (this.ext == null){
 			ext = imgTarget.substring(imgTarget.lastIndexOf(".") + 1 );
@@ -147,6 +155,21 @@ public class Image {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	public ImageGroup getImageGroup() {
+		return imageGroup;
+	}
+
+	public void setImageGroup(ImageGroup imageGroup) {
+		this.imageGroup = imageGroup;
+		imageGroup.setUserId(userId);
+		if (imageGroup.getId() == null) {
+			imageGroup.setId(ImageGroup.genId());
+			if (imageGroup.getPath() == null) {
+				imageGroup.setPath(this.imgGroup);				
+			}
+			this.groupId = imageGroup.getId();
+		}
 	}
 
 }

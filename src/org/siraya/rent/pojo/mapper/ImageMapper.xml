@@ -3,8 +3,9 @@
 <mapper namespace="rent.mapper">
   <resultMap id="ImageResultMap" type="org.siraya.rent.pojo.Image">
     <id column="ID" jdbcType="VARCHAR" property="id" />
-    <result column="IMG_GROUP" jdbcType="VARCHAR" property="imgGroup" />
+    <result column="GROUP_ID" jdbcType="VARCHAR" property="groupId" />
     <result column="IMG_TARGET" jdbcType="VARCHAR" property="imgTarget"/>
+    <result column="IMG_GROUP" jdbcType="VARCHAR" property="imgGroup" />
     <result column="SHARE_URL" jdbcType="VARCHAR" property="shareUrl" />
     <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
     <result column="STATUS" jdbcType="INTEGER" property="status" />

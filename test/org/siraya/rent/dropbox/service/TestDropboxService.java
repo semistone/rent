@@ -2,20 +2,19 @@ package org.siraya.rent.dropbox.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.siraya.rent.pojo.DontTry;
-import org.siraya.rent.pojo.Image;
-import org.siraya.rent.pojo.Member;
+import org.siraya.rent.pojo.*;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.*;
-import org.siraya.rent.dropbox.dao.ImageDao;
+import org.siraya.rent.dropbox.dao.*;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.springframework.util.Assert;
 public class TestDropboxService {
 	ImageDao dao;
+	ImageGroupDao groupDao;
 	private Mockery context;
 	private String userId;
 	private String group;
@@ -28,9 +27,12 @@ public class TestDropboxService {
 		test = new DropboxService();
 		context = new JUnit4Mockery();
 		dao = context.mock(ImageDao.class);	
+		groupDao = context.mock(ImageGroupDao.class);	
+
 		config = new org.siraya.rent.utils.ApplicationConfig();
 		test.setApplicationConfig(config);
 		test.setImageDao(dao);
+		test.setImageGroupDao(groupDao);
 		userId="user";
 		group = "img_group1";
 		image = new Image();
@@ -49,6 +51,9 @@ public class TestDropboxService {
 	public void testUpload() throws Exception{
 		context.checking(new Expectations() {
 			{
+				one(groupDao).getByUserAndPath(userId, group);
+				one(groupDao).insert(with(any(ImageGroup.class)));
+				will(returnValue(1));
 				one(dao).insert(image);
 				will(returnValue(1));
 			}

@@ -1,12 +1,11 @@
 package org.siraya.rent.dropbox.service;
-import org.w3c.dom.*;
+
 import java.io.*;
 import java.net.URI;
 import java.util.Map;
-import java.awt.Dimension;
-import org.siraya.rent.donttry.service.DontTryService;
-import org.siraya.rent.dropbox.dao.ImageDao;
-import org.siraya.rent.pojo.Image;
+
+import org.siraya.rent.dropbox.dao.*;
+import org.siraya.rent.pojo.*;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,16 +28,17 @@ import com.dropbox.client2.session.Session.AccessType;
 import org.siraya.rent.utils.RentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.imageio.*;
-import javax.imageio.stream.*;
-import javax.imageio.metadata.*;
+
 @Service("dropboxService")
 public class DropboxService implements IDropboxService {
 	@Autowired
 	private IApplicationConfig applicationConfig;
 	@Autowired
 	private ImageDao imageDao;
-    private static Logger logger = LoggerFactory.getLogger(DropboxService.class);
+	@Autowired
+	private ImageGroupDao imageGroupDao;
+
+	private static Logger logger = LoggerFactory.getLogger(DropboxService.class);
 
 	private static String DIR = "/";
 	private DropboxAPI<WebAuthSession> api;
@@ -101,6 +101,8 @@ public class DropboxService implements IDropboxService {
 		if (img.getId() == null) {
 			img.setId(Image.genId());
 		}
+		this.loadOrInsertImageGroup(img);
+		
 		File src = new File(img.getImgTarget());
 		if (!src.isFile()) {
 			throw new RentException(RentException.RentErrorCode.ErrorNotFound,src+ " is not file");
@@ -136,6 +138,26 @@ public class DropboxService implements IDropboxService {
 		}
 	}
 
+	private void loadOrInsertImageGroup(Image image){
+		if (image.getImageGroup() != null) {
+			return;
+		} 
+		String groupId = image.getGroupId();
+		if (groupId == null) {
+			ImageGroup group = this.imageGroupDao.getByUserAndPath(image.getUserId(), image.getImgGroup());			
+			if (group != null) {
+				image.setImageGroup(group);
+				return;
+			}
+			group = new ImageGroup();
+			image.setImageGroup(group);
+			this.imageGroupDao.insert(group);
+		}  else {
+			ImageGroup group = this.imageGroupDao.get(groupId);
+			image.setImageGroup(group);
+		}
+	}
+	
 	private String upload(File src, String target) {
 		try {
 			FileInputStream fis = new FileInputStream(src);
@@ -239,8 +261,8 @@ public class DropboxService implements IDropboxService {
 	}
 
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<Image> getGroup(String group){
-		return this.imageDao.getImageByGroup(group);
+	public List<Image> getGroup(String groupId){
+		return this.imageDao.getImageByGroup(groupId);
 	}
 	
 	
@@ -408,6 +430,12 @@ public class DropboxService implements IDropboxService {
 		}
 	}
 	
+	public ImageGroupDao getImageGroupDao() {
+		return imageGroupDao;
+	}
 
+	public void setImageGroupDao(ImageGroupDao imageGroupDao) {
+		this.imageGroupDao = imageGroupDao;
+	}
 
 }

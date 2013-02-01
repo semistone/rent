@@ -196,9 +196,9 @@ public class ImageUploadApi {
     
     @GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/get_by_group/{image_group}")
-    public List<Image> getGroup(String imgGroup){
-    	return this.dropboxService.getGroup(imgGroup);
+	@Path("/get_by_group_id/{group_id}")
+    public List<Image> getGroup(@PathParam("group_id") String groupId){
+    	return this.dropboxService.getGroup(groupId);
     }
     
 	private void copyToOutputStream(File f, OutputStream os) throws Exception{
