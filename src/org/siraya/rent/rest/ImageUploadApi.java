@@ -96,11 +96,19 @@ public class ImageUploadApi {
 		image.setId(id);
 		dropboxService.delete(image);
     }
-    
+	
+
 	@GET
 	@Path("/thumbnail/{size}/{id}")
-	public Response thumbnail(@PathParam("id") final String id,
+	public Response thumbnail(@PathParam("id")  String id,
 			@PathParam("size")final String size) {
+		int idx = id.indexOf(".");
+		String ext = null;
+		if (idx > 0 ) {
+			ext = id.substring(idx+1);
+			id = id.substring(0, idx);
+		}
+		
 		final Image image = dropboxService.get(id);
 		StreamingOutput stream = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException {
@@ -114,15 +122,34 @@ public class ImageUploadApi {
 				}
 			}
 		};
+		if (ext != null && !ext.equals(image.getExt())) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"ext not match");
+		}
 		return Response.ok(stream).status(HttpURLConnection.HTTP_OK)
 				.type("image/" + image.getExt()).build();
 	}
-    
+	
+
+	
 	@GET
 	@Path("/{id}")
 	public Response get(@PathParam("id") String id) {
 		final Image image = dropboxService.get(id);
+		int idx = id.indexOf(".");
 		String ext = image.getExt();
+		String ext2 = null;
+		if (idx > 0 ) {
+			ext2 = id.substring(idx+1);
+			id = id.substring(0, idx);
+		}
+		
+		if (ext2 != null && !ext2.equals(ext)) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"ext not match");
+		} 
 
 		//
 		// image had upload to dropbox, use redirect
@@ -175,6 +202,7 @@ public class ImageUploadApi {
 			}
 		}		
 	}
+	
     private void saveFileToTmp(File f, InputStream is) throws Exception{
 		FileOutputStream fos = null;
 		try{
