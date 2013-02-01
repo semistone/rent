@@ -1,7 +1,7 @@
 package org.siraya.rent.rest;
 import javax.ws.rs.core.StreamingOutput;
 import java.net.HttpURLConnection;
-import java.util.HashMap;
+import java.util.*;
 import java.io.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -193,7 +193,14 @@ public class ImageUploadApi {
 	public void syncMeta(@PathParam("image_group") String imgGroup){
 		this.dropboxService.syncMeta(userAuthorizeData.getUserId(), imgGroup);
 	}
-	
+    
+    @GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/get_by_group/{image_group}")
+    public List<Image> getGroup(String imgGroup){
+    	return this.dropboxService.getGroup(imgGroup);
+    }
+    
 	private void copyToOutputStream(File f, OutputStream os) throws Exception{
 		java.io.FileInputStream fis = null;
 		try{

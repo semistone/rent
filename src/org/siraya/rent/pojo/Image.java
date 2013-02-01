@@ -14,6 +14,8 @@ public class Image {
 	private String imgGroup;
 	@NotNull
 	private int status;
+	private String groupId;
+
 	private String name;
 
 	private int width;
@@ -111,6 +113,13 @@ public class Image {
 	}
 	public int getWidth() {
 		return width;
+	}
+	public String getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
 	}
 
 	public void setWidth(int widdh) {

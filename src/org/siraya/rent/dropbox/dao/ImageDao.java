@@ -32,6 +32,10 @@ public interface ImageDao {
     @ResultMap("rent.mapper.ImageResultMap")
     public List<Image> getImage(@Param("userId")String userId, @Param("imgGroup")String imgGroup);
     
+    @Select("select * from IMAGE where IMG_GROUP=#{imgGroup}")
+    @ResultMap("rent.mapper.ImageResultMap")
+    public List<Image> getImageByGroup( @Param("imgGroup")String imgGroup);
+    
     @Select("select count(*) from IMAGE where IMG_GROUP=#{imgGroup}")
     public int groupCount();
     

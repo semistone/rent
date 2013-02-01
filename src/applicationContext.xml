@@ -41,9 +41,5 @@
 
     <tx:annotation-driven transaction-manager="rentTxManager"/>
     
-    <task:scheduled-tasks scheduler="myScheduler">
-        <task:scheduled ref="dropboxService" method="sync" fixed-delay="60000"/>
-    </task:scheduled-tasks>
-
     <task:scheduler id="myScheduler" pool-size="10"/>
 </beans>

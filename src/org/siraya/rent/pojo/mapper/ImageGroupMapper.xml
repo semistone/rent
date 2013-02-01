@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rent.mapper">
+  <resultMap id="ImageGroupResultMap" type="org.siraya.rent.pojo.ImageGroup">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+    <result column="STATUS" jdbcType="INTEGER" property="status" />
+    <result column="PATH" jdbcType="VARCHAR" property="path" />
+    <result column="CREATED" jdbcType="DECIMAL" property="created" />
+    <result column="MODIFIED" jdbcType="DECIMAL" property="modified" />
+  </resultMap>
+</mapper>

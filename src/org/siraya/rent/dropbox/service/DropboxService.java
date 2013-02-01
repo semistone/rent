@@ -15,8 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.imageio.ImageIO;
 import java.util.*;
 import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.DropboxAPI.DropboxFileInfo;
-import com.dropbox.client2.DropboxAPI.DropboxInputStream;
 import com.dropbox.client2.DropboxAPI.DropboxLink;
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.DropboxAPI.ThumbFormat;
@@ -240,6 +238,12 @@ public class DropboxService implements IDropboxService {
 		src.delete();
 	}
 
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<Image> getGroup(String group){
+		return this.imageDao.getImageByGroup(group);
+	}
+	
+	
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false)
 	public void delete(Image image){
 		String id = image.getId();

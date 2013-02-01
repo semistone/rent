@@ -1,5 +1,7 @@
 package org.siraya.rent.dropbox.service;
 
+import java.util.List;
+
 import org.siraya.rent.pojo.Image;
 
 
@@ -20,4 +22,6 @@ public interface IDropboxService {
 	public void thumbnail(Image image, String size, java.io.OutputStream out);
 	
 	public void syncMeta(String userId, String group);
+
+	public List<Image> getGroup(String group);
 }
