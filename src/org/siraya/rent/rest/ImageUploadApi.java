@@ -186,7 +186,14 @@ public class ImageUploadApi {
 					.type("image/" + ext).build();
 		}
 	}
- 
+	
+    @GET
+	@Path("/sync_meta/{image_group}")
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
+	public void syncMeta(@PathParam("image_group") String imgGroup){
+		this.dropboxService.syncMeta(userAuthorizeData.getUserId(), imgGroup);
+	}
+	
 	private void copyToOutputStream(File f, OutputStream os) throws Exception{
 		java.io.FileInputStream fis = null;
 		try{

@@ -18,4 +18,6 @@ public interface IDropboxService {
 	public Image get(String id);
 	
 	public void thumbnail(Image image, String size, java.io.OutputStream out);
+	
+	public void syncMeta(String userId, String group);
 }

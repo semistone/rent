@@ -28,9 +28,9 @@ public interface ImageDao {
     @Update("update IMAGE set IMG_TARGET = #{imgTarget}, SHARE_URL= #{shareUrl}, MODIFIED=#{modified} ,STATUS=#{status} where ID = #{id} and USER_ID=#{userId}")
     public int update(Image imag);
     
-    @Select("select * from IMAGE where IMG_GROUP=#{imgGroup}")
+    @Select("select * from IMAGE where USER_ID=#{userId} and IMG_GROUP=#{imgGroup}")
     @ResultMap("rent.mapper.ImageResultMap")
-    public List<Image> getImage(@Param("imgGroup")String imgGroup);
+    public List<Image> getImage(@Param("userId")String userId, @Param("imgGroup")String imgGroup);
     
     @Select("select count(*) from IMAGE where IMG_GROUP=#{imgGroup}")
     public int groupCount();

@@ -2,6 +2,7 @@ package org.siraya.rent.dropbox.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.siraya.rent.pojo.DontTry;
 import org.siraya.rent.pojo.Image;
 import org.siraya.rent.pojo.Member;
 import org.jmock.Expectations;
@@ -9,12 +10,15 @@ import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Test;
+import java.util.*;
 import org.siraya.rent.dropbox.dao.ImageDao;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.springframework.util.Assert;
 public class TestDropboxService {
 	ImageDao dao;
 	private Mockery context;
+	private String userId;
+	private String group;
 	private IApplicationConfig config;
 	DropboxService test;
 	Image image;
@@ -27,9 +31,11 @@ public class TestDropboxService {
 		config = new org.siraya.rent.utils.ApplicationConfig();
 		test.setApplicationConfig(config);
 		test.setImageDao(dao);
+		userId="user";
+		group = "img_group1";
 		image = new Image();
-		image.setUserId("user");
-		image.setImgGroup("img_group1");
+		image.setUserId(userId);
+		image.setImgGroup(group);
 		image.setImgTarget("WebContent/apple-touch-icon.png");
 		test.init();
 		
@@ -49,4 +55,21 @@ public class TestDropboxService {
 		});
 		test.upload(image);
 	}
+    
+    @Test 
+    public void testSyncMeta(){
+    	final List<Image> list = new ArrayList<Image>();   
+    	image.setName("file1.png");
+    	image.setId("12313");
+    	list.add(image);
+		context.checking(new Expectations() {
+			{
+				one(dao).getImage(userId, group);
+				will(returnValue(list));
+				one(dao).delete(image.getId(), userId);
+				one(dao).insert(with(any(Image.class)));
+			}
+		});
+    	test.syncMeta(userId, group);	
+    }
 }

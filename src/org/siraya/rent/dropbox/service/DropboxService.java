@@ -18,6 +18,7 @@ import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.DropboxFileInfo;
 import com.dropbox.client2.DropboxAPI.DropboxInputStream;
 import com.dropbox.client2.DropboxAPI.DropboxLink;
+import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.DropboxAPI.ThumbFormat;
 import com.dropbox.client2.DropboxAPI.ThumbSize;
 import com.dropbox.client2.exception.DropboxException;
@@ -224,7 +225,7 @@ public class DropboxService implements IDropboxService {
 		String ext = img.getImgTarget();
 		ext = ext.substring(ext.lastIndexOf(".") + 1);
 		String target = DIR + img.getUserId() + SEPERATOR + img.getImgGroup()
-				+ SEPERATOR + img.getId() + "." + ext;
+				+ SEPERATOR + img.getName();
 		logger.debug("sync id " + img.getId() + " target is " + target);
 		img.setImgTarget(target);
 		String url = this.upload(src, target);
@@ -300,6 +301,79 @@ public class DropboxService implements IDropboxService {
 		}catch (Exception e){
 			logger.error("get thumbnail fail", e);
 			throw new RentException(RentException.RentErrorCode.ErrorMobileGateway,"remote exception");
+		}
+	}
+	
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false)
+	public void syncMeta(String userId, String group) {
+		DropboxAPI<WebAuthSession> api = getApi();
+		String target = DIR + userId + SEPERATOR + group;
+		Entry ent = null;
+		//
+		// get meta from dropbox
+		//
+		try { 
+			logger.debug("fetch meta in "+target);
+			ent = api.metadata(target, 1000, null, true, null);
+			if (ent == null) {
+				logger.warn("dir "+target+" not exist");
+			}
+		} catch(Exception e){
+			logger.error("get meta fail", e);
+			throw new RentException(RentException.RentErrorCode.ErrorMobileGateway,"get dropbox meta fail");
+		}
+		if (!ent.isDir) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,target+" is not dir");
+		}
+		if (ent.isDeleted) {
+			throw new RentException(RentException.RentErrorCode.ErrorNotFound,target+" has deleted");			
+		}
+		//
+		// get images from database.
+		//
+		List<Image> images=this.imageDao.getImage(userId, group);
+		HashMap<String,Image> map = new HashMap<String,Image>();
+		for (Image image : images) {
+			logger.debug("file "+image.getName());
+			map.put(image.getName(), image);
+		}
+		//
+		// compare database and entrys from dropbox.
+		//
+		List<Entry> contents = ent.contents;
+		for(Entry entry : contents) {
+			String filename = entry.fileName();
+			logger.debug(filename+" in dropbox");
+			if (map.containsKey(filename)){
+				logger.debug("remove "+filename+" from map");
+				map.remove(filename);
+			} else {
+				logger.debug("insert "+filename+" into database");
+				Image image = new Image();
+				image.setUserId(userId);
+				image.setId(Image.genId());
+				image.setName(filename);
+				image.setStatus(1);
+				image.setImgGroup(group);
+				String imgTarget = target + SEPERATOR + filename;
+				image.setImgTarget(imgTarget);
+				try {
+					DropboxLink link = api.share(imgTarget);
+					image.setShareUrl(link.url);
+				}catch(Exception e){
+					logger.debug("fetch share url fail");
+				}
+		
+				this.imageDao.insert(image);
+			}			
+		}
+		//
+		// remove database entry which not exist in dropbox.
+		//
+		for(String key: map.keySet()) {
+			logger.debug("delete "+key);
+			String id = ((Image)map.get(key)).getId();
+			this.imageDao.delete(id, userId);
 		}
 	}
 	
