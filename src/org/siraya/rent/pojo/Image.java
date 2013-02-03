@@ -17,7 +17,8 @@ public class Image {
 	@NotNull
 	private int status;
 	private String groupId;
-
+	@JsonIgnore
+	private String rev;
 
 
 	private String name;
@@ -170,6 +171,13 @@ public class Image {
 			}
 			this.groupId = imageGroup.getId();
 		}
+	}
+	public String getRev() {
+		return rev;
+	}
+
+	public void setRev(String rev) {
+		this.rev = rev;
 	}
 
 }

@@ -97,6 +97,15 @@ public class DropboxService implements IDropboxService {
 		this.save(img, true);
 	}
 
+	public void update(Image img){
+		File src = new File(img.getImgTarget());
+		this.validateImageSize(src, img);
+		String ext = src.getName();
+		ext = ext.substring(ext.lastIndexOf(".")+1);
+		this.checkExtend(ext);
+		imageDao.update(img);
+	}
+	
 	private void save(Image img, boolean isUpload) {
 		if (img.getId() == null) {
 			img.setId(Image.genId());
@@ -120,7 +129,7 @@ public class DropboxService implements IDropboxService {
 					+ img.getImgGroup() + SEPERATOR + img.getId()+ "."+ ext;
 			logger.debug("target is "+target);
 			img.setImgTarget(target);
-			String url = this.upload(src, target);
+			String url = this.upload(src, img);
 			img.setShareUrl(url);			
 		}
 		try {	
@@ -158,11 +167,19 @@ public class DropboxService implements IDropboxService {
 		}
 	}
 	
-	private String upload(File src, String target) {
+	private String upload(File src,Image image) {
 		try {
+			String target = image.getImgTarget();
 			FileInputStream fis = new FileInputStream(src);
 			if (api == null) init();
-			api.putFile(target, fis, src.length(), null, null);
+			
+			if (image.getRev() == null) {
+				Entry entry = api.putFileOverwrite(target, fis, src.length(), null);
+				image.setRev(entry.rev);				
+			} else {
+				Entry entry = api.putFile(target, fis, src.length(),image.getRev(), null);
+				image.setRev(entry.rev);								
+			}
 			DropboxLink link = api.share(target);
 			return link.url;
 			
@@ -248,7 +265,7 @@ public class DropboxService implements IDropboxService {
 				+ SEPERATOR + img.getName();
 		logger.debug("sync id " + img.getId() + " target is " + target);
 		img.setImgTarget(target);
-		String url = this.upload(src, target);
+		String url = this.upload(src,img);
 		img.setShareUrl(url);
 		img.setModified(0);
 		img.setStatus(1);

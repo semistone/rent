@@ -29,7 +29,8 @@ public class RentException extends RuntimeException {
 		ErrorEncrypt(17),
 		ErrorDeviceNotFound(18),
 		ErrorDuplicate(19),
-		ErrorCallback(20);
+		ErrorCallback(20),
+		ErrorInit(21);
 		private int code;	
 		
 		

@@ -11,7 +11,7 @@ import org.siraya.rent.pojo.Image;
 import org.apache.ibatis.annotations.Select;
 @Repository("imageDao")
 public interface ImageDao {
-    @Insert("insert into IMAGE (ID,USER_ID,IMG_TARGET,IMG_GROUP,GROUP_ID,SHARE_URL,NAME,STATUS,CREATED,MODIFIED) values(#{id},#{userId}, #{imgTarget}, #{imgGroup},#{groupId}, #{shareUrl},#{name},#{status}, #{created}, #{modified})")
+    @Insert("insert into IMAGE (ID,USER_ID,IMG_TARGET,IMG_GROUP,GROUP_ID,SHARE_URL,NAME,STATUS,REV,CREATED,MODIFIED) values(#{id},#{userId}, #{imgTarget}, #{imgGroup},#{groupId}, #{shareUrl},#{name},#{status},#{rev}, #{created}, #{modified})")
 	public int insert(Image image);
     
     @Select("select * from IMAGE where ID=#{id}") 
@@ -25,7 +25,7 @@ public interface ImageDao {
     @ResultMap("rent.mapper.ImageResultMap")
     public List<Image> fetchImgNeedSync();
     
-    @Update("update IMAGE set IMG_TARGET = #{imgTarget}, SHARE_URL= #{shareUrl}, MODIFIED=#{modified} ,STATUS=#{status} where ID = #{id} and USER_ID=#{userId}")
+    @Update("update IMAGE set REV=#{rev}, IMG_TARGET = #{imgTarget}, SHARE_URL= #{shareUrl}, MODIFIED=#{modified} ,STATUS=#{status} where ID = #{id} and USER_ID=#{userId}")
     public int update(Image imag);
     
     @Select("select * from IMAGE where USER_ID=#{userId} and IMG_GROUP=#{imgGroup}")
