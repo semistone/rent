@@ -62,7 +62,7 @@ public class ImageUploadApi {
 			image.setName(imgTarget);
 			image.setUserId(userAuthorizeData.getUserId());
 			image.setImgGroup(imgGroup);
-			image.setImgTarget(dest);
+			image.setImgTarget(f.toString());
 			String shareUrl = baseUrl + "/image/" + image.getId();
 			logger.debug("share url is " + shareUrl + " target is " + dest
 					+ " group " + imgGroup + " user " + image.getUserId());
@@ -92,7 +92,7 @@ public class ImageUploadApi {
 		}
 		String dest = image.getImgGroup() + "/" + image.getName();
 		File f = fileUtilty.copyInputToTmp(dest, requestBodyStream, true);
-		image.setImgTarget(dest);
+		image.setImgTarget(f.toString());
 		image.setStatus(0);
 		String shareUrl = baseUrl + "/image/" + image.getId();
 		image.setShareUrl(shareUrl);
