@@ -169,8 +169,9 @@ public class Image {
 			if (imageGroup.getPath() == null) {
 				imageGroup.setPath(this.imgGroup);				
 			}
-			this.groupId = imageGroup.getId();
 		}
+		this.groupId = imageGroup.getId();
+
 	}
 	public String getRev() {
 		return rev;

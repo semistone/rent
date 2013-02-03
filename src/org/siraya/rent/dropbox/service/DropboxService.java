@@ -46,25 +46,26 @@ public class DropboxService implements IDropboxService {
 	private static Map<String,Object> imgSetting;
 	
 	private static final int IO_BUFFER_SIZE = 4 * 1024;  
+	private boolean isInit =false;
 	public DropboxAPI<WebAuthSession> getApi() {
-		if (api == null) {
-			init();
-		}
+		init();
 		return api;
 	}
 
 	public void init() {
+		if (isInit) return;
 		Map<String, Object> settings = applicationConfig.get("dropbox");
 		AppKeyPair consumerTokenPair = new AppKeyPair(
 				(String) settings.get("app_key"),
 				(String) settings.get("app_secret"));
-		
+		imgSetting = applicationConfig.get("image");
 
 		WebAuthSession session = new WebAuthSession(consumerTokenPair,
 				AccessType.APP_FOLDER);
 		session.setAccessTokenPair(new AccessTokenPair((String) settings
 				.get("token_key"), (String) settings.get("token_secret")));
 		api = new DropboxAPI<WebAuthSession>(session);
+		isInit =true;
 	}
 
 	/**
@@ -72,8 +73,7 @@ public class DropboxService implements IDropboxService {
 	 * @param ext
 	 */
 	private void checkExtend(String ext) {
-		if (imgSetting == null && applicationConfig != null ) 
-			imgSetting = applicationConfig.get("image");
+		this.init();
 		logger.debug("check ext for "+ext);
 		List<String> exts = (List<String>) imgSetting.get("ext");
 		if (!exts.contains(ext)) {
@@ -97,6 +97,7 @@ public class DropboxService implements IDropboxService {
 		this.save(img, true);
 	}
 
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false)
 	public void update(Image img){
 		File src = new File(img.getImgTarget());
 		this.validateImageSize(src, img);
