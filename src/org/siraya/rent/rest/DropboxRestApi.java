@@ -3,6 +3,7 @@ package org.siraya.rent.rest;
 import java.net.HttpURLConnection;
 import java.util.Map;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.siraya.rent.dropbox.service.IDropboxService;
+import org.siraya.rent.filter.UserAuthorizeData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,14 +21,27 @@ import org.springframework.stereotype.Component;
 public class DropboxRestApi {
 	@Autowired
 	private IDropboxService dropboxService;
+	@Autowired
+	private UserAuthorizeData userAuthorizeData;
+	
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/do_link")
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 	public Response doLink(){	
 		Map<String, String> result = new java.util.HashMap<String, String>();
-		String url = this.dropboxService.doLink();
+		String url = this.dropboxService.doLink(userAuthorizeData.getUserId());
 		result.put("url", url);
 		return Response.status(HttpURLConnection.HTTP_OK).entity(result).build();
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/retrieve_token")
+	@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
+	public Response retrieveToken(){
+		this.dropboxService.retrieveWebAccessToken(userAuthorizeData.getUserId());
+		return null;
 	}
 }

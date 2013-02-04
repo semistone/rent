@@ -19,6 +19,6 @@ public interface IMobileProviderDao {
     @ResultMap("rent.mapper.MobileProviderResultMap")
     public MobileProvider get(@Param("id")String id, @Param("type")String type);
 
-    @Update("update MOBILE_PROVIDER set USER = #{user}, PASSWORD = #{password}, TYPE=#{type}, MODIFIED=#{modified} where ID = #{id}")
+    @Update("update MOBILE_PROVIDER set USER = #{user}, PASSWORD = #{password}, MODIFIED=#{modified} where ID = #{id} and TYPE=#{type}")
     public int updateProvider(MobileProvider mobileProvider);
 }

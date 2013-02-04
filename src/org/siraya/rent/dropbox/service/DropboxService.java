@@ -3,8 +3,9 @@ package org.siraya.rent.dropbox.service;
 import java.io.*;
 import java.net.URI;
 import java.util.Map;
-
+import com.dropbox.client2.session.RequestTokenPair;
 import org.siraya.rent.dropbox.dao.*;
+import org.siraya.rent.mobile.dao.IMobileProviderDao;
 import org.siraya.rent.pojo.*;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,9 @@ public class DropboxService implements IDropboxService {
 	private ImageDao imageDao;
 	@Autowired
 	private ImageGroupDao imageGroupDao;
-
+	@Autowired
+	private IMobileProviderDao mobileProviderDao;
+	
 	private static Logger logger = LoggerFactory.getLogger(DropboxService.class);
 
 	private static String DIR = "/";
@@ -47,6 +50,9 @@ public class DropboxService implements IDropboxService {
 	
 	private static final int IO_BUFFER_SIZE = 4 * 1024;  
 	private boolean isInit =false;
+	private AppKeyPair appKeyPair;
+	static String PROVIDER_TYPE_REQUSET = "DROPBOX_R";
+	static String PROVIDER_TYPE_TOKEN = "DROPBOX_T";
 	public DropboxAPI<WebAuthSession> getApi() {
 		init();
 		return api;
@@ -55,12 +61,12 @@ public class DropboxService implements IDropboxService {
 	public void init() {
 		if (isInit) return;
 		Map<String, Object> settings = applicationConfig.get("dropbox");
-		AppKeyPair consumerTokenPair = new AppKeyPair(
+		this.appKeyPair = new AppKeyPair(
 				(String) settings.get("app_key"),
 				(String) settings.get("app_secret"));
 		imgSetting = applicationConfig.get("image");
 
-		WebAuthSession session = new WebAuthSession(consumerTokenPair,
+		WebAuthSession session = new WebAuthSession(appKeyPair,
 				AccessType.APP_FOLDER);
 		session.setAccessTokenPair(new AccessTokenPair((String) settings
 				.get("token_key"), (String) settings.get("token_secret")));
@@ -190,17 +196,60 @@ public class DropboxService implements IDropboxService {
 		}
 	}
 
-	public String doLink() {
+	public void retrieveWebAccessToken(String userId){
 		try {
-			Map<String, Object> settings = applicationConfig.get("dropbox");
-			AppKeyPair appKeyPair = new AppKeyPair(
-					(String) settings.get("app_key"),
-					(String) settings.get("app_secret"));
+			this.init();
+			WebAuthSession was = new WebAuthSession(appKeyPair,
+					Session.AccessType.APP_FOLDER);
+			//
+			// retrieve access token
+			//
+			MobileProvider mobileProvider = mobileProviderDao.get(userId,
+					PROVIDER_TYPE_REQUSET);
+			RequestTokenPair requestTokenPair = new RequestTokenPair(
+					mobileProvider.getUser(), mobileProvider.getPassword());
+
+			was.retrieveWebAccessToken(requestTokenPair);
+			AccessTokenPair accessToken = was.getAccessTokenPair();
+			//
+			// insert or update into provider
+			//
+			MobileProvider mobileProvider2 = new MobileProvider();
+			mobileProvider2.setId(userId);
+			mobileProvider2.setUser(accessToken.key);
+			mobileProvider2.setPassword(accessToken.secret);
+			mobileProvider2.setType(PROVIDER_TYPE_TOKEN);
+			//
+			// insert or update into provider
+			//
+			if (mobileProviderDao.updateProvider(mobileProvider2) == 0) {
+				mobileProviderDao.newProvider(mobileProvider2);
+			}
+		}catch(Exception e ){
+			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
+					e.getMessage());
+		}
+
+	}
+	public String doLink(String userId) {
+		try {
+			this.init();
 			WebAuthSession was = new WebAuthSession(appKeyPair,
 					Session.AccessType.APP_FOLDER);
 
 			// Make the user log in and authorize us.
-			WebAuthSession.WebAuthInfo info = was.getAuthInfo();
+			WebAuthSession.WebAuthInfo info = was.getAuthInfo("http://localhost:8080/rent/rest/dropbox/retrieve_token");
+			//
+			// insert or update into provider 
+			//
+			MobileProvider mobileProvider = new MobileProvider();
+			mobileProvider.setId(userId);
+			mobileProvider.setUser(info.requestTokenPair.key);
+			mobileProvider.setPassword(info.requestTokenPair.secret);
+			mobileProvider.setType(PROVIDER_TYPE_REQUSET);
+			if (mobileProviderDao.updateProvider(mobileProvider) == 0 ){
+				mobileProviderDao.newProvider(mobileProvider);
+			}
 			return info.url;
 		} catch (DropboxException e) {
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
