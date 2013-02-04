@@ -47,6 +47,18 @@ public class TestDropboxService {
 		Assert.notNull(config.get("dropbox").get("app_key"));
 		Assert.notNull(config.get("dropbox").get("token_key"));
 	}
+    
+    @Test 
+    public void testDoLink(){
+    	String url = test.doLink();
+    	System.out.println(url);
+    }
+    
+    @Test 
+    public void testRetrieveWebAccessToken()throws Exception{
+    	test.retrieveWebAccessToken();
+    }
+    
     @Test 
 	public void testUpload() throws Exception{
 		context.checking(new Expectations() {
