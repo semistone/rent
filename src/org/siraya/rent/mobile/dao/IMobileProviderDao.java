@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.Delete;
 import org.siraya.rent.pojo.MobileProvider;
 import org.springframework.stereotype.Repository;
 
@@ -21,4 +22,7 @@ public interface IMobileProviderDao {
 
     @Update("update MOBILE_PROVIDER set USER = #{user}, PASSWORD = #{password}, MODIFIED=#{modified} where ID = #{id} and TYPE=#{type}")
     public int updateProvider(MobileProvider mobileProvider);
+    
+    @Delete("delete from MOBILE_PROVIDER where ID=#{id} and TYPE=#{type} ")
+    public int delete(@Param("id")String id, @Param("type")String type);
 }

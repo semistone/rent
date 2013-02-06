@@ -41,6 +41,7 @@ public class DropboxService implements IDropboxService {
 	@Autowired
 	private IMobileProviderDao mobileProviderDao;
 	
+
 	private static Logger logger = LoggerFactory.getLogger(DropboxService.class);
 
 	private static String DIR = "/";
@@ -51,6 +52,8 @@ public class DropboxService implements IDropboxService {
 	private static final int IO_BUFFER_SIZE = 4 * 1024;  
 	private boolean isInit =false;
 	private AppKeyPair appKeyPair;
+	private String retrieveTokenUrl;
+
 	static String PROVIDER_TYPE_REQUSET = "DROPBOX_R";
 	static String PROVIDER_TYPE_TOKEN = "DROPBOX_T";
 	public DropboxAPI<WebAuthSession> getApi() {
@@ -66,6 +69,8 @@ public class DropboxService implements IDropboxService {
 				(String) settings.get("app_secret"));
 		imgSetting = applicationConfig.get("image");
 
+		String baseUrl = (String) applicationConfig.get("general").get("base_url");
+		retrieveTokenUrl = baseUrl + settings.get("retrieve_token_path");
 		WebAuthSession session = new WebAuthSession(appKeyPair,
 				AccessType.APP_FOLDER);
 		session.setAccessTokenPair(new AccessTokenPair((String) settings
@@ -206,6 +211,12 @@ public class DropboxService implements IDropboxService {
 			//
 			MobileProvider mobileProvider = mobileProviderDao.get(userId,
 					PROVIDER_TYPE_REQUSET);
+
+			if (mobileProvider == null) {
+				throw new RentException(
+						RentException.RentErrorCode.ErrorGeneral,
+						"request session not exist");
+			}
 			RequestTokenPair requestTokenPair = new RequestTokenPair(
 					mobileProvider.getUser(), mobileProvider.getPassword());
 
@@ -225,20 +236,26 @@ public class DropboxService implements IDropboxService {
 			if (mobileProviderDao.updateProvider(mobileProvider2) == 0) {
 				mobileProviderDao.newProvider(mobileProvider2);
 			}
+			//
+			// delete request token
+			//
+			mobileProviderDao.delete(userId,PROVIDER_TYPE_REQUSET);
 		}catch(Exception e ){
+			logger.error("retreive token error ",e);
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
 					e.getMessage());
 		}
 
 	}
-	public String doLink(String userId) {
+	public String doLink(String userId, String done) {
 		try {
 			this.init();
 			WebAuthSession was = new WebAuthSession(appKeyPair,
 					Session.AccessType.APP_FOLDER);
 
 			// Make the user log in and authorize us.
-			WebAuthSession.WebAuthInfo info = was.getAuthInfo("http://localhost:8080/rent/rest/dropbox/retrieve_token");
+			String callback = retrieveTokenUrl+"?.done="+java.net.URLEncoder.encode(done, "UTF-8"); 
+			WebAuthSession.WebAuthInfo info = was.getAuthInfo(callback);
 			//
 			// insert or update into provider 
 			//
@@ -251,7 +268,8 @@ public class DropboxService implements IDropboxService {
 				mobileProviderDao.newProvider(mobileProvider);
 			}
 			return info.url;
-		} catch (DropboxException e) {
+		} catch (Exception e) {
+			logger.error("do link error",e);
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
 					e.getMessage());
 		}
@@ -503,6 +521,13 @@ public class DropboxService implements IDropboxService {
 
 	public void setImageGroupDao(ImageGroupDao imageGroupDao) {
 		this.imageGroupDao = imageGroupDao;
+	}
+	public IMobileProviderDao getMobileProviderDao() {
+		return mobileProviderDao;
+	}
+
+	public void setMobileProviderDao(IMobileProviderDao mobileProviderDao) {
+		this.mobileProviderDao = mobileProviderDao;
 	}
 
 }

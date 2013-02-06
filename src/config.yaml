@@ -37,6 +37,7 @@ dropbox:
     app_secret: test
     toekn_key: test
     token_secret: test
+    retrieve_token_path : /dropbox/retrieve_token
 image:
     ext: ['png', 'gif', 'jpg']
     limit: [4000,2000]

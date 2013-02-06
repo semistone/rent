@@ -7,7 +7,7 @@ import org.siraya.rent.pojo.Image;
 
 
 public interface IDropboxService {
-	public String doLink(String userId);
+	public String doLink(String userId,String done);
 	
 	public void retrieveWebAccessToken(String userId);
 	
