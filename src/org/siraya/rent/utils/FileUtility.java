@@ -1,8 +1,10 @@
 package org.siraya.rent.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,22 @@ public class FileUtility {
 		return f;
 	}
 	
+	public void copyToOutputStream(File f, OutputStream os) throws Exception {
+		java.io.FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(f);
+			byte[] buf = new byte[8192];
+			int n = 0;
+			while (-1 != (n = fis.read(buf))) {
+				os.write(buf, 0, n);
+			}
+		} finally {
+			if (fis != null) {
+				fis.close();
+			}
+		}
+	}
+	
 	private void mkdir(String path) {
 		logger.debug("mkdir "+path);
 		File f = new File(path);
@@ -55,7 +73,7 @@ public class FileUtility {
 								+ path + " is not dir");
 			}
 		} else {
-			if (!f.mkdir()) {
+			if (!f.mkdirs()) {
 				throw new RentException(
 						RentException.RentErrorCode.ErrorGeneral, "mkdir "
 								+ path + " fail");

@@ -1,13 +1,22 @@
 package org.siraya.rent.repl.dao;
-
-import org.apache.ibatis.annotations.Insert;
-import org.springframework.stereotype.Repository;	
 import org.siraya.rent.pojo.Message;
-
-@Repository("queueDao")
+import org.siraya.rent.pojo.QueueMeta;
+import java.util.List;
+import java.sql.Connection;
+import org.siraya.rent.pojo.*;
 public interface IQueueDao {
+	public void init() throws Exception;
+	
+	public QueueMeta getMeta(Connection meta) throws Exception;
+	
+	public Connection initQueue(String queue) throws Exception;
+	
+	public Connection initVolumnFile(String queue, int volumn) throws Exception;
 
-	@Insert("insert into MESSAGE_QUEUE (USER_ID, CMD, DATA, CREATED,MODIFIED) values(#{userId}, #{cmd}, #{data}, #{created}, #{modified})")
-	public int insert(Message message);
-
+	public void resetVolumn(Connection connMeta, QueueMeta meta) throws Exception;
+	
+	public int insert(Connection connMeta, Connection volumn, QueueMeta meta, Message message) throws Exception;
+	
+	public List<Message> dump(Connection conn) throws Exception;
+	
 }

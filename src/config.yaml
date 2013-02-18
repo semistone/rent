@@ -31,7 +31,13 @@ keydb:
     general: thebestsecretkey
 web:
     cdn: 'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com'
-    
+repl:
+    local_queues: 
+        queue1: xyz
+        queue2: xyz
+        test:
+            param1: xyz
+    volumn_max_entity: 5000
 dropbox:
     app_key: test
     app_secret: test

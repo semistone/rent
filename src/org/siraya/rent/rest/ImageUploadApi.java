@@ -181,7 +181,7 @@ public class ImageUploadApi {
 			StreamingOutput stream = new StreamingOutput() {
 				public void write(OutputStream output) throws IOException {
 					try {
-						copyToOutputStream(new File(image.getImgTarget()),
+						fileUtilty.copyToOutputStream(new File(image.getImgTarget()),
 								output);
 
 					} catch (Exception e) {
@@ -212,21 +212,7 @@ public class ImageUploadApi {
 		return this.dropboxService.getGroup(groupId);
 	}
 
-	private void copyToOutputStream(File f, OutputStream os) throws Exception {
-		java.io.FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(f);
-			byte[] buf = new byte[8192];
-			int n = 0;
-			while (-1 != (n = fis.read(buf))) {
-				os.write(buf, 0, n);
-			}
-		} finally {
-			if (fis != null) {
-				fis.close();
-			}
-		}
-	}
+
 
 	public FileUtility getFileUtilty() {
 		return fileUtilty;
