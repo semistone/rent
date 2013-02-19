@@ -1,6 +1,8 @@
 package org.siraya.rent.repl.dao;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.siraya.rent.pojo.Message;
 import org.siraya.rent.pojo.QueueMeta;
@@ -22,19 +24,14 @@ import org.siraya.rent.pojo.*;
  * @author angus_chen
  * 
  */
-@Repository("queueDao")
-public class QueueDao implements IQueueDao {
+public class QueueDao implements IQueueDao,InitializingBean  {
 	@Autowired
 	private IApplicationConfig applicationConfig;
 	private static Logger logger = LoggerFactory.getLogger(QueueDao.class);
 
 	private String volHome;
 
-	public QueueDao() {
-
-	}
-
-	public void init() throws Exception {
+	public void afterPropertiesSet() throws Exception {
 		//
 		// use sqlite as local storage
 		//
@@ -89,9 +86,11 @@ public class QueueDao implements IQueueDao {
 		return ret;
 		
 	}
+	
+	
 	public Connection initQueue(String queue) throws Exception {
 		if (volHome == null || queue == null) {
-			this.init();
+			this.afterPropertiesSet();
 		}
 		String volDir = volHome + queue;
 		//

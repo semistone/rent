@@ -25,19 +25,6 @@
         </list>
     </property>
 </bean>
-<bean id="queueSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-   <property name="dataSource" ref="queueDS" />
-   <property name="mapperLocations">
-        <list>
-            <value>classpath:org/siraya/rent/pojo/mapper/*.xml</value>
-        </list>
-    </property>
-</bean>
-
-<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-    <property name="basePackage" value="org.siraya.rent.repl.dao" />
-    <property name="sqlSessionFactory" ref="queueSqlSessionFactory" />
-</bean>
 
 <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
     <property name="basePackage" value="org.siraya.rent" />

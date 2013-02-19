@@ -4,17 +4,18 @@ import java.sql.Connection;
 import java.util.*;
 import org.siraya.rent.pojo.*;
 import org.siraya.rent.utils.IApplicationConfig;
+import org.siraya.rent.utils.RentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.siraya.rent.repl.dao.*;
-
-public class LocalQueueService implements ILocalQueueService {
+import org.springframework.beans.factory.*;
+public class LocalQueueService implements ILocalQueueService,BeanNameAware,InitializingBean {
 	@Autowired
 	private IApplicationConfig applicationConfig;
-
 	@Autowired
 	private IQueueDao queueDao;
+
 
 	private static Logger logger = LoggerFactory
 			.getLogger(LocalQueueService.class);
@@ -26,14 +27,12 @@ public class LocalQueueService implements ILocalQueueService {
 	public LocalQueueService() {
 
 	}
-
-	public LocalQueueService(String queue) throws Exception {
-		init(queue);
+	
+	public void setBeanName(String name){
+		this.queue = name;
 	}
-
-	void init(String queue) throws Exception {
-		this.queue = queue;
-		queueDao.init();
+	
+	public void afterPropertiesSet() throws Exception {
 		HashMap<String, Object> settings = (HashMap<String, Object>) applicationConfig
 				.get("repl");
 		HashMap<String, Object> localQueues = (HashMap<String, Object>) settings
@@ -44,7 +43,9 @@ public class LocalQueueService implements ILocalQueueService {
 					+ " setting not exist");
 		}
 		queueSettings = (HashMap<String, Object>) localQueues.get(queue);
-
+		if (queueDao == null) {
+			throw new NullPointerException("queue dao is not set yet");
+		}
 		connMeta = queueDao.initQueue(queue);
 		meta = queueDao.getMeta(connMeta);
 		connVolumn = queueDao.initVolumnFile(queue, meta.getVolumn());

@@ -25,7 +25,8 @@ public class TestLocalQueueService {
 		queueDao.setApplicationConfig(applicationConfig);
 		localQueueService.setApplicationConfig(applicationConfig);
 		localQueueService.setQueueDao(queueDao);
-		localQueueService.init(queue);
+		localQueueService.setBeanName(queue);
+		localQueueService.afterPropertiesSet();
 	}
 	
     @Test   

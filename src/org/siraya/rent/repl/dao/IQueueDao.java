@@ -5,7 +5,6 @@ import java.util.List;
 import java.sql.Connection;
 import org.siraya.rent.pojo.*;
 public interface IQueueDao {
-	public void init() throws Exception;
 	
 	public QueueMeta getMeta(Connection meta) throws Exception;
 	

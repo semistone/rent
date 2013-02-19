@@ -39,14 +39,15 @@
     <bean id="rentTxManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="rentDS"/>
     </bean>
-    <bean id="queueDS" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="org.sqlite.JDBC" />
-        <property name="url" value="jdbc:sqlite:sample.db" /> 
+    
+    <!-- initial local queue -->
+    <bean id="queueDao" class="org.siraya.rent.repl.dao.QueueDao">
     </bean>
-    <bean id="queueTxManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="queueDS"/>
+    <bean id="queue1" class="org.siraya.rent.repl.service.LocalQueueService">
+ 
     </bean>
-    <tx:annotation-driven transaction-manager="queueTxManager"/>
+  
+    <!-- set up schedule task -->
     <tx:annotation-driven transaction-manager="rentTxManager"/>   
     <task:scheduler id="myScheduler" pool-size="10"/>
 </beans>
