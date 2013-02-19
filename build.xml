@@ -17,11 +17,14 @@
 	<property name="reports.tests" value="build" />
 	<property name="src.dir.js" value="${webroot.dir}/js" />
 	<property name="dist.dir.js" value="${dest.dir}/js" />
-	
+    <property name="tomcat.home" value="/usr/share/tomcat6" />
 
 	<path id="build.lib.path">
 		<fileset dir="${lib.dir}">
 			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${tomcat.home}">
+			<include name="lib/*.jar" />
 		</fileset>
 	</path>
 
