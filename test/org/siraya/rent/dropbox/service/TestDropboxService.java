@@ -1,7 +1,7 @@
 package org.siraya.rent.dropbox.service;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.siraya.rent.mobile.dao.IMobileProviderDao;
 import org.siraya.rent.pojo.*;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -19,8 +19,11 @@ public class TestDropboxService {
 	private String userId;
 	private String group;
 	private IApplicationConfig config;
+	private IMobileProviderDao mobileProviderDao;
 	DropboxService test;
 	Image image;
+	private String user = "user";
+	private String done = "http://tw.yahoo.com";
 	private Map<String, Object> setting;
 	@Before
 	public void setUp() throws Exception{
@@ -28,11 +31,13 @@ public class TestDropboxService {
 		context = new JUnit4Mockery();
 		dao = context.mock(ImageDao.class);	
 		groupDao = context.mock(ImageGroupDao.class);	
+		mobileProviderDao = context.mock(IMobileProviderDao.class);	
 
 		config = new org.siraya.rent.utils.ApplicationConfig();
 		test.setApplicationConfig(config);
 		test.setImageDao(dao);
 		test.setImageGroupDao(groupDao);
+		test.setMobileProviderDao(mobileProviderDao);
 		userId="user";
 		group = "img_group1";
 		image = new Image();
@@ -47,6 +52,34 @@ public class TestDropboxService {
 		Assert.notNull(config.get("dropbox").get("app_key"));
 		Assert.notNull(config.get("dropbox").get("token_key"));
 	}
+    
+    @Test 
+    public void testDoLink(){
+		context.checking(new Expectations() {
+			{
+				one(mobileProviderDao).updateProvider(with(any(MobileProvider.class)));
+				will(returnValue(1));
+			}
+		});
+    	String url = test.doLink(user, done);
+    	System.out.println(url);
+    }
+    
+
+    @Test(expected=org.siraya.rent.utils.RentException.class)
+    public void testRetrieveWebAccessToken()throws Exception{
+    	final MobileProvider mobileProvider = new MobileProvider();
+    	mobileProvider.setUser("xxx");
+    	mobileProvider.setPassword("password");
+    	context.checking(new Expectations() {
+			{
+				one(mobileProviderDao).get(user, DropboxService.PROVIDER_TYPE_REQUSET);
+				will(returnValue(mobileProvider));
+			}
+		});
+    	test.retrieveWebAccessToken(user);
+    }
+    
     @Test 
 	public void testUpload() throws Exception{
 		context.checking(new Expectations() {

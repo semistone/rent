@@ -35,11 +35,19 @@
         <property name="acquireIncrement" value="1"></property>
     </bean>
 
+
     <bean id="rentTxManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="rentDS"/>
     </bean>
-
-    <tx:annotation-driven transaction-manager="rentTxManager"/>
     
+    <!-- initial local queue -->
+    <bean id="queueDao" class="org.siraya.rent.repl.dao.QueueDao">
+    </bean>
+    <bean id="queue1" class="org.siraya.rent.repl.service.LocalQueueService">
+ 
+    </bean>
+  
+    <!-- set up schedule task -->
+    <tx:annotation-driven transaction-manager="rentTxManager"/>   
     <task:scheduler id="myScheduler" pool-size="10"/>
 </beans>

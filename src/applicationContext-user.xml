@@ -29,7 +29,8 @@
     org.siraya.rent.rest;
     org.siraya.rent.page;
     org.siraya.rent.dropbox;
-    org.siraya.rent.filter" />
+    org.siraya.rent.filter;
+    org.siraya.rent.repl" />
     <task:scheduled-tasks scheduler="myScheduler">
         <task:scheduled ref="dropboxService" method="sync" fixed-delay="60000"/>
     </task:scheduled-tasks>

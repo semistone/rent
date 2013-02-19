@@ -30,4 +30,5 @@
     <property name="basePackage" value="org.siraya.rent" />
     <property name="sqlSessionFactory" ref="rentSqlSessionFactory" />
 </bean>
+
 </beans>

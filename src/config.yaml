@@ -31,12 +31,21 @@ keydb:
     general: thebestsecretkey
 web:
     cdn: 'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com'
-    
+repl:
+    local_queues: 
+        queue1: 
+            param1: xyz
+        queue2: 
+            param1: xyz
+        test: 
+            param1: xyz
+    volumn_max_entity: 5000
 dropbox:
     app_key: test
     app_secret: test
     toekn_key: test
     token_secret: test
+    retrieve_token_path : /dropbox/retrieve_token
 image:
     ext: ['png', 'gif', 'jpg']
     limit: [4000,2000]
