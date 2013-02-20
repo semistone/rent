@@ -41,10 +41,10 @@
     </bean>
     
     <!-- initial local queue -->
-    <bean id="queueDao" class="org.siraya.rent.repl.dao.QueueDao">
+    <bean id="queue1Dao" class="org.siraya.rent.repl.dao.QueueDao">
     </bean>
     <bean id="queue1" class="org.siraya.rent.repl.service.LocalQueueService">
- 
+        <property name="queueDao" ref="queue1Dao"></property>
     </bean>
   
     <!-- set up schedule task -->

@@ -3,6 +3,14 @@ package org.siraya.rent.pojo;
 public class QueueMeta {
 	int volumn;
 	int lastRecord;
+	String id;
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public int getLastRecord() {
 		return lastRecord;

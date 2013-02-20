@@ -34,7 +34,9 @@ web:
 repl:
     local_queues: 
         queue1: 
-            param1: xyz
+            readers: 
+                reader1:
+                    param1: xyz
         queue2: 
             param1: xyz
         test: 

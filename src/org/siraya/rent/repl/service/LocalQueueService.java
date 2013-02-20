@@ -13,25 +13,21 @@ import org.springframework.beans.factory.*;
 public class LocalQueueService implements ILocalQueueService,BeanNameAware,InitializingBean {
 	@Autowired
 	private IApplicationConfig applicationConfig;
-	@Autowired
 	private IQueueDao queueDao;
 
 
 	private static Logger logger = LoggerFactory
 			.getLogger(LocalQueueService.class);
-	private Connection connMeta;
 	private Connection connVolumn;
 	private HashMap<String, Object> queueSettings;
 	private QueueMeta meta;
 	private String queue;
-	public LocalQueueService() {
-
-	}
+	private List<INewMessageEventListener> listeners = new ArrayList<INewMessageEventListener>();
 	
 	public void setBeanName(String name){
 		this.queue = name;
 	}
-	
+		
 	public void afterPropertiesSet() throws Exception {
 		HashMap<String, Object> settings = (HashMap<String, Object>) applicationConfig
 				.get("repl");
@@ -46,9 +42,9 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 		if (queueDao == null) {
 			throw new NullPointerException("queue dao is not set yet");
 		}
-		connMeta = queueDao.initQueue(queue);
-		meta = queueDao.getMeta(connMeta);
-		connVolumn = queueDao.initVolumnFile(queue, meta.getVolumn());
+		queueDao.initQueue(queue);
+		meta = queueDao.getMeta();
+		connVolumn = queueDao.initVolumnFile(meta.getVolumn());
 	}
 
 	/**
@@ -62,7 +58,7 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 			logger.info("dump current volumn");
 			return queueDao.dump(connVolumn);			
 		} else {
-			Connection conn = queueDao.initVolumnFile(queue, volumn);
+			Connection conn = queueDao.initVolumnFile(volumn);
 			return queueDao.dump(conn);
 		}
 	}
@@ -77,17 +73,33 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 			if ((maxEntity).equals(meta.getLastRecord())) {
 				meta.setLastRecord(0);
 				meta.increaseVolumn();
-				queueDao.resetVolumn(connMeta, meta);
+				queueDao.resetVolumn(meta);
 			} else {
 				meta.increaseLastRecord();
 			}
 		}
-		queueDao.insert(connMeta, connVolumn, meta, message);
+		queueDao.insert(connVolumn, meta, message);
+		this.triggerListener();
+	}
+	
+	public void addEventListener(INewMessageEventListener listener){
+		listeners.add(listener);
 	}
 
-	public QueueMeta getMeta() throws Exception {
-		return this.queueDao.getMeta(connMeta);
+	public void removeEventListener(INewMessageEventListener listener){
+		listeners.remove(listener);
 	}
+
+	private void triggerListener(){
+		for(INewMessageEventListener listener: listeners){
+			listener.newMessageEvent();
+		}
+	}
+	
+	public QueueMeta getMeta() throws Exception {
+		return this.queueDao.getMeta(this.queue);
+	}
+	
 	public IApplicationConfig getApplicationConfig() {
 		return applicationConfig;
 	}
