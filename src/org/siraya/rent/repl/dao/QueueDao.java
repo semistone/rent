@@ -216,6 +216,7 @@ public class QueueDao implements IQueueDao,InitializingBean  {
 	}
 	
 	public void updateReaderMeta(QueueMeta meta) throws Exception{
+		logger.debug("update reader meta "+meta.getLastRecord()+" id:"+meta.getId());
 		String UPDATE = "update QUEUE_META set VOLUMN=? , LAST_RECORD=? where ID=? ";
 		PreparedStatement ps = connMeta.prepareStatement(UPDATE);
 		ps.setInt(1, meta.getVolumn());

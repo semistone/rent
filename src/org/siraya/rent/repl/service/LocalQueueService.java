@@ -40,7 +40,11 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 		}
 		queueSettings = (HashMap<String, Object>) localQueues.get(queue);
 		if (queueDao == null) {
-			throw new NullPointerException("queue dao is not set yet");
+			logger.info("new queue dao");
+			QueueDao tmp = new QueueDao();
+			tmp.setApplicationConfig(applicationConfig);
+			tmp.setQueue(queue);
+			this.queueDao = tmp;
 		}
 		queueDao.initQueue(queue);
 		meta = queueDao.getMeta();
@@ -90,9 +94,11 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 		listeners.remove(listener);
 	}
 
-	private void triggerListener(){
-		for(INewMessageEventListener listener: listeners){
-			listener.newMessageEvent();
+	private void triggerListener(){	
+		INewMessageEventListener[] array = listeners.toArray(new INewMessageEventListener[0]);
+		int size = array.length;
+		for(int i = 0 ; i < size ; i++){
+			array[i].newMessageEvent();
 		}
 	}
 	

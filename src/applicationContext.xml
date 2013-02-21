@@ -41,12 +41,16 @@
     </bean>
     
     <!-- initial local queue -->
-    <bean id="queue1Dao" class="org.siraya.rent.repl.dao.QueueDao">
+    <bean id ="sampleReader" class="org.siraya.rent.repl.service.example.LogReader1"></bean>
+    <bean id="queue1" class="org.siraya.rent.repl.service.LocalQueueService"/>
+    <bean id="reader1" class="org.siraya.rent.repl.service.LogReaderService">
+        <property name="localQueueService" ref="queue1"/>  
+        <property name="logReader" ref="sampleReader"/>            
     </bean>
-    <bean id="queue1" class="org.siraya.rent.repl.service.LocalQueueService">
-        <property name="queueDao" ref="queue1Dao"></property>
+    <bean id="readerThread1" class="java.lang.Thread" init-method="start">
+        <constructor-arg ref="reader1"/>
     </bean>
-  
+    
     <!-- set up schedule task -->
     <tx:annotation-driven transaction-manager="rentTxManager"/>   
     <task:scheduler id="myScheduler" pool-size="10"/>

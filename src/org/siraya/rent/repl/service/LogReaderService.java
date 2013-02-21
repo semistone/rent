@@ -14,11 +14,11 @@ import java.util.List;
  * @author angus_chen
  *
  */
-public class LogReaderService implements BeanNameAware,Runnable,INewMessageEventListener{
+public class LogReaderService implements BeanNameAware,Runnable,INewMessageEventListener,ILogReaderService,InitializingBean{
 	/**
 	 * which local queue it listen to 
 	 */
-	ILocalQueueService localQueueService;
+	private ILocalQueueService localQueueService;
 	private static Logger logger = LoggerFactory
 			.getLogger(LogReaderService.class);
 	private Connection connVolumn;
@@ -28,11 +28,21 @@ public class LogReaderService implements BeanNameAware,Runnable,INewMessageEvent
 	private String queue;
 	private ILogReader logReader;
 	private int writeInterval = 1;
+	private boolean isShutdown = false;
+
+
+	public void afterPropertiesSet() throws Exception {
+		meta = this.queueDao.getMeta(name);
+	}
+	
 	public void run(){
 		try {
+			if (logReader == null) {
+				throw new NullPointerException("log reader is null");
+			}
 			Connection conn = queueDao.initVolumnFile(meta.getVolumn());
 			int count = 0;
-			while(true) {
+			while(!isShutdown) {
 				List<Message> messages = this.queueDao.dump(conn, meta.getLastRecord()+1, 5000);			
 				for (Message message: messages) {				
 					count ++;
@@ -48,7 +58,7 @@ public class LogReaderService implements BeanNameAware,Runnable,INewMessageEvent
 				}
 			}
 		}catch(Exception e){
-			
+			logger.debug("error",e);
 		}
 	}
 
@@ -63,11 +73,14 @@ public class LogReaderService implements BeanNameAware,Runnable,INewMessageEvent
 		this.localQueueService.removeEventListener(this);
 		this.notify();
 	}
+	
+	
 	public void setLocalQueueService(ILocalQueueService localQueueService) throws Exception {
+		logger.debug("setup local queue service in reader");
 		this.localQueueService = localQueueService;
 		this.queueDao = localQueueService.getQueueDao();
 		this.queue = localQueueService.getMeta().getId();
-		meta = this.queueDao.getMeta(name);
+
 		
 	}
 	
@@ -86,5 +99,11 @@ public class LogReaderService implements BeanNameAware,Runnable,INewMessageEvent
 	public ILocalQueueService getLocalQueueService() {
 		return localQueueService;
 	}
+	public boolean isShutdown() {
+		return isShutdown;
+	}
 
+	public void setShutdown(boolean isShutdown) {
+		this.isShutdown = isShutdown;
+	}
 }
