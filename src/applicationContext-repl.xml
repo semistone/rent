@@ -22,7 +22,7 @@
                 
     <!-- initial local queue -->
     <bean id="queueDao" class="org.siraya.rent.repl.dao.QueueDao" scope="prototype"></bean>    
-    <bean id="relayReader" class="org.siraya.rent.repl.service.RelayLogReader"></bean>
+    <bean id="relayReader" class="org.siraya.rent.repl.service.RelayLogReader" scope="prototype"></bean>
     <bean id ="sampleReader" class="org.siraya.rent.repl.service.example.LogReader1"></bean>
 
     <bean id="queue1" class="org.siraya.rent.repl.service.LocalQueueService"/>
@@ -36,7 +36,5 @@
 
     <!-- queue2 -->
     <bean id="queue2" class="org.siraya.rent.repl.service.LocalQueueService"/>    
-    <!-- set up schedule task -->
-    <tx:annotation-driven transaction-manager="rentTxManager"/>   
-    <task:scheduler id="myScheduler" pool-size="10"/>
+
 </beans>
