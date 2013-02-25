@@ -3,6 +3,7 @@ import java.sql.Connection;
 import org.springframework.beans.factory.*;
 import org.siraya.rent.pojo.*;
 import org.siraya.rent.repl.dao.IQueueDao;
+import org.siraya.rent.utils.RentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,7 @@ public class LogReaderService implements BeanNameAware,Runnable,INewMessageEvent
 	private int writeInterval = 1;
 	private boolean isShutdown = false;
 	private boolean isWake = true;
-
+	private int maxEntity;
 	public void afterPropertiesSet() throws Exception {
 		meta = this.queueDao.getMeta(name);
 		this.logReader.init(name);
@@ -41,18 +42,36 @@ public class LogReaderService implements BeanNameAware,Runnable,INewMessageEvent
 			if (logReader == null) {
 				throw new NullPointerException("log reader is null");
 			}
+			if (this.maxEntity == 0) {
+				throw new RentException(RentException.RentErrorCode.ErrorInit,
+						"max entity not set");
+			}
+			logger.debug("reader get volumn "+meta.getVolumn());
 			Connection conn = queueDao.initVolumnFile(meta.getVolumn());
 			int count = 0;
 			while(!isShutdown) {
-				List<Message> messages = this.queueDao.dump(conn, meta.getLastRecord()+1, 5000);			
+				logger.debug("dump from "+meta.getLastRecord());
+				List<Message> messages = this.queueDao.dump(conn, meta.getLastRecord(), 5000);			
 				for (Message message: messages) {				
 					count ++;
 					logReader.consume(message);
 					meta.increaseLastRecord();
+					
 					if (count % writeInterval == 0) {
 						queueDao.updateReaderMeta(meta);
 					}
-				}				
+				}	
+				//
+				// reset reader volumn
+				//
+				if (meta.getLastRecord() == this.maxEntity) {
+					logger.info("reset reader meta");
+					meta.setLastRecord(0);
+					meta.increaseVolumn();
+					queueDao.updateReaderMeta(meta);
+					conn = queueDao.initVolumnFile(meta.getVolumn());
+					continue;
+				}
 				if (messages.size() == 0) {
 					// no more data
 					this.noMoreMessageAndWait();
@@ -84,6 +103,7 @@ public class LogReaderService implements BeanNameAware,Runnable,INewMessageEvent
 		this.localQueueService = localQueueService;
 		this.queueDao = localQueueService.getQueueDao();
 		this.queue = localQueueService.getMeta().getId();
+		this.maxEntity = localQueueService.getMaxEntity();
 
 		
 	}

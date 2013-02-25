@@ -16,4 +16,5 @@ public interface ILocalQueueService {
 
 	public void removeEventListener(INewMessageEventListener listener);
 
+	public int getMaxEntity();
 }

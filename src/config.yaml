@@ -34,6 +34,7 @@ web:
 repl:
     log_writers: 
         queue1: 
+            volumn_max_entity: 2
             readers: [reader1,reader2]
         queue2: 
             param1: xyz
@@ -41,7 +42,6 @@ repl:
             param1: xyz
     log_readers:
         reader1:
-            type: relay
             relay_to: http://localhost:8080/rent/rest/repl/queue2
         reader2:
             type: bean

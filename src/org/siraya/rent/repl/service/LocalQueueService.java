@@ -23,8 +23,10 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 	private HashMap<String, Object> queueSettings;
 	private QueueMeta meta;
 	private String queue;
+	private int currentVolumn = 0 ;
 	private List<INewMessageEventListener> listeners = new ArrayList<INewMessageEventListener>();
-	
+	private int maxEntity;
+
 	public void setBeanName(String name){
 		this.queue = name;
 	}
@@ -49,6 +51,7 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 		}
 		queueDao.initQueue(queue);
 		meta = queueDao.getMeta();
+		this.currentVolumn = meta.getVolumn();
 		connVolumn = queueDao.initVolumnFile(meta.getVolumn());
 	}
 
@@ -69,20 +72,32 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 	}
 	
 	public void insert(Message message) throws Exception {
-		Integer maxEntity = (Integer) queueSettings.get("volumn_max_entity");
-		if (maxEntity == null) {
-			logger.info("set default max record 5000");
-			maxEntity = 5000;
+		if (maxEntity == 0) {
+			this.getMaxEntity();
 		}
-		synchronized (this) {
-			if ((maxEntity).equals(meta.getLastRecord())) {
-				meta.setLastRecord(0);
-				meta.increaseVolumn();
-				queueDao.resetVolumn(meta);
-			} else {
-				meta.increaseLastRecord();
+		int lastRecord = meta.getLastRecord();
+		logger.debug("last record is "+lastRecord +" max entity is "+maxEntity);
+		int tmpVolumn = this.currentVolumn;
+		if (maxEntity == meta.getLastRecord()) {
+			synchronized (this) {
+				// if current insert in last record, only first thread will go to first 
+				// block, else will just increase last record.
+				if (tmpVolumn == meta.getVolumn()) {
+					meta.setLastRecord(1);
+					meta.increaseVolumn();
+					queueDao.resetVolumn(meta);
+					this.connVolumn.close();
+					this.connVolumn = queueDao.initVolumnFile(meta.getVolumn());
+					currentVolumn = meta.getVolumn();
+					logger.info("update volumn to "+this.currentVolumn);
+				} else {
+					meta.increaseLastRecord();					
+				}
 			}
+		} else {
+			meta.increaseLastRecord();
 		}
+		
 		queueDao.insert(connVolumn, meta, message);
 		this.triggerListener();
 	}
@@ -121,6 +136,23 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 
 	public void setQueueDao(IQueueDao queueDao) {
 		this.queueDao = queueDao;
+	}
+	
+	public int getMaxEntity() {
+		if (maxEntity != 0 ) {
+			return this.maxEntity;
+		}
+		if (queueSettings.containsKey("volumn_max_entity")) {
+			maxEntity = (int) queueSettings.get("volumn_max_entity");	
+		}else {
+			maxEntity = 5000;
+		}	
+		logger.info("max entity is "+maxEntity);
+		return maxEntity;
+	}
+
+	public void setMaxEntity(int maxEntity) {
+		this.maxEntity = maxEntity;
 	}
 
 }
