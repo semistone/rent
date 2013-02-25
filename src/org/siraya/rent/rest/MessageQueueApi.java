@@ -18,25 +18,29 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
+import java.util.*;
 /**
  * prove of concept repl implement. put message into queue.
  * 
  * @author angus_chen
  * 
  */
-@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
+//@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
 @Component("messageWriterApi")
-@Path("/msg_queue")
+@Path("/repl")
 public class MessageQueueApi {
 	@Autowired
 	private UserAuthorizeData userAuthorizeData;
 	private static Logger logger = LoggerFactory.getLogger(MessageQueueApi.class);
-	
+	private Map<String,String> ret;
+	public MessageQueueApi(){
+		ret = new HashMap<String,String> ();
+		ret.put("status", "SUCCESS");
+	}
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{queue}/{cmd}")
-	public void post(@Context HttpServletRequest req,
+	public Map post(@Context HttpServletRequest req,
 			@PathParam("queue") String queue, @PathParam("cmd") String cmd,
 			InputStream requestBodyStream) throws Exception {
 		logger.debug("post queue:"+queue+" cmd:"+cmd);
@@ -64,6 +68,7 @@ public class MessageQueueApi {
 		}
 		message.setData(bos.toByteArray());
 		localQueueService.insert(message);
+		return ret;
 	}
 
 }

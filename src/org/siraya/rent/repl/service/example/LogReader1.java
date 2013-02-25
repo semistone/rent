@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 public class LogReader1 implements ILogReader{
 	private static Logger logger = LoggerFactory.getLogger(LogReader1.class);
+	public void init(String name) throws Exception{
+		
+	}
 	public void consume(Message message) {
 		//
 		// do nothing haha.

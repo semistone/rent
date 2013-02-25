@@ -32,15 +32,20 @@ keydb:
 web:
     cdn: 'http://ec2-54-251-33-245.ap-southeast-1.compute.amazonaws.com'
 repl:
-    local_queues: 
+    log_writers: 
         queue1: 
-            readers: 
-                reader1:
-                    param1: xyz
+            readers: [reader1,reader2]
         queue2: 
             param1: xyz
         test: 
             param1: xyz
+    log_readers:
+        reader1:
+            type: relay
+            relay_to: http://localhost:8080/rent/rest/repl/queue2
+        reader2:
+            type: bean
+                                  
     volumn_max_entity: 5000
 dropbox:
     app_key: test

@@ -7,5 +7,7 @@ import org.siraya.rent.pojo.Message;
  *
  */
 public interface ILogReader {
+	public void init(String name) throws Exception;
+	
 	public void consume(Message message);
 }

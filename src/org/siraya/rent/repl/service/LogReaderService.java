@@ -29,10 +29,11 @@ public class LogReaderService implements BeanNameAware,Runnable,INewMessageEvent
 	private ILogReader logReader;
 	private int writeInterval = 1;
 	private boolean isShutdown = false;
-
+	private boolean isWake = true;
 
 	public void afterPropertiesSet() throws Exception {
 		meta = this.queueDao.getMeta(name);
+		this.logReader.init(name);
 	}
 	
 	public void run(){
@@ -65,13 +66,16 @@ public class LogReaderService implements BeanNameAware,Runnable,INewMessageEvent
 	private synchronized void noMoreMessageAndWait() throws Exception{
 		logger.debug("no more task and wait");
 		this.localQueueService.addEventListener(this);
+		this.isWake = false;
 		this.wait();
 	}
 	
 	public synchronized void newMessageEvent(){
-		logger.debug("wake up");
+		if (isWake) return;  // prevent notify twice before real wake up.
+		logger.debug("wake up");		
 		this.localQueueService.removeEventListener(this);
-		this.notify();
+		this.isWake = true;
+		this.notify();		
 	}
 	
 	

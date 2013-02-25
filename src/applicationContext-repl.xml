@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task" 
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/task   
+            http://www.springframework.org/schema/task/spring-task-3.0.xsd 
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+                
+    <!-- initial local queue -->
+    <bean id="queueDao" class="org.siraya.rent.repl.dao.QueueDao" scope="prototype"></bean>    
+    <bean id="relayReader" class="org.siraya.rent.repl.service.RelayLogReader"></bean>
+    <bean id ="sampleReader" class="org.siraya.rent.repl.service.example.LogReader1"></bean>
+
+    <bean id="queue1" class="org.siraya.rent.repl.service.LocalQueueService"/>
+    <bean id="reader1" class="org.siraya.rent.repl.service.LogReaderService">
+        <property name="localQueueService" ref="queue1"/>  
+        <property name="logReader" ref="relayReader"/>            
+    </bean>
+    <bean id="readerThread1" class="java.lang.Thread" init-method="start">
+        <constructor-arg ref="reader1"/>
+    </bean>
+
+    <!-- queue2 -->
+    <bean id="queue2" class="org.siraya.rent.repl.service.LocalQueueService"/>    
+    <!-- set up schedule task -->
+    <tx:annotation-driven transaction-manager="rentTxManager"/>   
+    <task:scheduler id="myScheduler" pool-size="10"/>
+</beans>

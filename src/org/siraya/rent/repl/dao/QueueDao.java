@@ -2,8 +2,7 @@ package org.siraya.rent.repl.dao;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Scope;
 import org.siraya.rent.pojo.Message;
 import org.siraya.rent.pojo.QueueMeta;
 import org.siraya.rent.utils.IApplicationConfig;
@@ -24,6 +23,7 @@ import org.siraya.rent.pojo.*;
  * @author angus_chen
  * 
  */
+@Scope("prototype")
 public class QueueDao implements IQueueDao,InitializingBean  {
 	@Autowired
 	private IApplicationConfig applicationConfig;

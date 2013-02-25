@@ -39,18 +39,7 @@
     <bean id="rentTxManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="rentDS"/>
     </bean>
-    
-    <!-- initial local queue -->
-    <bean id ="sampleReader" class="org.siraya.rent.repl.service.example.LogReader1"></bean>
-    <bean id="queue1" class="org.siraya.rent.repl.service.LocalQueueService"/>
-    <bean id="reader1" class="org.siraya.rent.repl.service.LogReaderService">
-        <property name="localQueueService" ref="queue1"/>  
-        <property name="logReader" ref="sampleReader"/>            
-    </bean>
-    <bean id="readerThread1" class="java.lang.Thread" init-method="start">
-        <constructor-arg ref="reader1"/>
-    </bean>
-    
+       
     <!-- set up schedule task -->
     <tx:annotation-driven transaction-manager="rentTxManager"/>   
     <task:scheduler id="myScheduler" pool-size="10"/>

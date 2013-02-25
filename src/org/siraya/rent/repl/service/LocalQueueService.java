@@ -13,6 +13,7 @@ import org.springframework.beans.factory.*;
 public class LocalQueueService implements ILocalQueueService,BeanNameAware,InitializingBean {
 	@Autowired
 	private IApplicationConfig applicationConfig;
+	@Autowired
 	private IQueueDao queueDao;
 
 
@@ -32,7 +33,7 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 		HashMap<String, Object> settings = (HashMap<String, Object>) applicationConfig
 				.get("repl");
 		HashMap<String, Object> localQueues = (HashMap<String, Object>) settings
-				.get("local_queues");
+				.get("log_writers");
 
 		if (!localQueues.containsKey(queue)) {
 			throw new NullPointerException("queue " + queue
