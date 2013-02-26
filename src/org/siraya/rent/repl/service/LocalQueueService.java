@@ -2,6 +2,7 @@ package org.siraya.rent.repl.service;
 
 import java.sql.Connection;
 import java.util.*;
+
 import org.siraya.rent.pojo.*;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.utils.RentException;
@@ -27,6 +28,7 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 	private List<INewMessageEventListener> listeners = new ArrayList<INewMessageEventListener>();
 	private int maxEntity;
 
+	
 	public void setBeanName(String name){
 		this.queue = name;
 	}
@@ -53,6 +55,12 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 		meta = queueDao.getMeta();
 		this.currentVolumn = meta.getVolumn();
 		connVolumn = queueDao.initVolumnFile(meta.getVolumn());
+	}
+	
+	
+	public List<QueueMeta> getMetaList() throws Exception{
+		
+		return this.queueDao.getMetaList();
 	}
 
 	/**

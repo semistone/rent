@@ -85,6 +85,22 @@ public class QueueDao implements IQueueDao,InitializingBean  {
 		return ret;
 			
 	}
+	
+	
+	public List<QueueMeta>getMetaList() throws Exception{
+		ResultSet rs =connMeta.createStatement().executeQuery("select * from QUEUE_META");
+		ArrayList<QueueMeta> ret = new ArrayList<QueueMeta>();
+		while(rs.next()) {
+			QueueMeta meta = new QueueMeta();
+			meta.setId(rs.getString(1));
+			meta.setVolumn(rs.getInt(2));
+			meta.setLastRecord(rs.getInt(3));
+			ret.add(meta);
+		}
+		return ret;			
+	}
+	
+	
 	public List<Message> dump(Connection conn) throws Exception{
 		return this.dump(conn,0, 50000);
 	}

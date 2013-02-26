@@ -37,6 +37,35 @@ public class MessageQueueApi {
 		ret = new HashMap<String,String> ();
 		ret.put("status", "SUCCESS");
 	}
+	
+	private ILocalQueueService getQueueService(HttpServletRequest req,String queue){
+		HttpSession ses = req.getSession(true);
+		WebApplicationContext ctxt = WebApplicationContextUtils
+				.getWebApplicationContext(ses.getServletContext());
+		ILocalQueueService localQueueService = (ILocalQueueService) ctxt
+				.getBean(queue);		
+		return localQueueService;
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/{queue}/dump/{volumn}")
+	public List<Message> dump(@Context HttpServletRequest req,
+			@PathParam("queue") String queue,
+			@PathParam("volumn") Integer volumn) throws Exception {
+		ILocalQueueService localQueueService = getQueueService(req, queue);
+		return localQueueService.dump(volumn.intValue());
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/{queue}/meta")
+	public List<QueueMeta> dump(@Context HttpServletRequest req,
+			@PathParam("queue") String queue) throws Exception {
+		ILocalQueueService localQueueService = getQueueService(req, queue);
+		return localQueueService.getMetaList();
+	}
+	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{queue}/{cmd}")
@@ -44,11 +73,7 @@ public class MessageQueueApi {
 			@PathParam("queue") String queue, @PathParam("cmd") String cmd,
 			InputStream requestBodyStream) throws Exception {
 		logger.debug("post queue:"+queue+" cmd:"+cmd);
-		HttpSession ses = req.getSession(true);
-		WebApplicationContext ctxt = WebApplicationContextUtils
-				.getWebApplicationContext(ses.getServletContext());
-		ILocalQueueService localQueueService = (ILocalQueueService) ctxt
-				.getBean(queue);
+		ILocalQueueService localQueueService = getQueueService(req, queue);
 		if (localQueueService == null) {
 			throw new RentException(
 					RentException.RentErrorCode.ErrorInvalidParameter,

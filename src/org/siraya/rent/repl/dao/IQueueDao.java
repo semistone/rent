@@ -22,6 +22,8 @@ public interface IQueueDao {
 	
 	public QueueMeta getMeta() throws Exception;
 	
+	public List<QueueMeta>getMetaList() throws Exception;
+	
 	public void updateReaderMeta(QueueMeta meta) throws Exception;
 	
 }

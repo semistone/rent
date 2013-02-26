@@ -17,4 +17,6 @@ public interface ILocalQueueService {
 	public void removeEventListener(INewMessageEventListener listener);
 
 	public int getMaxEntity();
+	
+	public List<QueueMeta> getMetaList()throws Exception;
 }
