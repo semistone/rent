@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-@ContextConfiguration(locations = {"classpath*:/applicationContext-keystore.xml"})
+@ContextConfiguration(locations = {"classpath*:/applicationContext.xml","classpath*:/applicationContext-keystore.xml"})
 public class TestKeystoreDao extends AbstractJUnit4SpringContextTests{
     @Autowired
     private IKeystoreDao test;
