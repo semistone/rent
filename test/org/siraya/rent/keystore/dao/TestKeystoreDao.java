@@ -30,6 +30,7 @@ public class TestKeystoreDao extends AbstractJUnit4SpringContextTests{
     	String value="value";
     	test.insert(key, value);
     	Assert.assertEquals(value, test.get(key));
+    	
     }
     
 }

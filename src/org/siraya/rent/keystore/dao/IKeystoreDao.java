@@ -19,4 +19,7 @@ public interface IKeystoreDao {
 
     @Delete("delete from KEYSTORE where  KEY=#{key}")
     public void delete(@Param("key")String key);
+   
+    @Update("update KEYSTORE set value = #{value} where key = #{key}")
+    public void update(@Param("key")String key, @Param("value")String value);
 }
