@@ -600,7 +600,7 @@ public class UserService implements IUserService {
 	}
 
 	public List<Device> getSsoDevices(){
-		return this.deviceDao.getSsoDevices();
+		return this.deviceDao.getAppDevices(SSO_DEVICE_ID);
 	}
 	
 

@@ -20,6 +20,7 @@ general:
     geoip_data: 'C:/Users/User/Downloads'
     tmp_dir: d:/tmp
     base_url: http://localhost:8080/rent/rest
+    api_timeout: 300
 sently:
     username: semistone
     password: semistone

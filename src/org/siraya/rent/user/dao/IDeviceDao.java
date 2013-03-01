@@ -75,8 +75,16 @@ public interface IDeviceDao {
     @Update("update DEVICE set LAST_LOGIN_TIME=#{created},LAST_LOGIN_IP = #{lastLoginIp}, MODIFIED=#{created} where ID = #{deviceId} and USER_ID=#{userId}")    
     public int updateLastLoginIp(Session session);
     
-    @Select("select * from DEVICE where STATUS ='5' order by MODIFIED desc limit 10")     
+    @Select("select * from DEVICE where STATUS ='5' and NAME=#{name} order by MODIFIED desc limit 10")     
     @ResultMap("rent.mapper.DeviceResultMap")
-    public List<Device> getSsoDevices();
+    public List<Device> getAppDevices(@Param("name")String name);
+    
+    @Select("select * from DEVICE where STATUS ='5' and NAME=#{name} and USER_ID=#{userId} order by MODIFIED desc limit 10")     
+    @ResultMap("rent.mapper.DeviceResultMap")
+    public Device getUserAppDevice(@Param("userId")String userId, @Param("name")String name);
+    
+    @Select("select * from DEVICE where STATUS ='5' and DEVICE_ID=#{deviceId}")     
+    @ResultMap("rent.mapper.DeviceResultMap")
+    public Device getAppDeviceByDeviceId(@Param("deviceId")String deviceId);
 
 }

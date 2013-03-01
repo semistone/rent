@@ -12,6 +12,7 @@ import org.siraya.rent.utils.IApplicationConfig;
 import org.siraya.rent.utils.RentException;
 import org.siraya.rent.utils.RentException.RentErrorCode;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -76,9 +77,13 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		Map<String, Cookie> cookies = request.getCookies();
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
 		String ip = headers.getFirst("X-Real-IP");
-		if (cookies.containsKey("S")) {
+		if (cookies.containsKey("S") || headers.containsKey("SESSION_KEY")) {
 			logger.debug("extract session cookie exist");
+			//
+			// get sesson ley from cookie or HEADER[SESSION_KEY]
+			//
 			String value = cookies.get("S").getValue();
+			if (value == null ) value = headers.getFirst("SESSION_KEY");
 			cookieUtils.extractSessionCookie(value,userAuthorizeData);	
 			Session session = userAuthorizeData.getSession();
 			if (session != null) {
@@ -89,6 +94,16 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 					cookies.remove("S");
 					this.newSession(ip);
 				} 
+			}
+			//
+			// check session timeout
+			//
+			
+			if (session.getTimeout() > 0) {
+				long now = Calendar.getInstance().getTime().getTime();
+				if (session.getTimeout() > now) {
+					throw new RentException(RentException.RentErrorCode.ErrorSessionTimeout,"session timeout");
+				}
 			}
 		}else{
 			newSession(ip);

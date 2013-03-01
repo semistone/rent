@@ -86,26 +86,31 @@ public class LocalQueueService implements ILocalQueueService,BeanNameAware,Initi
 		int lastRecord = meta.getLastRecord();
 		logger.debug("last record is "+lastRecord +" max entity is "+maxEntity);
 		int tmpVolumn = this.currentVolumn;
-		if (maxEntity == meta.getLastRecord()) {
+		if (meta.getLastRecord() >= maxEntity - 5) { // last 5 record
 			synchronized (this) {
-				// if current insert in last record, only first thread will go to first 
-				// block, else will just increase last record.
-				if (tmpVolumn == meta.getVolumn()) {
-					meta.setLastRecord(1);
-					meta.increaseVolumn();
-					queueDao.resetVolumn(meta);
-					this.connVolumn.close();
-					this.connVolumn = queueDao.initVolumnFile(meta.getVolumn());
-					currentVolumn = meta.getVolumn();
-					logger.info("update volumn to "+this.currentVolumn);
+				if (maxEntity == meta.getLastRecord()) {
+					// if current insert in last record, only first thread will go to first 
+					// block, else will just increase last record.
+					if (tmpVolumn == meta.getVolumn()) {
+						meta.setLastRecord(1);
+						meta.increaseVolumn();
+						queueDao.resetVolumn(meta);
+						this.connVolumn.close();
+						this.connVolumn = queueDao.initVolumnFile(meta.getVolumn());
+						currentVolumn = meta.getVolumn();
+						logger.info("update volumn to "+this.currentVolumn);
+					} else { 
+						// already change to next volumn.
+						meta.increaseLastRecord();					
+					}
 				} else {
+					// still not the last record, just ++
 					meta.increaseLastRecord();					
 				}
 			}
 		} else {
-			meta.increaseLastRecord();
-		}
-		
+			meta.increaseLastRecord();			
+		}		
 		queueDao.insert(connVolumn, meta, message);
 		this.triggerListener();
 	}

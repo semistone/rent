@@ -8,6 +8,7 @@ import java.util.*;
 import org.siraya.rent.filter.UserAuthorizeData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.user.service.*;
 import org.siraya.rent.pojo.*;
 @Component("openApi")
@@ -17,6 +18,8 @@ public class OpenApi {
 	private UserAuthorizeData userAuthorizeData;
 	@Autowired
 	private IApiService apiService;
+	@Autowired
+	private CookieUtils cookieUtils;
 	/**
 	 * user want to apply api permission from another device.
 	 * @param applicationName
@@ -40,12 +43,16 @@ public class OpenApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/request_session")
-	public String requestSession(Map<String,String> request){
+	public Map<String,String> requestSession(Map<String,String> request){
 		String deviceId = userAuthorizeData.getDeviceId(); 
 		String timestamp = request.get("timestamp");
 		String authData = request.get("auth_data");
-		
-		return null;
+		Session session = this.apiService.requestSession(deviceId, authData, Long.parseLong(timestamp));
+		session.setLastLoginIp(this.userAuthorizeData.getSession().getLastLoginIp());
+		HashMap<String,String> ret = new HashMap<String,String>();
+		String sessionKey = cookieUtils.encryptSession(session);
+		ret.put("session_key", sessionKey);
+		return ret;
 	}
 	
 }

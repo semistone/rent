@@ -18,7 +18,7 @@ public class Session {
 	private long created;
 	private String city;
 	private String country;
-	private int timeout = -1;
+	private long timeout = -1;
 
 	private int onlineStatus;
 	@JsonIgnore
@@ -184,10 +184,10 @@ public class Session {
 	public void setOnlineStatus(int onlineStatus) {
 		this.onlineStatus = onlineStatus;
 	}	
-	public int getTimeout() {
+	public long getTimeout() {
 		return timeout;
 	}
-	public void setTimeout(int timeout) {
+	public void setTimeout(long timeout) {
 		this.timeout = timeout;
 	}
 }

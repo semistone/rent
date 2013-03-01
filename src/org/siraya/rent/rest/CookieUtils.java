@@ -71,6 +71,15 @@ public class CookieUtils {
 		return sessionCookie;
 	}
     
+    /**
+     * encrpypt session by api key.
+     * @param session
+     * @return
+     */
+    public String encryptSession(Session session) {
+		return encodeUtility.encrypt(session.toString(),
+				KEY_NAME);    	
+    }
     
     public  NewCookie removeDeviceCookie(){    	
 		NewCookie deviceCookie = new NewCookie("D", "", "/",
