@@ -1,7 +1,7 @@
 package org.siraya.rent.dropbox.service;
 import java.util.HashMap;
 import java.util.Map;
-import org.siraya.rent.mobile.dao.IMobileProviderDao;
+import org.siraya.rent.mobile.dao.IServiceProviderDao;
 import org.siraya.rent.pojo.*;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -19,7 +19,7 @@ public class TestDropboxService {
 	private String userId;
 	private String group;
 	private IApplicationConfig config;
-	private IMobileProviderDao mobileProviderDao;
+	private IServiceProviderDao serviceProviderDao;
 	DropboxService test;
 	Image image;
 	private String user = "user";
@@ -31,13 +31,13 @@ public class TestDropboxService {
 		context = new JUnit4Mockery();
 		dao = context.mock(ImageDao.class);	
 		groupDao = context.mock(ImageGroupDao.class);	
-		mobileProviderDao = context.mock(IMobileProviderDao.class);	
+		serviceProviderDao = context.mock(IServiceProviderDao.class);	
 
 		config = new org.siraya.rent.utils.ApplicationConfig();
 		test.setApplicationConfig(config);
 		test.setImageDao(dao);
 		test.setImageGroupDao(groupDao);
-		test.setMobileProviderDao(mobileProviderDao);
+		test.setServiceProviderDao(serviceProviderDao);
 		userId="user";
 		group = "img_group1";
 		image = new Image();
@@ -57,7 +57,7 @@ public class TestDropboxService {
     public void testDoLink(){
 		context.checking(new Expectations() {
 			{
-				one(mobileProviderDao).updateProvider(with(any(MobileProvider.class)));
+				one(serviceProviderDao).updateProvider(with(any(MobileProvider.class)));
 				will(returnValue(1));
 			}
 		});
@@ -73,7 +73,7 @@ public class TestDropboxService {
     	mobileProvider.setPassword("password");
     	context.checking(new Expectations() {
 			{
-				one(mobileProviderDao).get(user, DropboxService.PROVIDER_TYPE_REQUSET);
+				one(serviceProviderDao).get(user, DropboxService.PROVIDER_TYPE_REQUSET);
 				will(returnValue(mobileProvider));
 			}
 		});

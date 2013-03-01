@@ -3,7 +3,7 @@ package org.siraya.rent.mobile.dao;
 import org.junit.Before;
 import org.junit.Test;
 import org.siraya.rent.pojo.MobileProvider;
-import org.siraya.rent.mobile.dao.IMobileProviderDao;
+import org.siraya.rent.mobile.dao.IServiceProviderDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 public class TestMobileProviderDao extends AbstractJUnit4SpringContextTests{
     @Autowired
-    private IMobileProviderDao mobileProviderDao; 
+    private IServiceProviderDao serviceProviderDao; 
     private MobileProvider mobileProvider;
 	@Before
     public void setUp(){
@@ -31,6 +31,6 @@ public class TestMobileProviderDao extends AbstractJUnit4SpringContextTests{
 	
     @Test   
     public void testCRUD()throws Exception{
-    	mobileProviderDao.newProvider(mobileProvider);
+    	serviceProviderDao.newProvider(mobileProvider);
     }
 }	

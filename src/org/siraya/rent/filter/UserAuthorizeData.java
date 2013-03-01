@@ -4,6 +4,8 @@ import com.sun.jersey.spi.container.ContainerRequest;
 public class UserAuthorizeData {
 	private String userId;
 	private String deviceId;
+	private boolean isBrower = true;
+
 
 	private ContainerRequest request;
 	private Session session;
@@ -47,5 +49,11 @@ public class UserAuthorizeData {
 	public void signOff() {
 		this.isNewDevice = true;
 	}
+	public boolean isBrower() {
+		return isBrower;
+	}
 
+	public void setBrower(boolean isBrower) {
+		this.isBrower = isBrower;
+	}
 }

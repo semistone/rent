@@ -67,6 +67,11 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		return request;
 	}
 
+	/**
+	 * extract session cookie and set into userAuthorizeData.session
+	 * 
+	 * @param request
+	 */
 	private void extractSessionCookie(ContainerRequest request){
 		Map<String, Cookie> cookies = request.getCookies();
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
@@ -109,13 +114,10 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 			String value = cookies.get("D").getValue();
 			cookieUtils.extractDeviceCookie(value, userAuthorizeData);
 		} else {
-			/* for openAPI but not yet.
 			if (headers.containsKey("DEVICE_ID")) {
 				userAuthorizeData.setDeviceId(headers.getFirst("DEVICE_ID"));
+				userAuthorizeData.setBrower(false);
 			}
-			if (headers.containsKey("USER_ID")) {
-				userAuthorizeData.setUserId(headers.getFirst("USER_ID"));
-			}*/
 		}
 		request.setHeaders((InBoundHeaders) headers);
 	}

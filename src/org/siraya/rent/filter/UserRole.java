@@ -32,7 +32,7 @@ public class UserRole {
 			case 5:
 				return SSO_APP;
 			case 6:
-				return MOBILE_PROVIDER;
+				return MOBILE_PROVIDER; // allow to send sms through user's mobile phone.
 			default:
 				return null;
 			}

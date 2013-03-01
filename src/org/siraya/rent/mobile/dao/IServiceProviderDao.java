@@ -9,8 +9,8 @@ import org.apache.ibatis.annotations.Delete;
 import org.siraya.rent.pojo.MobileProvider;
 import org.springframework.stereotype.Repository;
 
-@Repository("mobileProviderDao")
-public interface IMobileProviderDao {
+@Repository("serviceProviderDao")
+public interface IServiceProviderDao {
 
     @Insert("insert into MOBILE_PROVIDER values(#{id}, #{user}, #{password}, #{type}, #{created}, #{modified})")
 	public int newProvider(MobileProvider mobileProvider);
