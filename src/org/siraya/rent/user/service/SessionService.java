@@ -92,6 +92,19 @@ public class SessionService implements ISessionService {
 		}
 	}
 	
+	private void addRolesByDeviceId(Session session) {
+		logger.debug("add roles from db");
+		String deviceId = session.getDeviceId();
+		List<Role> roles = this.roleDao.getRoleByUserId(deviceId);
+		int size = roles.size();
+		for (int i = 0; i < size; i++) {
+			int role = roles.get(i).getRoleId();
+			session.addRole(role);
+			logger.debug("add role " + role + " into device" + deviceId);
+		}
+		
+	}
+	
 	private void addRolesFromDb(Session session) {
 		logger.debug("add roles from db");
 		String userId = session.getUserId();
@@ -110,9 +123,14 @@ public class SessionService implements ISessionService {
 		logger.debug("new api session");
 		this.setGeoInfo(session);
 		this.sessionDao.newSession(session);		
-		this.addRolesFromDb(session);
+		this.addRolesByDeviceId(session);
 	}
 	
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
+    public Session get(String id) {
+    	return this.sessionDao.getSession(id);
+    }
+    
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<Session> getSessions(Device device, int limit, int offset) {
 		List<Session> sessions = this.sessionDao.getSessions(

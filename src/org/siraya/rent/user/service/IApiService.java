@@ -5,5 +5,5 @@ import org.siraya.rent.pojo.Session;
 public interface IApiService {
 	public Device apply(String userId,String name);
 	
-	public Session requestSession(String deviceId, String authData, long timestamp);
+	public void requestSession(Session session, String authData, long timestamp);
 }

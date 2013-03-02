@@ -35,8 +35,8 @@ public class OpenApi {
 		// return secure token
 		//
 		HashMap<String,String> ret = new HashMap<String,String>();
-		ret.put("device_id", device.getId());
-		ret.put("secure_token",device.getToken());		
+		ret.put("deviceId", device.getId());
+		ret.put("secureToken",device.getToken());		
 		return ret;
 	}
 	
@@ -44,14 +44,24 @@ public class OpenApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/request_session")
 	public Map<String,String> requestSession(Map<String,String> request){
-		String deviceId = userAuthorizeData.getDeviceId(); 
 		String timestamp = request.get("timestamp");
-		String authData = request.get("auth_data");
-		Session session = this.apiService.requestSession(deviceId, authData, Long.parseLong(timestamp));
-		session.setLastLoginIp(this.userAuthorizeData.getSession().getLastLoginIp());
+		String authData = request.get("authData");
+		String sessionKey;
+		sessionKey = request.get("sessionKey");
+		Session session = cookieUtils.extraceSessionKey(sessionKey);
+		//
+		// if device id is null then get it from request.
+		//   only for first time not for update session.
+		//
+		if (session.getDeviceId() == null && request.containsKey("deviceId")) {
+			String deviceId = session.getDeviceId();
+			session.setDeviceId(deviceId);
+		}
+		
+		this.apiService.requestSession(session, authData, Long.parseLong(timestamp));
 		HashMap<String,String> ret = new HashMap<String,String>();
-		String sessionKey = cookieUtils.encryptSession(session);
-		ret.put("session_key", sessionKey);
+		String newSessionKey = cookieUtils.encryptSession(session);
+		ret.put("sessionKey", newSessionKey);
 		return ret;
 	}
 	

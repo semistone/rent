@@ -77,28 +77,35 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		Map<String, Cookie> cookies = request.getCookies();
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
 		String ip = headers.getFirst("X-Real-IP");
-		if (cookies.containsKey("S") || headers.containsKey("SESSION_KEY")) {
-			logger.debug("extract session cookie exist");
+		String cookieValue =  null;
+		if (headers.containsKey("SESSION_KEY")) {
 			//
 			// get sesson ley from cookie or HEADER[SESSION_KEY]
 			//
-			String value = cookies.get("S").getValue();
-			if (value == null ) value = headers.getFirst("SESSION_KEY");
-			cookieUtils.extractSessionCookie(value,userAuthorizeData);	
+			userAuthorizeData.setBrower(false);
+			cookieValue = headers.getFirst("SESSION_KEY");
+		} else if (cookies.containsKey("S")) {
+			cookieValue =  cookies.get("S").getValue();
+		}
+		
+		if (cookieValue != null) {
+			logger.debug("extract session cookie exist");
+			cookieUtils.extractSessionCookie(cookieValue, userAuthorizeData);	
 			Session session = userAuthorizeData.getSession();
 			if (session != null) {
 				if (ip == null) {
 					logger.debug("ip is null");
 				} else if (!session.getLastLoginIp().equals(ip)){
 					logger.debug("ip not match remove session cookie");
-					cookies.remove("S");
-					this.newSession(ip);
+					if (userAuthorizeData.isBrower()) {
+						cookies.remove("S");
+						this.newSession(ip);						
+					}
 				} 
 			}
 			//
-			// check session timeout
-			//
-			
+			// check session timeout, 
+			//			
 			if (session.getTimeout() > 0) {
 				long now = Calendar.getInstance().getTime().getTime();
 				if (session.getTimeout() > now) {
@@ -128,12 +135,7 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		if (cookies.containsKey("D")) {
 			String value = cookies.get("D").getValue();
 			cookieUtils.extractDeviceCookie(value, userAuthorizeData);
-		} else {
-			if (headers.containsKey("DEVICE_ID")) {
-				userAuthorizeData.setDeviceId(headers.getFirst("DEVICE_ID"));
-				userAuthorizeData.setBrower(false);
-			}
-		}
+		} 
 		request.setHeaders((InBoundHeaders) headers);
 	}
 

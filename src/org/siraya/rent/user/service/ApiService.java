@@ -6,7 +6,7 @@ import org.siraya.rent.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.siraya.rent.user.dao.*;
 public class ApiService implements IApiService{
 	@Autowired
     private IDeviceDao deviceDao;
@@ -14,7 +14,8 @@ public class ApiService implements IApiService{
 	private ISessionService sessionService;
     @Autowired
     private IApplicationConfig applicationConfig;
-    
+
+
 	/**
 	 * 
 	 * @param userId
@@ -50,8 +51,9 @@ public class ApiService implements IApiService{
     }
     
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
-    public Session requestSession(String deviceId, String authData, long timestamp){
-    	Session session = new Session();
+    public void requestSession(Session session, String authData, long timestamp){
+    	String deviceId= session.getDeviceId();
+    	
     	//
     	// get device from database.
     	//
@@ -62,23 +64,40 @@ public class ApiService implements IApiService{
     	if (!ApiService.genAuthData(device.getToken(), timestamp).equals(authData)) {
     		throw new RentException(RentException.RentErrorCode.ErrorPermissionDeny, "check auth data fail");
     	}
+
+    	if (session.getUserId() == null) {
+        	//
+        	// set session data
+        	//
+        	session.setUserId(device.getUserId());    		
+    	} else if ( !device.getUserId().equals(session.getUserId())) {
+        	//
+        	// compare old session's user id and device's user id match ?
+        	//    
+    		throw new RentException(
+					RentException.RentErrorCode.ErrorPermissionDeny,
+					"user not match");
+    	}
+
+    	java.util.List<Session> oldSession=sessionService.getSessions(device, 1, 0);
+    	if (oldSession != null && oldSession.size() == 1) {
+        	//
+        	// add roles from user
+        	//
+        	sessionService.newApiSession(session);    		
+    	} else {
+			if (!session.getId().equals(oldSession.get(0).getId())) {
+				throw new RentException(
+						RentException.RentErrorCode.ErrorGeneral,
+						"session id not match");
+			}
+    	}
     	//
-    	// set session data
-    	//
-    	session.setDeviceId(deviceId);
-    	session.setUserId(device.getUserId());
-    	session.setDeviceVerified(true);
-    	//
-    	// add roles from user
-    	//
-    	sessionService.newApiSession(session);
-    	//
-    	// set session timeout
+    	// set or extend session timeout
     	//
     	long timeout = java.util.Calendar.getInstance().getTime().getTime();
     	timeout += (Integer)applicationConfig.get("general").get("api_timeout");
     	session.setTimeout(timeout);    	
-    	return session;
     }
     
 }

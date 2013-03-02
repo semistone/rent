@@ -1,12 +1,16 @@
 package org.siraya.rent.user.service;
 import org.siraya.rent.pojo.*;
+
 import java.util.List;
 import org.siraya.rent.pojo.Device;
 public interface ISessionService {
 
+	public Session get(String id);
+	
 	public void newSession(Session session);
 
 	public void newApiSession(Session session);
+	
 	
 	public List<Session> getSessions(Device device,int limit ,int offset);
 
