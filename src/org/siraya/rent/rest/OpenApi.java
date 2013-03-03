@@ -16,10 +16,14 @@ import org.siraya.rent.pojo.*;
 public class OpenApi {
 	@Autowired
 	private UserAuthorizeData userAuthorizeData;
+
+
 	@Autowired
 	private IApiService apiService;
 	@Autowired
 	private CookieUtils cookieUtils;
+
+
 	/**
 	 * user want to apply api permission from another device.
 	 * @param applicationName
@@ -79,5 +83,28 @@ public class OpenApi {
 		String newSessionKey = cookieUtils.encryptSession(session);
 		ret.put("sessionKey", newSessionKey);
 		return ret;
+	}
+	
+	public UserAuthorizeData getUserAuthorizeData() {
+		return userAuthorizeData;
+	}
+
+	public void setUserAuthorizeData(UserAuthorizeData userAuthorizeData) {
+		this.userAuthorizeData = userAuthorizeData;
+	}
+
+	public IApiService getApiService() {
+		return apiService;
+	}
+
+	public void setApiService(IApiService apiService) {
+		this.apiService = apiService;
+	}
+	public CookieUtils getCookieUtils() {
+		return cookieUtils;
+	}
+
+	public void setCookieUtils(CookieUtils cookieUtils) {
+		this.cookieUtils = cookieUtils;
 	}
 }

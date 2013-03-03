@@ -72,16 +72,21 @@ public class Session {
 			rolesString = strings[4];
 		}		
 		if (strings.length == 6 && strings[5] != null) {
-			timeout = Integer.parseInt(strings[5]);
+			timeout = Long.parseLong(strings[5]);
 		}
 		
 		this.roles = new  java.util.ArrayList<Integer>();
 		if (rolesString != null) {
-			String[] roleArray = rolesString.split(" ");
-			int size = roleArray.length;
-			for(int i =0 ; i < size ; i++) {
-				this.roles.add(Integer.parseInt(roleArray[i]));
-			}			
+			try {
+				String[] roleArray = rolesString.split(" ");
+				int size = roleArray.length;
+				for(int i =0 ; i < size ; i++) {
+					this.roles.add(Integer.parseInt(roleArray[i]));
+				}	
+			}catch(Exception e) {
+				logger.error("parse role string error roleString:"+rolesString);
+				throw e;
+			}
 		}
 	}
 
