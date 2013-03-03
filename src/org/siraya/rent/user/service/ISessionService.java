@@ -9,8 +9,9 @@ public interface ISessionService {
 	
 	public void newSession(Session session);
 
-	public void newApiSession(Session session);
+	public void newApiSession(Session session, List<Integer> roles);
 	
+	public void updateApiSession(Session session);	
 	
 	public List<Session> getSessions(Device device,int limit ,int offset);
 

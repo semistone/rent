@@ -100,6 +100,13 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 					if (userAuthorizeData.isBrower()) {
 						cookies.remove("S");
 						this.newSession(ip);						
+					} else {
+						//
+						// open api only allow right ip
+						//
+						throw new RentException(
+								RentException.RentErrorCode.ErrorPermissionDeny,
+								"ip not match");
 					}
 				} 
 			}
@@ -116,6 +123,11 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 			newSession(ip);
 		}
 	}
+	
+	/**
+	 * if user id and device id is not null, then set new session in user auth data.
+	 * @param ip
+	 */
 	private void newSession(String ip){
 		String userId = this.userAuthorizeData.getUserId();
 		String deviceId = this.userAuthorizeData.getDeviceId();
@@ -127,7 +139,17 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 			session.setLastLoginIp(ip);		
 			sessionService.newSession(session);				
 			this.userAuthorizeData.setSession(session);
+		}  else if (!this.userAuthorizeData.isBrower()){
+			//
+			// if open api, then set new session for ip address
+			//
+			Session session = new Session();
+			session.genId();
+			session.setLastLoginIp(ip);		
+			this.userAuthorizeData.setSession(session);
 		}
+		
+			
 	}
 	private void extraceDeviceCookie(ContainerRequest request) {
 		Map<String, Cookie> cookies = request.getCookies();

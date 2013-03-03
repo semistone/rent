@@ -119,11 +119,31 @@ public class SessionService implements ISessionService {
 	}
 	
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
-	public void newApiSession(Session session){
+	public void newApiSession(Session session, List<Integer> roles){
 		logger.debug("new api session");
 		this.setGeoInfo(session);
 		this.sessionDao.newSession(session);		
 		this.addRolesByDeviceId(session);
+		logger.debug("add roles from db");
+		String userId = session.getUserId();
+		if (roles != null) {
+			List<Role> userRoles = this.roleDao.getRoleByUserId(userId);
+			for(Role role : userRoles) {
+				if (roles.contains(role.getRoleId())) {
+					session.addRole(role.getRoleId());
+					logger.debug("add role " + role + " into user" + userId);
+					
+				}
+				
+			}
+		}
+
+	}
+	
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
+	public void updateApiSession(Session session) {
+		this.setGeoInfo(session);
+		this.sessionDao.updateLastLoginIp(session);
 	}
 	
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)

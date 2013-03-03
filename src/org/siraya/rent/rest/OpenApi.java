@@ -43,26 +43,41 @@ public class OpenApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/request_session")
-	public Map<String,String> requestSession(Map<String,String> request){
-		String timestamp = request.get("timestamp");
-		String authData = request.get("authData");
-		String sessionKey;
-		sessionKey = request.get("sessionKey");
-		Session session = cookieUtils.extraceSessionKey(sessionKey);
-		//
-		// if device id is null then get it from request.
-		//   only for first time not for update session.
-		//
-		if (session.getDeviceId() == null && request.containsKey("deviceId")) {
-			String deviceId = session.getDeviceId();
-			session.setDeviceId(deviceId);
-		}
+	public Map<String,String> requestSession(Map<String,Object> request){
+		long timestamp = (long)request.get("timestamp");
+		String authData = (String)request.get("authData");
+		String deviceId = (String)request.get("deviceId");
+
+		List<Integer> roles = null;
+		if (request.containsKey("roles")) 
+			roles = (List<Integer>) request.get("roles");
 		
-		this.apiService.requestSession(session, authData, Long.parseLong(timestamp));
+		Session session = this.userAuthorizeData.getSession();
+		session.setDeviceId(deviceId);
+		this.apiService.requestSession(session, authData, timestamp, roles);
 		HashMap<String,String> ret = new HashMap<String,String>();
 		String newSessionKey = cookieUtils.encryptSession(session);
 		ret.put("sessionKey", newSessionKey);
 		return ret;
 	}
 	
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/request_session")
+	public Map<String,String> updateSession(Map<String,Object> request){
+		long timestamp = (long)request.get("timestamp");
+		String authData = (String)request.get("authData");		
+		String sessionKey = (String)request.get("sessionKey");
+		Session session = cookieUtils.extraceSessionKey(sessionKey);
+		//
+		// change ip
+		//
+		String ip = this.userAuthorizeData.getSession().getLastLoginIp();		
+		session.setLastLoginIp(ip);
+		this.apiService.updateSession(session, authData, timestamp);
+		HashMap<String,String> ret = new HashMap<String,String>();
+		String newSessionKey = cookieUtils.encryptSession(session);
+		ret.put("sessionKey", newSessionKey);
+		return ret;
+	}
 }
