@@ -152,5 +152,35 @@ public class ApiService implements IApiService{
     	timeout += (Integer)applicationConfig.get("general").get("api_timeout");
     	session.setTimeout(timeout);    	
     }
+
+
+	public IDeviceDao getDeviceDao() {
+		return deviceDao;
+	}
+
+
+	public void setDeviceDao(IDeviceDao deviceDao) {
+		this.deviceDao = deviceDao;
+	}
+
+
+	public ISessionService getSessionService() {
+		return sessionService;
+	}
+
+
+	public void setSessionService(ISessionService sessionService) {
+		this.sessionService = sessionService;
+	}
+
+
+	public IApplicationConfig getApplicationConfig() {
+		return applicationConfig;
+	}
+
+
+	public void setApplicationConfig(IApplicationConfig applicationConfig) {
+		this.applicationConfig = applicationConfig;
+	}
     
 }
