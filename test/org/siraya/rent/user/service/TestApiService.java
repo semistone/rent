@@ -72,4 +72,10 @@ public class TestApiService {
 		});
 		test.updateSession(session, authData, timestamp);
 	}
+	
+	@Test
+	public void testGenAuthData(){
+		String data=ApiService.genAuthData("648987", 1333333333);
+		System.out.println(data);
+	}
 }
