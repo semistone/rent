@@ -59,7 +59,7 @@ public class TestOpenApi {
 		request.put("sessionKey", sessionKey);
 		context.checking(new Expectations() {
 			{
-				one(apiService).requestSession(userAuthorizeData.getSession(), authData, timestamp, null);
+				one(apiService).updateSession(with(any(Session.class)), with(any(String.class)), with(any(Long.class)));
 			}
 		});
 		openApi.updateSession(request);

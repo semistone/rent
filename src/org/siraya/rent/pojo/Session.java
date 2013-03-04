@@ -76,7 +76,7 @@ public class Session {
 		}
 		
 		this.roles = new  java.util.ArrayList<Integer>();
-		if (rolesString != null) {
+		if (rolesString != null && !rolesString.equals("")) {
 			try {
 				String[] roleArray = rolesString.split(" ");
 				int size = roleArray.length;
