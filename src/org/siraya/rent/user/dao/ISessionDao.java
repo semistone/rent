@@ -37,5 +37,7 @@ public interface ISessionDao {
 
 	@Select("select distinct(USER_ID) from SESSION where CALLBACK=#{callback} and ONLINE_STATUS='1'")
 	public List<String> getOnlineUserFilterByCallback(@Param("callback") String callback);
-    
+ 
+    @Update("update SESSION set LAST_LOGIN_IP = #{lastLoginIp}, CITY = #{city}, COUNTRY= #{country} where ID = #{id}")
+	public int updateLastLoginIp(Session session);
 }

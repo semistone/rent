@@ -45,10 +45,7 @@ public class SessionService implements ISessionService {
 	private static Logger logger = LoggerFactory
 			.getLogger(SessionService.class);
 
-	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
-	public void newSession(Session session) {
-		logger.debug("new session");
-
+	private void setGeoInfo(Session session) {
 		try {
 			String data = (String) applicationConfig.get("general").get(
 					"geoip_data");
@@ -60,6 +57,14 @@ public class SessionService implements ISessionService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+	}
+	
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
+	public void newSession(Session session) {
+		logger.debug("new session");
+		this.setGeoInfo(session);
+		
 		this.sessionDao.newSession(session);
 		String deviceId = session.getDeviceId();
 		String userId = session.getUserId();
@@ -83,17 +88,69 @@ public class SessionService implements ISessionService {
 			//
 			// only authed device can have roles.
 			//
-			logger.debug("add roles from db");
-			List<Role> roles = this.roleDao.getRoleByUserId(userId);
-			int size = roles.size();
-			for (int i = 0; i < size; i++) {
-				int role = roles.get(i).getRoleId();
-				session.addRole(role);
-				logger.debug("add role " + role + " into user" + userId);
-			}
+			this.addRolesFromDb(session);
 		}
 	}
+	
+	private void addRolesByDeviceId(Session session) {
+		logger.debug("add roles from db");
+		String deviceId = session.getDeviceId();
+		List<Role> roles = this.roleDao.getRoleByUserId(deviceId);
+		int size = roles.size();
+		for (int i = 0; i < size; i++) {
+			int role = roles.get(i).getRoleId();
+			session.addRole(role);
+			logger.debug("add role " + role + " into device" + deviceId);
+		}
+		
+	}
+	
+	private void addRolesFromDb(Session session) {
+		logger.debug("add roles from db");
+		String userId = session.getUserId();
+		List<Role> roles = this.roleDao.getRoleByUserId(userId);
+		int size = roles.size();
+		for (int i = 0; i < size; i++) {
+			int role = roles.get(i).getRoleId();
+			session.addRole(role);
+			logger.debug("add role " + role + " into user" + userId);
+		}
+		
+	}
+	
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
+	public void newApiSession(Session session, List<Integer> roles){
+		logger.debug("new api session");
+		this.setGeoInfo(session);
+		this.sessionDao.newSession(session);		
+		this.addRolesByDeviceId(session);
+		logger.debug("add roles from db");
+		String userId = session.getUserId();
+		if (roles != null) {
+			List<Role> userRoles = this.roleDao.getRoleByUserId(userId);
+			for(Role role : userRoles) {
+				if (roles.contains(role.getRoleId())) {
+					session.addRole(role.getRoleId());
+					logger.debug("add role " + role + " into user" + userId);
+					
+				}
+				
+			}
+		}
 
+	}
+	
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class)
+	public void updateApiSession(Session session) {
+		this.setGeoInfo(session);
+		this.sessionDao.updateLastLoginIp(session);
+	}
+	
+	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
+    public Session get(String id) {
+    	return this.sessionDao.getSession(id);
+    }
+    
 	@Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<Session> getSessions(Device device, int limit, int offset) {
 		List<Session> sessions = this.sessionDao.getSessions(
