@@ -1,5 +1,5 @@
 package org.siraya.rent.user.service;
-
+import org.siraya.rent.utils.ApplicationConfig;
 import java.util.Calendar;
 
 import org.jmock.Expectations;
@@ -21,16 +21,19 @@ public class TestApiService {
 	private ISessionService sessionService;
 	private Device device = new Device();
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception{
 		session.setDeviceId("device");
+		session.setUserId("user1");
+		session.setId("id1");
 		context = new JUnit4Mockery();
 		deviceDao = context.mock(IDeviceDao.class);
 		test.setDeviceDao(deviceDao);
 		device.setId(session.getDeviceId());
 		device.setToken("123");
-		
+		device.setUserId(session.getUserId());
 		sessionService= context.mock(ISessionService.class);
 		test.setSessionService(sessionService);
+		test.setApplicationConfig(new ApplicationConfig());
 	}
 	
 	@Test
@@ -48,5 +51,25 @@ public class TestApiService {
 		});
 		
 		test.requestSession(session, authData, timestamp, roles);
+	}
+	
+	
+	@Test
+	public void testUpdateSession(){
+		authData = ApiService.genAuthData(device.getToken(), timestamp);
+		context.checking(new Expectations() {
+			{
+				one(deviceDao).getAppDeviceByDeviceId(session.getDeviceId());
+				will(returnValue(device));
+				one(sessionService).getSessions(device, 1, 0);
+				ArrayList<Session> lists = new ArrayList<Session>();
+				lists.add(session);
+				will(returnValue(lists));
+				one(sessionService).updateApiSession(session);
+
+
+			}
+		});
+		test.updateSession(session, authData, timestamp);
 	}
 }
