@@ -62,6 +62,6 @@ public class TestOpenApi {
 				one(apiService).updateSession(with(any(Session.class)), with(any(String.class)), with(any(Long.class)));
 			}
 		});
-		openApi.updateSession(request);
+		openApi.updateSession(request,deviceId);
 	}
 }
