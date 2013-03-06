@@ -93,7 +93,7 @@ public class SessionService implements ISessionService {
 	}
 	
 	private void addRolesByDeviceId(Session session) {
-		logger.debug("add roles from db");
+		logger.debug("add roles by device id ");
 		String deviceId = session.getDeviceId();
 		List<Role> roles = this.roleDao.getRoleByUserId(deviceId);
 		int size = roles.size();
@@ -106,7 +106,7 @@ public class SessionService implements ISessionService {
 	}
 	
 	private void addRolesFromDb(Session session) {
-		logger.debug("add roles from db");
+		logger.debug("add roles by session");
 		String userId = session.getUserId();
 		List<Role> roles = this.roleDao.getRoleByUserId(userId);
 		int size = roles.size();
@@ -123,9 +123,14 @@ public class SessionService implements ISessionService {
 		logger.debug("new api session");
 		this.setGeoInfo(session);
 		this.sessionDao.newSession(session);		
+		//
+		// add role from device id
+		//
 		this.addRolesByDeviceId(session);
-		logger.debug("add roles from db");
 		String userId = session.getUserId();
+		//
+		// add role from parameter roles and check with user role
+		//
 		if (roles != null) {
 			List<Role> userRoles = this.roleDao.getRoleByUserId(userId);
 			for(Role role : userRoles) {

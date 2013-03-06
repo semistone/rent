@@ -52,6 +52,12 @@ public class ApiService implements IApiService {
 		return EncodeUtility.sha1(token + " " + timestamp);
 	}
 
+	/**
+	 * use timestamp and secure token to check auth data.
+	 * @param device
+	 * @param authData
+	 * @param timestamp
+	 */
 	private void checkAuthData(Device device, String authData, long timestamp) {
 		if (!ApiService.genAuthData(device.getToken(), timestamp).equals(
 				authData)) {
@@ -60,6 +66,9 @@ public class ApiService implements IApiService {
 					"check auth data fail");
 		}
 		long now = Calendar.getInstance().getTime().getTime() / 1000;
+		//
+		// this auth data only valid 1 min.
+		//
 		if (!debug && (timestamp > now + 30 || timestamp < now - 30)) {
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
 					"timestamp is too old, now is "+now);
