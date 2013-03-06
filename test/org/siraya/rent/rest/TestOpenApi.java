@@ -50,7 +50,7 @@ public class TestOpenApi {
 				one(apiService).requestSession(userAuthorizeData.getSession(), authData, timestamp, null);
 			}
 		});
-		openApi.requestSession(request);
+		openApi.requestSession(request,deviceId);
 
 	}
 	@Test

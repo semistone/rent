@@ -154,13 +154,13 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 	private void extraceDeviceCookie(ContainerRequest request) {
 		Map<String, Cookie> cookies = request.getCookies();
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
-		if (cookies.containsKey("D")) {
-			String value = cookies.get("D").getValue();
-			cookieUtils.extractDeviceCookie(value, userAuthorizeData);
-		} else if (headers.containsKey("DEVICE_ID")) {
+		if (headers.containsKey("DEVICE_ID")) {
 			this.userAuthorizeData.setBrower(false);
 			this.userAuthorizeData.setDeviceId(headers.getFirst("DEVICE_ID"));
-		}
+		} else if (cookies.containsKey("D")) {
+			String value = cookies.get("D").getValue();
+			cookieUtils.extractDeviceCookie(value, userAuthorizeData);
+		} 
 		request.setHeaders((InBoundHeaders) headers);
 	}
 

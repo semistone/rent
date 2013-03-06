@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.siraya.rent.user.dao.IDeviceDao;
 import org.siraya.rent.user.service.*;
+import org.siraya.rent.utils.RentException;
 import org.siraya.rent.pojo.*;
 @Component("openApi")
 @Path("/api")
@@ -47,12 +48,10 @@ public class OpenApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/request_session")
-	public Map<String,String> requestSession(Map<String,Object> request){
+	public Map<String,String> requestSession(Map<String,Object> request, @HeaderParam("DEVICE_ID") String deviceId){
 		this.userAuthorizeData.setBrower(false);
 		Integer timestamp = ((Integer)request.get("timestamp"));
 		String authData = (String)request.get("authData");
-		String deviceId = (String)request.get("deviceId");
-
 		List<Integer> roles = null;
 		if (request.containsKey("roles")) 
 			roles = (List<Integer>) request.get("roles");
@@ -69,12 +68,17 @@ public class OpenApi {
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/request_session")
-	public Map<String,String> updateSession(Map<String,Object> request){
+	public Map<String,String> updateSession(Map<String,Object> request,@HeaderParam("DEVICE_ID") String deviceId){
 		this.userAuthorizeData.setBrower(false);
 		Integer timestamp = ((Integer)request.get("timestamp"));
 		String authData = (String)request.get("authData");		
 		String sessionKey = (String)request.get("sessionKey");
 		Session session = cookieUtils.extraceSessionKey(sessionKey);
+		if (!deviceId.equals(session.getDeviceId())) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"device id not match");
+		}
 		//
 		// change ip
 		//
