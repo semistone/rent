@@ -17,37 +17,6 @@
 			http://www.springframework.org/schema/util
            	http://www.springframework.org/schema/util/spring-util.xsd">
     <context:component-scan base-package="org.siraya.rent.mobile;org.siraya.rent.utils;org.siraya.rent.mobile;org.siraya.rent.donttry" />
-    <bean id="connectionManager" class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
-        <property name="params">
-            <bean class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
-                <property name="connectionTimeout" value="10000"/>
-                <property name="soTimeout" value="10000"/>
-                <property name="maxTotalConnections" value="50"/>
-                <property name="defaultMaxConnectionsPerHost" value="20"/>
-            </bean>
-        </property>
-    </bean>
-    <!-- set http connection retry number = 0 -->
-    <bean id="retryHandler" class="org.apache.commons.httpclient.DefaultHttpMethodRetryHandler">
-        <constructor-arg index="0"><value>0</value></constructor-arg>
-        <constructor-arg index="1"><value>false</value></constructor-arg>
-    </bean>
-    <bean id="httpClientParams" class="org.apache.commons.httpclient.params.HttpClientParams">
-        <property name="authenticationPreemptive" value="true"/>
-        <property name="connectionManagerClass" value="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager"/>
-    </bean>
-    
-    <bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">
-        <constructor-arg index="0" ref="httpClientParams" />
-        <constructor-arg index="1" ref="connectionManager" />
-    </bean>
-    <bean id="httpClientFactory" class="org.springframework.http.client.CommonsClientHttpRequestFactory">
-        <constructor-arg ref="httpClient"/>
-    </bean>
-    <bean  id="restTemplate" class="org.springframework.web.client.RestTemplate">
-         <constructor-arg ref="httpClientFactory" type="org.springframework.http.client.ClientHttpRequestFactory"/>
-         <property name="errorHandler" ref="mobileErrorHandler"/>
-    </bean>
    <bean id="mobileGatewayService" class="org.siraya.rent.mobile.provider.SentlyMobileGatewayProvider">
         <constructor-arg type="org.springframework.web.client.RestOperations" ref="restTemplate"/>
     </bean>  
@@ -60,4 +29,5 @@
             </bean>
         </constructor-arg>
     </bean> 
+    
 </beans>

@@ -5,7 +5,7 @@ import java.net.URI;
 import java.util.Map;
 import com.dropbox.client2.session.RequestTokenPair;
 import org.siraya.rent.dropbox.dao.*;
-import org.siraya.rent.mobile.dao.IMobileProviderDao;
+import org.siraya.rent.mobile.dao.IServiceProviderDao;
 import org.siraya.rent.pojo.*;
 import org.siraya.rent.utils.IApplicationConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class DropboxService implements IDropboxService {
 	@Autowired
 	private ImageGroupDao imageGroupDao;
 	@Autowired
-	private IMobileProviderDao mobileProviderDao;
+	private IServiceProviderDao serviceProviderDao;
 	
 
 	private static Logger logger = LoggerFactory.getLogger(DropboxService.class);
@@ -209,7 +209,7 @@ public class DropboxService implements IDropboxService {
 			//
 			// retrieve access token
 			//
-			MobileProvider mobileProvider = mobileProviderDao.get(userId,
+			MobileProvider mobileProvider = serviceProviderDao.get(userId,
 					PROVIDER_TYPE_REQUSET);
 
 			if (mobileProvider == null) {
@@ -233,13 +233,13 @@ public class DropboxService implements IDropboxService {
 			//
 			// insert or update into provider
 			//
-			if (mobileProviderDao.updateProvider(mobileProvider2) == 0) {
-				mobileProviderDao.newProvider(mobileProvider2);
+			if (serviceProviderDao.updateProvider(mobileProvider2) == 0) {
+				serviceProviderDao.newProvider(mobileProvider2);
 			}
 			//
 			// delete request token
 			//
-			mobileProviderDao.delete(userId,PROVIDER_TYPE_REQUSET);
+			serviceProviderDao.delete(userId,PROVIDER_TYPE_REQUSET);
 		}catch(Exception e ){
 			logger.error("retreive token error ",e);
 			throw new RentException(RentException.RentErrorCode.ErrorGeneral,
@@ -264,8 +264,8 @@ public class DropboxService implements IDropboxService {
 			mobileProvider.setUser(info.requestTokenPair.key);
 			mobileProvider.setPassword(info.requestTokenPair.secret);
 			mobileProvider.setType(PROVIDER_TYPE_REQUSET);
-			if (mobileProviderDao.updateProvider(mobileProvider) == 0 ){
-				mobileProviderDao.newProvider(mobileProvider);
+			if (serviceProviderDao.updateProvider(mobileProvider) == 0 ){
+				serviceProviderDao.newProvider(mobileProvider);
 			}
 			return info.url;
 		} catch (Exception e) {
@@ -522,12 +522,12 @@ public class DropboxService implements IDropboxService {
 	public void setImageGroupDao(ImageGroupDao imageGroupDao) {
 		this.imageGroupDao = imageGroupDao;
 	}
-	public IMobileProviderDao getMobileProviderDao() {
-		return mobileProviderDao;
+	public IServiceProviderDao getServiceProviderDao() {
+		return serviceProviderDao;
 	}
 
-	public void setMobileProviderDao(IMobileProviderDao mobileProviderDao) {
-		this.mobileProviderDao = mobileProviderDao;
+	public void setServiceProviderDao(IServiceProviderDao serviceProviderDao) {
+		this.serviceProviderDao = serviceProviderDao;
 	}
 
 }

@@ -27,6 +27,13 @@ public class CookieResponseFilter implements ContainerResponseFilter {
 	private UserAuthorizeData userAuthorizeData;
 	public ContainerResponse filter(ContainerRequest request,
 			ContainerResponse response) {
+		//
+		// if not browser, means don't support cookie and then direct return here.
+		//
+		if (!userAuthorizeData.isBrower()) {
+			return response;
+		}
+		
 		Session session = this.userAuthorizeData.getSession();
 		boolean changeCookie = false;
 		NewCookie sessionCookie = null;

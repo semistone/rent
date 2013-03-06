@@ -449,6 +449,11 @@ public class DeviceRestApi {
 				.entity(OK).build();
 	}
 
+	//==============================================================================
+	//
+	// PERSISTENT DEVICE MANAGEMENT APIs
+	//
+	//==============================================================================
 	@GET
 	@Path("/connect/{callback}")
 	@Produces(MediaType.APPLICATION_JSON)

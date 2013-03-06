@@ -2,7 +2,7 @@ package org.siraya.rent.mobile.provider;
 
 import org.siraya.rent.donttry.service.IDontTryService;
 import org.siraya.rent.filter.UserRole;
-import org.siraya.rent.mobile.dao.IMobileProviderDao;
+import org.siraya.rent.mobile.dao.IServiceProviderDao;
 import org.siraya.rent.mobile.service.IMobileGatewayService;
 import org.siraya.rent.utils.EncodeUtility;
 import org.siraya.rent.utils.IApplicationConfig;
@@ -26,7 +26,7 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService {
 	@Autowired
 	protected IDontTryService dontTryService;
 	@Autowired
-	private IMobileProviderDao mobileProviderDao;
+	private IServiceProviderDao serviceProviderDao;
 	@Autowired
 	private EncodeUtility encodeUtility;
 	@Autowired
@@ -65,7 +65,7 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService {
 			vars.put("username", (String) setting.get("username"));
 			vars.put("password", (String) setting.get("password"));
 		} else {
-			MobileProvider mobileProvider = this.mobileProviderDao.get(
+			MobileProvider mobileProvider = this.serviceProviderDao.get(
 					provider, PROVIDER_TYPE);
 			if (mobileProvider == null) {
 				throw new RentException(
@@ -95,10 +95,10 @@ public class SentlyMobileGatewayProvider implements IMobileGatewayService {
 				MobileProvider.ENCRYPT_KEY);
 		mobileProvider.setPassword(password);
 		try {
-			mobileProviderDao.newProvider(mobileProvider);
+			serviceProviderDao.newProvider(mobileProvider);
 			logger.debug("add new role mobile provider");
 		}catch(org.springframework.dao.DuplicateKeyException e){
-			int ret = mobileProviderDao.updateProvider(mobileProvider);			
+			int ret = serviceProviderDao.updateProvider(mobileProvider);			
 			if (ret != 1) {
 				throw new RentException(
 						RentException.RentErrorCode.ErrorStatusViolate,

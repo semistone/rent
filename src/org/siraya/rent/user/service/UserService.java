@@ -338,6 +338,7 @@ public class UserService implements IUserService {
     @Transactional(value = "rentTxManager", propagation = Propagation.SUPPORTS, readOnly = false, rollbackFor = java.lang.Throwable.class) 
     public void applySSOApplication(Device device){
     	device.setId(SSO_DEVICE_ID);
+    	device.setName(SSO_DEVICE_ID);
 		device.setStatus(DeviceStatus.ApiKeyOnly.getStatus());
 		device.setModified(0);
 		device.genToken();
@@ -599,7 +600,7 @@ public class UserService implements IUserService {
 	}
 
 	public List<Device> getSsoDevices(){
-		return this.deviceDao.getSsoDevices();
+		return this.deviceDao.getAppDevices(SSO_DEVICE_ID);
 	}
 	
 

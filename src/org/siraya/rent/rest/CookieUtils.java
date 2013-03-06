@@ -71,6 +71,15 @@ public class CookieUtils {
 		return sessionCookie;
 	}
     
+    /**
+     * encrpypt session by api key.
+     * @param session
+     * @return
+     */
+    public String encryptSession(Session session) {
+		return encodeUtility.encrypt(session.toString(),
+				KEY_NAME);    	
+    }
     
     public  NewCookie removeDeviceCookie(){    	
 		NewCookie deviceCookie = new NewCookie("D", "", "/",
@@ -85,20 +94,25 @@ public class CookieUtils {
 				false);
 		return deviceCookie;	
 	} 
-    
-    public void extractSessionCookie(String cookieValue,UserAuthorizeData userAuthorizeData){
+    public Session extraceSessionKey(String sessionKey) {
     	try{
-    		cookieValue = encodeUtility.decrypt(cookieValue,KEY_NAME);
+    		sessionKey = encodeUtility.decrypt(sessionKey,KEY_NAME);
     	}catch (RentException e){
     		logger.error("decrypt session cookie fail");
     	} 
+    	Session session = new Session(sessionKey);
+    	return session;
+    }
+    public void extractSessionCookie(String cookieValue,UserAuthorizeData userAuthorizeData){
 		try {
+			Session session = this.extraceSessionKey(cookieValue);
+
 			String userId = userAuthorizeData.getUserId();
 			if (userId == null) {
 				logger.error("user id is null when extract session");
 				return;
 			}
-			Session session = new Session(cookieValue);
+			
 			if (!userId.equals(session.getUserId())
 					|| !userAuthorizeData.getDeviceId().equals(
 							session.getDeviceId())) {

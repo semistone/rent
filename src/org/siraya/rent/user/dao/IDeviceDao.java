@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository("deviceDao")
 public interface IDeviceDao {
-    static final String INSERT_DEVICE_SQL = "INSERT INTO DEVICE (ID,USER_ID,TOKEN,STATUS,CREATED, MODIFIED) " +   
-            " VALUES (#{id}, #{userId}, #{token}, #{status}, " +
+    static final String INSERT_DEVICE_SQL = "INSERT INTO DEVICE (ID,USER_ID,TOKEN,NAME,STATUS,LAST_LOGIN_IP,CREATED, MODIFIED) " +   
+            " VALUES (#{id}, #{userId}, #{token}, #{name},#{status}, #{lastLoginIp}," +
             "#{created}, #{modified})";
   
     
@@ -75,8 +75,16 @@ public interface IDeviceDao {
     @Update("update DEVICE set LAST_LOGIN_TIME=#{created},LAST_LOGIN_IP = #{lastLoginIp}, MODIFIED=#{created} where ID = #{deviceId} and USER_ID=#{userId}")    
     public int updateLastLoginIp(Session session);
     
-    @Select("select * from DEVICE where STATUS ='5' order by MODIFIED desc limit 10")     
+    @Select("select * from DEVICE where STATUS ='5' and NAME=#{name} order by MODIFIED desc limit 10")     
     @ResultMap("rent.mapper.DeviceResultMap")
-    public List<Device> getSsoDevices();
+    public List<Device> getAppDevices(@Param("name")String name);
+    
+    @Select("select * from DEVICE where STATUS ='5' and NAME=#{name} and USER_ID=#{userId} order by MODIFIED desc limit 10")     
+    @ResultMap("rent.mapper.DeviceResultMap")
+    public Device getUserAppDevice(@Param("userId")String userId, @Param("name")String name);
+    
+    @Select("select * from DEVICE where STATUS ='5' and ID=#{id}")     
+    @ResultMap("rent.mapper.DeviceResultMap")
+    public Device getAppDeviceByDeviceId(@Param("id")String deviceId);
 
 }

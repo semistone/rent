@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+
 public class Session {
 	private static Logger logger = LoggerFactory.getLogger(Session.class);
 	private String id;
@@ -17,7 +18,8 @@ public class Session {
 	private long created;
 	private String city;
 	private String country;
-	
+	private long timeout = -1;
+
 	private int onlineStatus;
 	@JsonIgnore
 	private String callback;
@@ -54,6 +56,11 @@ public class Session {
 		this.isChange = true;
 	}
 	
+	/**
+	 * session format
+	 *   id:deviceid:userId:lastloginip:role:timeout
+	 * @param cookieValue
+	 */
 	public Session(String cookieValue){
 		String[] strings = cookieValue.split(":");
 		this.id = strings[0];
@@ -61,16 +68,25 @@ public class Session {
 		this.userId = strings[2];
 		this.lastLoginIp = strings[3];
 		String rolesString = null;
-		if (strings.length == 5) {
+		if (strings.length >= 5) {
 			rolesString = strings[4];
+		}		
+		if (strings.length == 6 && strings[5] != null) {
+			timeout = Long.parseLong(strings[5]);
 		}
+		
 		this.roles = new  java.util.ArrayList<Integer>();
-		if (rolesString != null) {
-			String[] roleArray = rolesString.split(" ");
-			int size = roleArray.length;
-			for(int i =0 ; i < size ; i++) {
-				this.roles.add(Integer.parseInt(roleArray[i]));
-			}			
+		if (rolesString != null && !rolesString.equals("")) {
+			try {
+				String[] roleArray = rolesString.split(" ");
+				int size = roleArray.length;
+				for(int i =0 ; i < size ; i++) {
+					this.roles.add(Integer.parseInt(roleArray[i]));
+				}	
+			}catch(Exception e) {
+				logger.error("parse role string error roleString:"+rolesString);
+				throw e;
+			}
 		}
 	}
 
@@ -143,7 +159,15 @@ public class Session {
     	for(int i = 0; i < size ; i++) {
     		rolesString+=roles.get(i)+" ";
     	}
-    	return this.id + ":" + this.deviceId +":"+this.userId+":"+ this.lastLoginIp+":"+rolesString.trim();
+    	StringBuffer sb = new StringBuffer();
+    	sb.append(this.id + ":");
+    	sb.append(this.deviceId +":");
+    	sb.append(this.userId+":");
+    	sb.append(this.lastLoginIp+":");
+    	sb.append(rolesString.trim()+":");
+    	sb.append(timeout);
+    	return sb.toString();
+    	
 	}
 	
 	public String getCity() {
@@ -165,4 +189,10 @@ public class Session {
 	public void setOnlineStatus(int onlineStatus) {
 		this.onlineStatus = onlineStatus;
 	}	
+	public long getTimeout() {
+		return timeout;
+	}
+	public void setTimeout(long timeout) {
+		this.timeout = timeout;
+	}
 }

@@ -15,7 +15,7 @@ public class Authorizer implements SecurityContext {
     public Authorizer(final UserAuthorizeData user) {
         this.user = user;
         if (user.getUserId() == null){
-        	this.user.setUserId("anonymous");
+        	this.user.setUserId(UserRole.ANONYMOUS);
         }
         this.principal = new Principal() {
 

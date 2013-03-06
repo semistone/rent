@@ -5,7 +5,7 @@ package org.siraya.rent.utils;
  *
  */
 import java.io.InputStream;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -35,5 +35,11 @@ public class ApplicationConfig implements IApplicationConfig{
 	public Map<String,Object> get(String key){
 		return (Map<String,Object>)data.get(key);
 	}
+	
+	public String getKeystoreUrl(){
+		String tmp = (String)this.get("general").get("tmp_dir");
+		return "jdbc:sqlite:"+tmp+"/keystore.db";
+	}
+	
 	
 }

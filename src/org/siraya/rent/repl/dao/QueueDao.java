@@ -2,8 +2,7 @@ package org.siraya.rent.repl.dao;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Scope;
 import org.siraya.rent.pojo.Message;
 import org.siraya.rent.pojo.QueueMeta;
 import org.siraya.rent.utils.IApplicationConfig;
@@ -24,12 +23,15 @@ import org.siraya.rent.pojo.*;
  * @author angus_chen
  * 
  */
+@Scope("prototype")
 public class QueueDao implements IQueueDao,InitializingBean  {
 	@Autowired
 	private IApplicationConfig applicationConfig;
 	private static Logger logger = LoggerFactory.getLogger(QueueDao.class);
 
 	private String volHome;
+	private Connection connMeta;
+	private String queue;
 
 	public void afterPropertiesSet() throws Exception {
 		//
@@ -45,8 +47,8 @@ public class QueueDao implements IQueueDao,InitializingBean  {
 		volHome += "/repl/";
 	}
 
-	public Connection  initVolumnFile(String queue, int volumn) throws Exception {
-		Connection conn = createConnection(queue, volumn);
+	public Connection  initVolumnFile(int volumn) throws Exception {
+		Connection conn = createConnection(this.queue, volumn);
 		this.initVolumnFile(conn);
 		return conn;
 	}
@@ -54,25 +56,22 @@ public class QueueDao implements IQueueDao,InitializingBean  {
 	void initVolumnFile(Connection conn) throws Exception {
 		logger.debug("create volumn");
 		conn.createStatement().execute("create table if not exists QUEUE_VOLUMN (ID INTEGER PRIMARY KEY ASC,CMD TEXT,USER_ID TEXT,DATA TEXT, CREATED INTEGER)");
-
-	}
-	public QueueMeta getMeta(Connection conn) throws Exception{
-		ResultSet rs=conn.createStatement().executeQuery("select * from QUEUE_META");
-		QueueMeta ret = new QueueMeta();
-		if (rs.next()) {
-			ret.setVolumn(rs.getInt(1));
-			ret.setLastRecord(rs.getInt(2));
-			logger.info("meta from db, volumn is "+ret.getVolumn());
-			logger.info("meta from db, last record is "+ret.getLastRecord());
-		} else {
-			logger.debug("insert meta record");
-			conn.createStatement().execute("insert into QUEUE_META values(0,0)");
-		}
-		return ret;
 	}
 	
-	public List<Message> dump(Connection conn) throws Exception{
-		ResultSet rs =conn.createStatement().executeQuery("select * from QUEUE_VOLUMN");
+	
+	/**
+	 * dump message.
+	 * @param conn
+	 * @param offset
+	 * @param limit
+	 * @return
+	 * @throws Exception
+	 */
+	public List<Message> dump(Connection conn, int offset, int limit) throws Exception{
+		StringBuffer sb = new StringBuffer("select * from QUEUE_VOLUMN");
+		sb.append(" limit " + limit);
+		sb.append(" offset " + offset);
+		ResultSet rs =conn.createStatement().executeQuery(sb.toString());
 		ArrayList<Message> ret = new ArrayList<Message>();
 		while(rs.next()) {
 			Message msg = new Message();
@@ -84,11 +83,30 @@ public class QueueDao implements IQueueDao,InitializingBean  {
 			ret.add(msg);
 		}
 		return ret;
-		
+			
 	}
 	
 	
-	public Connection initQueue(String queue) throws Exception {
+	public List<QueueMeta>getMetaList() throws Exception{
+		ResultSet rs =connMeta.createStatement().executeQuery("select * from QUEUE_META");
+		ArrayList<QueueMeta> ret = new ArrayList<QueueMeta>();
+		while(rs.next()) {
+			QueueMeta meta = new QueueMeta();
+			meta.setId(rs.getString(1));
+			meta.setVolumn(rs.getInt(2));
+			meta.setLastRecord(rs.getInt(3));
+			ret.add(meta);
+		}
+		return ret;			
+	}
+	
+	
+	public List<Message> dump(Connection conn) throws Exception{
+		return this.dump(conn,0, 50000);
+	}
+	
+	
+	public void initQueue(String queue) throws Exception {
 		if (volHome == null || queue == null) {
 			this.afterPropertiesSet();
 		}
@@ -109,22 +127,56 @@ public class QueueDao implements IQueueDao,InitializingBean  {
 		//
 		// find meta file
 		//
-		Connection conn = createMetaConnection(queue);
-		this.initMeta(conn);
-		return conn;
-
+		this.queue = queue;
+		this.connMeta = createMetaConnection(queue);
+		this.initMeta(connMeta);
+		
+		
 	}
 	
 	void initMeta(Connection conn)throws Exception{
-		
+		//
+		// if meta connection not setup yet, then use current connection.
+		//
+		if (this.connMeta == null) this.connMeta = conn;
 		//
 		// create meta table
 		//
 		logger.debug("create meta");
-		String CREATE_META = "create table if not exists QUEUE_META (VOLUMN int,LAST_RECORD int)";
+		String CREATE_META = "create table if not exists QUEUE_META (ID text PRIMARY KEY,VOLUMN int,LAST_RECORD int)";
 		conn.createStatement().execute(CREATE_META);
+		
 	}
 
+	public QueueMeta getMeta() throws Exception{
+		return this.getMeta(this.queue);
+	}
+	
+	public QueueMeta getMeta(String id) throws Exception{
+		PreparedStatement ps1 = connMeta.prepareStatement("select * from QUEUE_META where id = ?");
+		ps1.setString(1, id);		
+		ResultSet rs= ps1.executeQuery();
+		QueueMeta ret = new QueueMeta();
+		ret.setId(id);
+		if (rs.next()) {
+			ret.setVolumn(rs.getInt(2));
+			ret.setLastRecord(rs.getInt(3));			
+			logger.info("meta from db, volumn is "+ret.getVolumn());
+			logger.info("meta from db, last record is "+ret.getLastRecord());
+		} else {
+			logger.debug("insert meta reader record");
+			PreparedStatement ps=connMeta.prepareStatement("insert into QUEUE_META values(?, ?, 0)");
+			ps.setString(1, id);
+			if (id.equals(queue)) { // if get queue's meta, then set volumn = 0
+				ps.setInt(2, 0);
+			} else {  // get volumn from writer
+				ps.setInt(2, this.getMeta().getVolumn());								
+			}
+			ps.execute();
+		}
+		return ret;
+	}
+	
 	private Connection createMetaConnection(String queue) throws Exception {
 		String volDir = volHome + queue;
 		String connString = "jdbc:sqlite:" + volDir + "/meta.db";
@@ -150,9 +202,11 @@ public class QueueDao implements IQueueDao,InitializingBean  {
 	 * 
 	 * @return 1 success
 	 */
-	public int insert(Connection connMeta, Connection volumn, QueueMeta meta, Message message) throws Exception {
+	public int insert(Connection volumn, QueueMeta meta, Message message) throws Exception {
 		logger.debug("update last record +1");
-		connMeta.createStatement().execute("update QUEUE_META set LAST_RECORD=LAST_RECORD+1");
+		PreparedStatement ps1= connMeta.prepareStatement("update QUEUE_META set LAST_RECORD=LAST_RECORD+1 where ID=?");
+		ps1.setString(1, meta.getId());
+		ps1.execute();
 		logger.debug("insert last message");
 		PreparedStatement ps = volumn.prepareStatement("insert into QUEUE_VOLUMN (CMD, USER_ID,DATA,  CREATED) values (?, ?, ?, ?)");
 		ps.setString(1, message.getCmd());
@@ -161,13 +215,30 @@ public class QueueDao implements IQueueDao,InitializingBean  {
 			ps.setString(3, new String(message.getData()));			
 		}		
 		ps.setLong(4, message.getCreated());
-		return ps.executeUpdate();
+		ps.executeUpdate();
+		int id ;
+		ResultSet rs = ps.getGeneratedKeys();
+		rs.next();
+		id = rs.getInt(1);		
+		return id;
 	}
 
-	public void resetVolumn(Connection connMeta, QueueMeta meta) throws Exception{
+	public void resetVolumn(QueueMeta meta) throws Exception{
 		logger.info("reset meta");
-		connMeta.createStatement().execute("update QUEUE_META set LAST_RECORD = 0, VOLUMN = VOLUMN+1 ");
-		
+		PreparedStatement ps= connMeta.prepareStatement("update QUEUE_META  set LAST_RECORD = 0, VOLUMN = VOLUMN+1 where ID=?");
+		ps.setString(1, meta.getId());
+		ps.execute();
+
+	}
+	
+	public void updateReaderMeta(QueueMeta meta) throws Exception{
+		logger.debug("update reader meta last record:"+meta.getLastRecord()+" id:"+meta.getId());
+		String UPDATE = "update QUEUE_META set VOLUMN=? , LAST_RECORD=? where ID=? ";
+		PreparedStatement ps = connMeta.prepareStatement(UPDATE);
+		ps.setInt(1, meta.getVolumn());
+		ps.setInt(2, meta.getLastRecord());
+		ps.setString(3, meta.getId());
+		ps.execute();
 	}
 	
 	public IApplicationConfig getApplicationConfig() {
@@ -177,4 +248,13 @@ public class QueueDao implements IQueueDao,InitializingBean  {
 	public void setApplicationConfig(IApplicationConfig applicationConfig) {
 		this.applicationConfig = applicationConfig;
 	}
+	
+	public String getQueue() {
+		return queue;
+	}
+
+	public void setQueue(String queue) {
+		this.queue = queue;
+	}
+
 }

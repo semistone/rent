@@ -15,23 +15,26 @@ import java.util.List;
 
 import junit.framework.Assert;
 public class TestQueueDao {
-    @Autowired
     private QueueDao queueDao; 
     private Message message;
     private Connection connection;
     private IApplicationConfig applicationConfig;
+    QueueMeta meta;
 	@Before
     public void setUp() throws Exception{
 		queueDao = new QueueDao();
+    	queueDao.setQueue("test");
 		applicationConfig = new ApplicationConfig();
 		queueDao.setApplicationConfig(applicationConfig);
 		message = new Message();
+    	message.setCmd("cmd1");
+    	message.setData("test".getBytes());
     	
 		Class.forName("org.sqlite.JDBC");
 		connection = DriverManager.getConnection("jdbc:sqlite:");
     	queueDao.initMeta(connection);
 		queueDao.initVolumnFile(connection);
-		
+		meta = new QueueMeta();
     }
 	
     @Test    
@@ -41,7 +44,7 @@ public class TestQueueDao {
     
     @Test 	
     public void testGetMeta()throws Exception{
-    	QueueMeta ret =queueDao.getMeta(connection);
+    	QueueMeta ret =queueDao.getMeta();
     	Assert.assertEquals(0, ret.getVolumn());
     }
     
@@ -49,22 +52,30 @@ public class TestQueueDao {
     public void testInitVolumnFile() throws Exception{
     	String queue = "test";
     	queueDao.initQueue(queue);
-    	queueDao.initVolumnFile(queue, 0);
+    	queueDao.initVolumnFile(0);
     }
     
     @Test 
     public void testInsert()throws Exception{
     	QueueMeta meta = new QueueMeta();
-    	Message message = new Message();
-    	message.setCmd("cmd1");
-    	message.setData("test".getBytes());
-    	queueDao.insert(connection, connection, meta, message);
+    	int id = queueDao.insert(connection, meta, message);
+    	Assert.assertEquals(1, id);
+    	id = queueDao.insert(connection, meta, message);
+    	Assert.assertEquals(2, id);
     }
     
     @Test 
     public void testReset() throws Exception{
-    	QueueMeta meta = new QueueMeta();
-    	queueDao.resetVolumn(connection, meta);
+    	
+    	queueDao.resetVolumn(meta);
+    }
+    
+    @Test 
+    public void testDump() throws Exception{
+    	int id = queueDao.insert(connection, meta, message);
+    	Assert.assertEquals(1, id);
+    	int size = queueDao.dump(connection).size();
+    	Assert.assertEquals(1, size);
     }
 
 }
