@@ -21,7 +21,9 @@ general:
     tmp_dir: d:/tmp
     base_url: http://localhost:8080/rent/rest
     api_timeout: 300
-    ca_host: http://angus-ec2.siraya.net/rest/api/request_session
+    #ca_host: http://angus-ec2.siraya.net/rest/api/request_session
+    ca_host: http://localhost:8080/rent/rest/api/request_session
+
 sently:
     username: semistone
     password: semistone

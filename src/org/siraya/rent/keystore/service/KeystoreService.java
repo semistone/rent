@@ -25,7 +25,7 @@ public class KeystoreService implements InitializingBean,IKeystoreService{
 	}
 	
 	public void insert(String key, String value){
-		logger.debug("insert key "+key+" value "+value);
+		logger.debug("insert key "+key);
 		this.keystoreDao.insert(key, value);		
 	}
 	

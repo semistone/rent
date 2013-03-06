@@ -36,7 +36,6 @@ public class ApiClientService {
 		logger.debug("ca host is " + ca);
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		String deviceId = keystoreService.get(applicationName + "_device_id");
-		params.put("deviceId", deviceId);
 		logger.debug("device id is " + deviceId);
 		String token = keystoreService.get(applicationName + "_secure_token");
 		long timestamp = Calendar.getInstance().getTime().getTime() / 1000;
@@ -51,6 +50,7 @@ public class ApiClientService {
 		HttpEntity<Map> request = new HttpEntity<Map>(params, headers);
 		ResponseEntity<Map> response = restTemplate.postForEntity(ca, request,
 				Map.class);
-		System.out.println(response.getBody().get("sessionKey"));
+		String key = applicationName+"_session_key";		
+		keystoreService.insert(key, (String)response.getBody().get("sessionKey"));
 	}
 }
