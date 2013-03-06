@@ -43,7 +43,7 @@ public class ApiClientService {
 		// logger.debug("auth data is "+authData);
 		// logger.debug("timestamp is "+timestamp);
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("DEVICE_ID", deviceId);
+		headers.set("DEVICEID", deviceId);
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		params.put("authData", authData);
 		params.put("timestamp", timestamp);

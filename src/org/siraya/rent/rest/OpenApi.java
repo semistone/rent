@@ -48,7 +48,7 @@ public class OpenApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/request_session")
-	public Map<String,String> requestSession(Map<String,Object> request, @HeaderParam("DEVICE_ID") String deviceId){
+	public Map<String,String> requestSession(Map<String,Object> request, @HeaderParam("DEVICEID") String deviceId){
 		this.userAuthorizeData.setBrower(false);
 		Integer timestamp = ((Integer)request.get("timestamp"));
 		String authData = (String)request.get("authData");
@@ -68,7 +68,7 @@ public class OpenApi {
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/request_session")
-	public Map<String,String> updateSession(Map<String,Object> request,@HeaderParam("DEVICE_ID") String deviceId){
+	public Map<String,String> updateSession(Map<String,Object> request,@HeaderParam("DEVICEID") String deviceId){
 		this.userAuthorizeData.setBrower(false);
 		Integer timestamp = ((Integer)request.get("timestamp"));
 		String authData = (String)request.get("authData");		
