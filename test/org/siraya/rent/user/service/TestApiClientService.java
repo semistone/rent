@@ -13,7 +13,7 @@ public class TestApiClientService extends AbstractJUnit4SpringContextTests{
 	String applicationName;
 	@Before
 	public void setUp(){
-		applicationName = "app2";
+		applicationName = "app3";
 	}
 	
 	@Test

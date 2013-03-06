@@ -78,7 +78,7 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		MultivaluedMap<String, String> headers = request.getRequestHeaders();
 		String ip = headers.getFirst("X-Real-IP");
 		String cookieValue =  null;
-		if (headers.containsKey("SESSION_KEY")) {
+		if (!this.userAuthorizeData.isBrower() || headers.containsKey("SESSION_KEY")) {
 			//
 			// get sesson ley from cookie or HEADER[SESSION_KEY]
 			//
@@ -157,7 +157,10 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		if (cookies.containsKey("D")) {
 			String value = cookies.get("D").getValue();
 			cookieUtils.extractDeviceCookie(value, userAuthorizeData);
-		} 
+		} else if (headers.containsKey("DEVICE_ID")) {
+			this.userAuthorizeData.setBrower(false);
+			this.userAuthorizeData.setDeviceId(headers.getFirst("DEVICE_ID"));
+		}
 		request.setHeaders((InBoundHeaders) headers);
 	}
 

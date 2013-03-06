@@ -8,38 +8,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestOperations;
 import java.util.*;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 /**
  * 
  * @author angus_chen
- *
+ * 
  */
 @Service("apiClientService")
 public class ApiClientService {
 	@Autowired
 	private IApplicationConfig applicationConfig;
-    @Autowired
-    IKeystoreService keystoreService;
+	@Autowired
+	IKeystoreService keystoreService;
 	@Autowired
 	private RestOperations restTemplate;
-	
+
 	private static Logger logger = LoggerFactory
 			.getLogger(ApiClientService.class);
-    
-	
-	public void requestSession(String applicationName){		
-		String ca = (String)applicationConfig.get("general").get("ca_host");
-		logger.debug("ca host is "+ca);
-		HashMap<String,Object> request = new HashMap<String,Object>();
-		String deviceId = keystoreService.get(applicationName+"_device_id");
-		request.put("deviceId", deviceId);
-		logger.debug("device id is "+deviceId);
-		String token = keystoreService.get(applicationName+"_secure_token");
-		long timestamp = Calendar.getInstance().getTime().getTime()/1000;
+
+	public void requestSession(String applicationName) {
+		String ca = (String) applicationConfig.get("general").get("ca_host");
+		logger.debug("ca host is " + ca);
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		String deviceId = keystoreService.get(applicationName + "_device_id");
+		params.put("deviceId", deviceId);
+		logger.debug("device id is " + deviceId);
+		String token = keystoreService.get(applicationName + "_secure_token");
+		long timestamp = Calendar.getInstance().getTime().getTime() / 1000;
 		String authData = ApiService.genAuthData(token, timestamp);
-		request.put("authData", authData);
-		request.put("timestamp", timestamp);
-		ResponseEntity<Map> response = restTemplate.postForEntity(ca, request, Map.class);
+		// logger.debug("auth data is "+authData);
+		// logger.debug("timestamp is "+timestamp);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		params.put("authData", authData);
+		params.put("timestamp", timestamp);
+		HttpEntity<Map> request = new HttpEntity<Map>(params, headers);
+		ResponseEntity<Map> response = restTemplate.postForEntity(ca, request,
+				Map.class);
 		System.out.println(response.getBody().get("sessionKey"));
 	}
 }
