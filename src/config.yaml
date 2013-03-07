@@ -45,8 +45,8 @@ repl:
             param1: xyz
     log_readers:
         reader1:
-            relay_to: http://localhost:8080/rent/rest/repl/queue2
-            application_name: app2
+            relay_to: http://angus-ec2.siraya.net/rest/repl/queue2
+            application_name: app3
         reader2:
             type: bean
                                   

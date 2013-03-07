@@ -26,7 +26,7 @@ import java.util.*;
  * 
  */
 // only allow api auth 
-@RolesAllowed({org.siraya.rent.filter.UserRole.API_AUTH})
+@RolesAllowed({org.siraya.rent.filter.UserRole.API_AUTH, org.siraya.rent.filter.UserRole.ROOT})
 @Component("messageWriterApi")
 @Path("/repl")
 public class MessageQueueApi {

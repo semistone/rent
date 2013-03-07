@@ -106,7 +106,13 @@ public class CookieUtils {
     public void extractSessionCookie(String cookieValue,UserAuthorizeData userAuthorizeData){
 		try {
 			Session session = this.extraceSessionKey(cookieValue);
-
+			userAuthorizeData.setSession(session);
+			//
+			// api don't check user match
+			//
+			if (!userAuthorizeData.isBrower()) 
+				return;
+				
 			String userId = userAuthorizeData.getUserId();
 			if (userId == null) {
 				logger.error("user id is null when extract session");
@@ -121,7 +127,8 @@ public class CookieUtils {
 			} else {
 				logger.debug("session user match");
 			}
-			userAuthorizeData.setSession(session);
+			
+
     	}catch(Exception e){
     		logger.error("extract session fail ",e);
     	}

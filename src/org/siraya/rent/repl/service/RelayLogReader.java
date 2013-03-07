@@ -49,9 +49,9 @@ public class RelayLogReader implements ILogReader {
 		url.append("/");
 		url.append(message.getCmd());
 		HttpHeaders headers = new HttpHeaders();
+		this.apiClientService.deviceAuth(applicationName, headers);
 		HttpEntity<String> request = new HttpEntity<String>(new String(message.getData()), headers);
 		logger.debug("url is "+url);
-		this.apiClientService.deviceAuth(applicationName, request);
 		restTemplate.postForEntity(url.toString(), request,String.class);
 	}
 	

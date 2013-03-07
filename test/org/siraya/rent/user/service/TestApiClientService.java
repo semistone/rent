@@ -20,4 +20,9 @@ public class TestApiClientService extends AbstractJUnit4SpringContextTests{
 	public void testRequestSession(){
 		appClientService.requestSession(applicationName);
 	}
+	
+	@Test
+	public void testUpdateSession() {
+		appClientService.updateSession(applicationName);
+	}
 }

@@ -43,6 +43,8 @@ public class ApiClientService {
 				Map.class);
 		String key = applicationName+"_session_key";		
 		keystoreService.insert(key, (String)response.getBody().get("sessionKey"));
+		logger.debug("request session key success");
+
 	}
 	
 	public void updateSession(String applicationName) {
@@ -58,20 +60,18 @@ public class ApiClientService {
 		String key = applicationName+"_session_key";		
 		String sessionKey = keystoreService.get(key);
 		request.getBody().put("sessionKey", sessionKey);
-		restTemplate.exchange(ca, HttpMethod.PUT, request, Map.class);
-		ResponseEntity<Map> response = restTemplate.postForEntity(ca, request,
-				Map.class);
+		ResponseEntity<Map> response = restTemplate.exchange(ca, HttpMethod.PUT, request, Map.class);
 		keystoreService.update(key, (String)response.getBody().get("sessionKey"));
-		
+		logger.debug("update session key success");
 	}
 	
-	public void deviceAuth(String applicationName, HttpEntity request) {		
+	public void deviceAuth(String applicationName, HttpHeaders headers) {		
 		//
 		// set session key
 		//
 		String key = applicationName+"_session_key";		
 		String sessionKey = keystoreService.get(key);
-		request.getHeaders().add("SESSIONKEY", sessionKey);
+		headers.add("SESSIONKEY", sessionKey);
 	}
 	
 	private HttpEntity<Map>  setupAuthData(String applicationName) {
