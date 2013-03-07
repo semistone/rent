@@ -8,7 +8,8 @@ public class UserRole {
 		ADMIN(3),
 		ROOT(4),
 		SSO_APP(5),
-		MOBILE_PROVIDER(6);
+		MOBILE_PROVIDER(6),
+		API_AUTH(7);
 		private int id;
 		private UserRoleId(int id){
 			this.id = id;
@@ -33,6 +34,8 @@ public class UserRole {
 				return SSO_APP;
 			case 6:
 				return MOBILE_PROVIDER; // allow to send sms through user's mobile phone.
+			case 7:
+				return API_AUTH;
 			default:
 				return null;
 			}
@@ -46,6 +49,8 @@ public class UserRole {
 	public final static String ROOT = "root";
 	public final static String SSO_APP = "sso";
 	public final static String MOBILE_PROVIDER = "mobileProvider";
+	public final static String API_AUTH = "apiAuth";
+	
 	public static int getRoleId(String role){
 		if (role.equals(ANONYMOUS)) {
 			return 0;
@@ -61,7 +66,9 @@ public class UserRole {
 			return 5;
 		} else if (role.equals(MOBILE_PROVIDER)) {
 			return 6;
-		} else {
+		} else if (role.equals(API_AUTH)){
+			return 7;
+		} else{
 			return -1;
 		}
 	}

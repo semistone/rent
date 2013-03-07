@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.web.client.RestOperations;
 import org.springframework.beans.factory.*;
 import java.util.*;
+import org.siraya.rent.user.service.*;
 import org.springframework.http.*;
 @Scope("prototype")
 public class RelayLogReader implements ILogReader {
@@ -23,6 +24,9 @@ public class RelayLogReader implements ILogReader {
 	private Map<String, Object> settings;
 
 	private String relayTo;
+	private String applicationName;
+	@Autowired
+	private ApiClientService apiClientService;
 	public void init(String name) throws Exception {
 		logger.info("init relay reader with name "+name);
 		this.name = name;
@@ -33,6 +37,7 @@ public class RelayLogReader implements ILogReader {
 		}
 		settings = (Map<String, Object>) tmp;
 		this.relayTo = (String)settings.get("relay_to");
+		this.applicationName = (String) settings.get("application_name");
 		logger.info("relay to "+this.relayTo);
 	}
 
@@ -44,9 +49,10 @@ public class RelayLogReader implements ILogReader {
 		url.append("/");
 		url.append(message.getCmd());
 		HttpHeaders headers = new HttpHeaders();
-		HttpEntity<String> entity = new HttpEntity<String>(new String(message.getData()), headers);
+		HttpEntity<String> request = new HttpEntity<String>(new String(message.getData()), headers);
 		logger.debug("url is "+url);
-		restTemplate.postForEntity(url.toString(), entity,String.class);
+		this.apiClientService.deviceAuth(applicationName, request);
+		restTemplate.postForEntity(url.toString(), request,String.class);
 	}
 	
 	public RestOperations getRestTemplate() {

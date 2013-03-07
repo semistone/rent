@@ -1,6 +1,7 @@
 package org.siraya.rent.user.service;
 
 import org.siraya.rent.user.dao.IRoleDao;
+import org.siraya.rent.filter.UserRole;
 import org.siraya.rent.pojo.Device;
 import org.siraya.rent.pojo.Session;
 import org.siraya.rent.pojo.User;
@@ -92,18 +93,7 @@ public class SessionService implements ISessionService {
 		}
 	}
 	
-	private void addRolesByDeviceId(Session session) {
-		logger.debug("add roles by device id ");
-		String deviceId = session.getDeviceId();
-		List<Role> roles = this.roleDao.getRoleByUserId(deviceId);
-		int size = roles.size();
-		for (int i = 0; i < size; i++) {
-			int role = roles.get(i).getRoleId();
-			session.addRole(role);
-			logger.debug("add role " + role + " into device" + deviceId);
-		}
-		
-	}
+
 	
 	private void addRolesFromDb(Session session) {
 		logger.debug("add roles by session");
@@ -123,11 +113,12 @@ public class SessionService implements ISessionService {
 		logger.debug("new api session");
 		this.setGeoInfo(session);
 		this.sessionDao.newSession(session);		
-		//
-		// add role from device id
-		//
-		this.addRolesByDeviceId(session);
 		String userId = session.getUserId();
+		//
+		// add api auth role.
+		//
+		int apiAuthRole = UserRole.UserRoleId.API_AUTH.getRoleId();
+		session.addRole(apiAuthRole);
 		//
 		// add role from parameter roles and check with user role
 		//
@@ -138,8 +129,7 @@ public class SessionService implements ISessionService {
 					session.addRole(role.getRoleId());
 					logger.debug("add role " + role + " into user" + userId);
 					
-				}
-				
+				}				
 			}
 		}
 

@@ -46,6 +46,7 @@ repl:
     log_readers:
         reader1:
             relay_to: http://localhost:8080/rent/rest/repl/queue2
+            application_name: app2
         reader2:
             type: bean
                                   

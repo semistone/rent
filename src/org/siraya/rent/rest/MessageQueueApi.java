@@ -25,7 +25,8 @@ import java.util.*;
  * @author angus_chen
  * 
  */
-//@RolesAllowed({ org.siraya.rent.filter.UserRole.DEVICE_CONFIRMED })
+// only allow api auth 
+@RolesAllowed({org.siraya.rent.filter.UserRole.API_AUTH})
 @Component("messageWriterApi")
 @Path("/repl")
 public class MessageQueueApi {

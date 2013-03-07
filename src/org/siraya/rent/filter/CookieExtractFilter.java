@@ -64,7 +64,6 @@ public class CookieExtractFilter implements ContainerRequestFilter {
 		this.extractSessionCookie(request);
 		logger.debug("set security context");
 		request.setSecurityContext(new Authorizer(userAuthorizeData));
-
 		return request;
 	}
 
