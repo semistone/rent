@@ -39,6 +39,16 @@ public class ImageUploadApi {
 	private static Logger logger = LoggerFactory
 			.getLogger(ImageUploadApi.class);
 
+	
+	/**
+	 * test script
+	 * curl 'http://192.168.56.1:8080/rent/rest/image/test1/test2.jpg' --data-binary  @/mnt/hgfs/Desktop/Desktop/theme/images/test.jpg  --cookie D=xxx
+	 * @param imgGroup
+	 * @param imgTarget
+	 * @param requestBodyStream
+	 * @return
+	 * @throws Exception
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{image_group}/{image_target}")
@@ -70,7 +80,7 @@ public class ImageUploadApi {
 			dropboxService.save(image);
 		} catch (Exception e) {
 			logger.debug("delete file");
-			f.delete();
+			//f.delete();
 			throw e;
 		}
 		return Response.status(HttpURLConnection.HTTP_OK).entity(image).build();

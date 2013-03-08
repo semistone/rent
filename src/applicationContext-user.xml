@@ -32,7 +32,4 @@
     org.siraya.rent.filter;
     org.siraya.rent.repl;
     org.siraya.rent.keystore" />
-    <task:scheduled-tasks scheduler="myScheduler">
-        <task:scheduled ref="dropboxService" method="sync" fixed-delay="60000"/>
-    </task:scheduled-tasks>
 </beans>

@@ -1,6 +1,7 @@
 package org.siraya.rent.dropbox.service;
 import java.util.HashMap;
 import java.util.Map;
+import org.siraya.rent.repl.service.ILocalQueueService;
 import org.siraya.rent.mobile.dao.IServiceProviderDao;
 import org.siraya.rent.pojo.*;
 import org.jmock.Expectations;
@@ -20,6 +21,7 @@ public class TestDropboxService {
 	private String group;
 	private IApplicationConfig config;
 	private IServiceProviderDao serviceProviderDao;
+	private ILocalQueueService localQueueService;
 	DropboxService test;
 	Image image;
 	private String user = "user";
@@ -33,6 +35,8 @@ public class TestDropboxService {
 		groupDao = context.mock(ImageGroupDao.class);	
 		serviceProviderDao = context.mock(IServiceProviderDao.class);	
 
+		localQueueService = context.mock(ILocalQueueService.class);
+		test.setDropboxQuque(localQueueService);
 		config = new org.siraya.rent.utils.ApplicationConfig();
 		test.setApplicationConfig(config);
 		test.setImageDao(dao);
@@ -96,6 +100,25 @@ public class TestDropboxService {
 		});
 		test.upload(image);
 	}
+    
+    @Test 
+    public void testSave() throws Exception{
+		context.checking(new Expectations() {
+			{
+				one(groupDao).getByUserAndPath(userId, group);
+				one(groupDao).insert(with(any(ImageGroup.class)));
+				will(returnValue(1));
+				one(dao).groupCount();				
+				will(returnValue(1));
+				one(dao).insert(image);
+				will(returnValue(1));
+				one(localQueueService).insert(with(any(org.siraya.rent.pojo.Message.class)));
+				
+			}
+		});
+    	
+    	test.save(image);
+    }
     
     @Test 
     public void testSyncMeta(){

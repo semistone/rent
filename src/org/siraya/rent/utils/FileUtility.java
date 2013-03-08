@@ -87,7 +87,7 @@ public class FileUtility {
 			fos = new FileOutputStream(f);
 			byte[] buf = new byte[8192];
 			int n =0;
-			while (-1 != (n = is.read(buf))) {
+			while (-1 != (n = is.read(buf))) {				
 				fos.write(buf, 0, n);
 			}
 		}finally{

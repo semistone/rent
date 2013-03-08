@@ -7,19 +7,20 @@ import com.dropbox.client2.session.RequestTokenPair;
 import org.siraya.rent.dropbox.dao.*;
 import org.siraya.rent.mobile.dao.IServiceProviderDao;
 import org.siraya.rent.pojo.*;
+import org.siraya.rent.repl.service.ILocalQueueService;
 import org.siraya.rent.utils.IApplicationConfig;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import javax.imageio.ImageIO;
+import javax.ws.rs.core.MediaType;
+
 import java.util.*;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.*;
 import com.dropbox.client2.session.*;
-import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.Session;
-import com.dropbox.client2.session.WebAuthSession;
 import com.dropbox.client2.session.Session.AccessType;
 import org.springframework.beans.factory.*;
 import org.siraya.rent.utils.RentException;
@@ -36,7 +37,9 @@ public class DropboxService implements IDropboxService ,InitializingBean{
 	private ImageGroupDao imageGroupDao;
 	@Autowired
 	private IServiceProviderDao serviceProviderDao;
-	
+    @Autowired
+    @Qualifier("dropboxQueue")
+    private ILocalQueueService dropboxQuque;
 
 	private static Logger logger = LoggerFactory.getLogger(DropboxService.class);
 
@@ -144,6 +147,21 @@ public class DropboxService implements IDropboxService ,InitializingBean{
 			img.setImgTarget(target);
 			String url = this.upload(src, img);
 			img.setShareUrl(url);			
+		} else {
+			logger.debug("insert image "+img.getId()+" into sync queue");
+			org.siraya.rent.pojo.Message message = new org.siraya.rent.pojo.Message();
+			try { 
+				message.setBinary(false);
+				message.setCmd("sync");
+				message.setContentType(MediaType.APPLICATION_JSON);
+				message.setStringData("{\"id\":\""+img.getId()+"\"}");
+				dropboxQuque.insert(message);
+			}catch(Exception e) {
+				logger.error("insert sync queue error");
+				throw new RentException(
+						RentException.RentErrorCode.ErrorGeneral,
+						"insert sync queue error");
+			}
 		}
 		try {	
 			int count = imageDao.groupCount();
@@ -541,6 +559,14 @@ public class DropboxService implements IDropboxService ,InitializingBean{
 
 	public void setServiceProviderDao(IServiceProviderDao serviceProviderDao) {
 		this.serviceProviderDao = serviceProviderDao;
+	}
+
+	public ILocalQueueService getDropboxQuque() {
+		return dropboxQuque;
+	}
+
+	public void setDropboxQuque(ILocalQueueService dropboxQuque) {
+		this.dropboxQuque = dropboxQuque;
 	}
 
 }
