@@ -44,7 +44,7 @@ public class TestDropboxService {
 		image.setUserId(userId);
 		image.setImgGroup(group);
 		image.setImgTarget("WebContent/apple-touch-icon.png");
-		test.init();
+		test.afterPropertiesSet();
 		
 	}
     @Test 
@@ -87,8 +87,11 @@ public class TestDropboxService {
 				one(groupDao).getByUserAndPath(userId, group);
 				one(groupDao).insert(with(any(ImageGroup.class)));
 				will(returnValue(1));
+				one(dao).groupCount();				
+				will(returnValue(1));
 				one(dao).insert(image);
 				will(returnValue(1));
+				
 			}
 		});
 		test.upload(image);

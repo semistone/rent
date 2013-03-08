@@ -15,23 +15,19 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.imageio.ImageIO;
 import java.util.*;
 import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.DropboxAPI.DropboxLink;
-import com.dropbox.client2.DropboxAPI.Entry;
-import com.dropbox.client2.DropboxAPI.ThumbFormat;
-import com.dropbox.client2.DropboxAPI.ThumbSize;
-import com.dropbox.client2.exception.DropboxException;
-import com.dropbox.client2.session.AccessTokenPair;
+import com.dropbox.client2.DropboxAPI.*;
+import com.dropbox.client2.session.*;
 import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.Session;
 import com.dropbox.client2.session.WebAuthSession;
 import com.dropbox.client2.session.Session.AccessType;
-
+import org.springframework.beans.factory.*;
 import org.siraya.rent.utils.RentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service("dropboxService")
-public class DropboxService implements IDropboxService {
+public class DropboxService implements IDropboxService ,InitializingBean{
 	@Autowired
 	private IApplicationConfig applicationConfig;
 	@Autowired
@@ -56,13 +52,13 @@ public class DropboxService implements IDropboxService {
 
 	static String PROVIDER_TYPE_REQUSET = "DROPBOX_R";
 	static String PROVIDER_TYPE_TOKEN = "DROPBOX_T";
-	public DropboxAPI<WebAuthSession> getApi() {
-		init();
-		return api;
-	}
-
-	public void init() {
-		if (isInit) return;
+	
+	/**
+	 * init dropbox api object.
+	 * 
+	 * @throws Exception
+	 */
+	public void afterPropertiesSet() throws Exception {
 		Map<String, Object> settings = applicationConfig.get("dropbox");
 		this.appKeyPair = new AppKeyPair(
 				(String) settings.get("app_key"),
@@ -78,13 +74,17 @@ public class DropboxService implements IDropboxService {
 		api = new DropboxAPI<WebAuthSession>(session);
 		isInit =true;
 	}
+	
+	public DropboxAPI<WebAuthSession> getApi() {
+		return api;
+	}
+
 
 	/**
 	 * check img file name extention
 	 * @param ext
 	 */
 	private void checkExtend(String ext) {
-		this.init();
 		logger.debug("check ext for "+ext);
 		List<String> exts = (List<String>) imgSetting.get("ext");
 		if (!exts.contains(ext)) {
@@ -117,6 +117,7 @@ public class DropboxService implements IDropboxService {
 		this.checkExtend(ext);
 		imageDao.update(img);
 	}
+	
 	
 	private void save(Image img, boolean isUpload) {
 		if (img.getId() == null) {
@@ -179,11 +180,17 @@ public class DropboxService implements IDropboxService {
 		}
 	}
 	
+	/**
+	 * upload to dropbox
+	 * @param src
+	 * @param image
+	 * @return
+	 */
 	private String upload(File src,Image image) {
 		try {
 			String target = image.getImgTarget();
 			FileInputStream fis = new FileInputStream(src);
-			if (api == null) init();
+
 			
 			if (image.getRev() == null) {
 				Entry entry = api.putFileOverwrite(target, fis, src.length(), null);
@@ -203,7 +210,7 @@ public class DropboxService implements IDropboxService {
 
 	public void retrieveWebAccessToken(String userId){
 		try {
-			this.init();
+
 			WebAuthSession was = new WebAuthSession(appKeyPair,
 					Session.AccessType.APP_FOLDER);
 			//
@@ -249,7 +256,7 @@ public class DropboxService implements IDropboxService {
 	}
 	public String doLink(String userId, String done) {
 		try {
-			this.init();
+
 			WebAuthSession was = new WebAuthSession(appKeyPair,
 					Session.AccessType.APP_FOLDER);
 
