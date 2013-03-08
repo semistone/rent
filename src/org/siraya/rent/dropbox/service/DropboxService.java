@@ -254,6 +254,12 @@ public class DropboxService implements IDropboxService ,InitializingBean{
 		}
 
 	}
+	
+	
+	/**
+	 * generate dropbox account link url.
+	 * 
+	 */
 	public String doLink(String userId, String done) {
 		try {
 

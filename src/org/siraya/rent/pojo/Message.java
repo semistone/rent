@@ -8,6 +8,18 @@ public class Message {
 	private long created;
 	private long modified;
 	private boolean isBinary = false;
+	private String contentType;
+	
+
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
 	public boolean isBinary() {
 		return isBinary;
 	}
@@ -46,6 +58,14 @@ public class Message {
 
 	public void setData(byte[] data) {
 		this.data = data;
+	}
+	
+	public String getStringData() {
+		return new String(data);
+	}
+	
+	public void setStringData(String data) {
+		this.data = data.getBytes();
 	}
 
 	public long getCreated() {

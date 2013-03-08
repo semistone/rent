@@ -68,9 +68,10 @@ public class MessageQueueApi {
 	}
 	
 	@POST
+	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{queue}/{cmd}")
-	public Map post(@Context HttpServletRequest req,
+	public Map postBinary(@Context HttpServletRequest req,
 			@PathParam("queue") String queue, @PathParam("cmd") String cmd,
 			InputStream requestBodyStream) throws Exception {
 		logger.debug("post queue:"+queue+" cmd:"+cmd);
@@ -83,6 +84,7 @@ public class MessageQueueApi {
 		Message message = new Message();
 		message.setUserId(userAuthorizeData.getUserId());
 		message.setCmd(cmd);
+		message.setContentType(req.getContentType());
 		//
 		// copy to byte array.
 		//
@@ -93,6 +95,29 @@ public class MessageQueueApi {
 			bos.write(buffer, 0, n ); // copy streams
 		}
 		message.setData(bos.toByteArray());
+		localQueueService.insert(message);
+		return ret;
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/{queue}/{cmd}")
+	public Map post(@Context HttpServletRequest req,
+			@PathParam("queue") String queue, @PathParam("cmd") String cmd,
+			String requestBody) throws Exception {
+		logger.debug("post queue:"+queue+" cmd:"+cmd+" in json type");
+		ILocalQueueService localQueueService = getQueueService(req, queue);
+		if (localQueueService == null) {
+			throw new RentException(
+					RentException.RentErrorCode.ErrorInvalidParameter,
+					"queue not exist");
+		}
+		Message message = new Message();
+		message.setUserId(userAuthorizeData.getUserId());
+		message.setCmd(cmd);
+		message.setContentType(MediaType.APPLICATION_JSON);
+		message.setStringData(requestBody);
 		localQueueService.insert(message);
 		return ret;
 	}

@@ -37,4 +37,8 @@
     <!-- queue2 -->
     <bean id="queue2" class="org.siraya.rent.repl.service.LocalQueueService"/>    
 
+
+    <!-- dropbox image sync queue -->
+    <bean id="dropboxQueue" class="org.siraya.rent.repl.service.LocalQueueService"/>    
+
 </beans>

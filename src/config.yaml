@@ -41,6 +41,9 @@ repl:
             readers: [reader1,reader2]
         queue2: 
             param1: xyz
+        dropboxQueue:
+            volumn_max_entity: 2
+            readers: [reader1,reader2]        
         test: 
             param1: xyz
     log_readers:
@@ -54,7 +57,7 @@ repl:
 dropbox:
     app_key: test
     app_secret: test
-    toekn_key: test
+    token_key: test
     token_secret: test
     retrieve_token_path : /dropbox/retrieve_token
 image:
