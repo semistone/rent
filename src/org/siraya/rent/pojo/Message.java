@@ -1,9 +1,12 @@
 package org.siraya.rent.pojo;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 public class Message {
 	private long id;
 	private String userId;
 	private String cmd;
+	@JsonIgnore
 	private byte[] data;
 	private long created;
 	private long modified;
@@ -60,6 +63,7 @@ public class Message {
 		this.data = data;
 	}
 	
+	@JsonProperty("data")
 	public String getStringData() {
 		return new String(data);
 	}

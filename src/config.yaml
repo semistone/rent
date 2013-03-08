@@ -42,7 +42,6 @@ repl:
         queue2: 
             param1: xyz
         dropboxQueue:
-            volumn_max_entity: 2
             readers: [reader1,reader2]        
         test: 
             param1: xyz

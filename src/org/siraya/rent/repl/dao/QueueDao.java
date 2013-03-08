@@ -55,7 +55,7 @@ public class QueueDao implements IQueueDao,InitializingBean  {
 
 	void initVolumnFile(Connection conn) throws Exception {
 		logger.debug("create volumn");
-		conn.createStatement().execute("create table if not exists QUEUE_VOLUMN (ID INTEGER PRIMARY KEY ASC,CMD TEXT,USER_ID TEXT,DATA TEXT, CREATED INTEGER)");
+		conn.createStatement().execute("create table if not exists QUEUE_VOLUMN (ID INTEGER PRIMARY KEY ASC,CMD TEXT,CONTENT_TYPE TEXT, USER_ID TEXT,DATA TEXT, CREATED INTEGER)");
 	}
 	
 	
@@ -77,9 +77,10 @@ public class QueueDao implements IQueueDao,InitializingBean  {
 			Message msg = new Message();
 			msg.setId(rs.getLong(1));
 			msg.setCmd(rs.getString(2));
-			msg.setUserId(rs.getString(3));
-			msg.setData(rs.getBytes(4));
-			msg.setCreated(rs.getLong(5));
+			msg.setContentType(rs.getString(3));
+			msg.setUserId(rs.getString(4));
+			msg.setData(rs.getBytes(5));				
+			msg.setCreated(rs.getLong(6));
 			ret.add(msg);
 		}
 		return ret;
@@ -208,13 +209,16 @@ public class QueueDao implements IQueueDao,InitializingBean  {
 		ps1.setString(1, meta.getId());
 		ps1.execute();
 		logger.debug("insert last message");
-		PreparedStatement ps = volumn.prepareStatement("insert into QUEUE_VOLUMN (CMD, USER_ID,DATA,  CREATED) values (?, ?, ?, ?)");
+		PreparedStatement ps = volumn.prepareStatement("insert into QUEUE_VOLUMN (CMD, CONTENT_TYPE,USER_ID,DATA,  CREATED) values (?, ?, ?, ?, ?)");
 		ps.setString(1, message.getCmd());
-		ps.setString(2, message.getUserId());
+		ps.setString(2, message.getContentType());
+		ps.setString(3, message.getUserId());
 		if (!message.isBinary()) {
-			ps.setString(3, new String(message.getData()));			
-		}		
-		ps.setLong(4, message.getCreated());
+			ps.setString(4, message.getStringData());			
+		} else {
+			ps.setBytes(4, message.getData());
+		}
+		ps.setLong(5, message.getCreated());
 		ps.executeUpdate();
 		int id ;
 		ResultSet rs = ps.getGeneratedKeys();
